@@ -44,7 +44,7 @@ function create_database {
 
 function drop_database {
     database=$1
-    su ${POSTGRES_ADMIN_USER} -c ${POSTGRES_PATH}/dropdb ${database}
+    su ${POSTGRES_ADMIN_USER} -c "${POSTGRES_PATH}/dropdb ${database}"
 }
 
 cd $(dirname $0)
