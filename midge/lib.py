@@ -25,7 +25,10 @@ def join_url(path, dictionary=None):
     if dictionary:
         attr = "&".join(["%s=%s" % (key, quote(value))
                          for key, value in dictionary.iteritems()])
-        return "%s?%s" % (path, attr)
+        if "?" in path:
+            return "%s&%s" % (path, attr)
+        else:
+            return "%s?%s" % (path, attr)
     else:
         return path
 

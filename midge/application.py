@@ -457,8 +457,8 @@ class StateTable(object):
         Will create a new value if necessary.
         
         """
+        value = str(value).strip()
         if value:
-            value = str(value)
             if not self.valid_value.match(value):
                 raise InvalidValueException, value
             state_id = self._get_id(cursor, value)
@@ -782,6 +782,80 @@ class Search:
             ("closed_in", "Closed in"),
             ("title", "Title"))
 
+    _order_map = dict(
+        ascending = "ASC",
+        descending = "DESC")
+
+    _select_map = dict(
+        bug_id = "bugs.bug_id",
+        status = "statuses.name",
+        priority = "priority_values.name",
+        category = "category_values.name",
+        configuration = "configuration_values.name",
+        keyword = "keyword_values.name",
+        reported_in = "reported_versions.name",
+        fixed_in = "fixed_versions.name",
+        closed_in = "closed_versions.name",
+        title = "title")
+
+    _from_map = dict(
+        priority = """
+               ) LEFT OUTER JOIN priorities ON
+                (priorities.bug_id = bugs.bug_id)
+               ) LEFT OUTER JOIN priority_values ON
+                (priority_values.id = priorities.id)""",
+        category = """
+               ) LEFT OUTER JOIN categories ON
+                (categories.bug_id = bugs.bug_id)
+               ) LEFT OUTER JOIN category_values ON
+                (category_values.id = categories.id)""",
+        configuration = """
+               ) LEFT OUTER JOIN configurations ON
+                (configurations.bug_id = bugs.bug_id)
+               ) LEFT OUTER JOIN configuration_values ON
+                (configuration_values.id = configurations.id)""",
+        keyword = """
+               ) LEFT OUTER JOIN keywords ON
+                (keywords.bug_id = bugs.bug_id)
+               ) LEFT OUTER JOIN keyword_values ON
+                (keyword_values.id = keywords.id)""",
+        reported_in = """
+               ) LEFT OUTER JOIN reported_ins ON
+                (reported_ins.bug_id = bugs.bug_id)
+               ) LEFT OUTER JOIN versions AS reported_versions ON
+                (reported_versions.id = reported_ins.id)""",
+        fixed_in = """
+               ) LEFT OUTER JOIN fixed_ins ON
+                (fixed_ins.bug_id = bugs.bug_id)
+               ) LEFT OUTER JOIN versions AS fixed_versions ON
+                (fixed_versions.id = fixed_ins.id)""",
+        closed_in = """
+               ) LEFT OUTER JOIN closed_ins ON
+                (closed_ins.bug_id = bugs.bug_id)
+               ) LEFT OUTER JOIN versions AS closed_versions ON
+                (closed_versions.id = closed_ins.id)""")
+
+    _where_map = {
+        "status": "statuses.name = '%s'",
+        "status_regex": "statuses.name ~* '%s'",
+        "priority": "priority_values.name = '%s'",
+        "priority_regex": "priority_values.name ~* '%s'",
+        "category": "category_values.name = '%s'",
+        "category_regex": "category_values.name ~* '%s'",
+        "configuration": "configuration_values.name = '%s'",
+        "configuration_regex": "configuration_values.name ~* '%s'",
+        "keyword": "keyword_values.name = '%s'",
+        "keyword_regex": "keyword_values.name ~* '%s'",
+        "reported_in": "reported_versions.name = '%s'",
+        "reported_in_regex": "reported_versions.name ~* '%s'",
+        "fixed_in": "fixed_versions.name = '%s'",
+        "fixed_in_regex": "fixed_versions.name ~* '%s'",
+        "closed_in": "closed_versions.name = '%s'",
+        "closed_in_regex": "closed_versions.name ~* '%s'",
+        "title": "title ~* '.*%s.*'",
+        "title_regex": "title ~* '%s'"
+        }
+
     def __init__(self, variables, sort_by, order, **criteria):
         """Construct an object defining a search.
 
@@ -803,7 +877,7 @@ class Search:
                   "category", "ascending", status="new")
 
         """
-        self.variables, self.titles = self._make(variables)
+        self.variables, self.titles = self._make_variables_and_titles(variables)
         self.sort_by = sort_by
         self.order = order
         self.criteria = criteria
@@ -813,7 +887,7 @@ class Search:
         assert self.order in ("ascending", "descending")
         assert type(self.criteria) == type({})
 
-    def _make(self, variables):
+    def _make_variables_and_titles(self, variables):
         variables_set = sets.Set(variables)
         variables = []
         titles = []
@@ -825,8 +899,49 @@ class Search:
         assert len(variables_set) == 0
         return tuple(variables), tuple(titles)
 
-    def reset(self):
-        self.rows = []    
+    def _make_select_clause(self, variables):
+        return "SELECT " + ", ".join([self._select_map[v] for v in variables])
+
+    def _make_from_clause(self, variables, criteria):
+        v_set = sets.Set(variables)
+        for v in criteria:
+            if v.endswith("_regex"):
+                v = v[:-len("_regex")]
+            v_set.add(v)
+        clauses = filter(None, [self._from_map.get(v, None) for v in v_set])
+        return """FROM %(from_brackets)s
+                  statuses INNER JOIN bugs ON
+                  (bugs.status_id = statuses.status_id)
+                  %(from)s""" % {"from_brackets": len(clauses) * "((",
+                                 "from": " ".join(clauses)}
+
+    def _make_where_clause(self, criteria):
+        clauses = [self._where_map[c] % v for c,v in criteria.iteritems()]
+        if clauses:
+            return "WHERE " + " AND ".join(clauses)
+        else:
+            return ""
+
+    def _make_sort_clause(self, sort_by, order):
+        return "ORDER BY %s %s" % (self._select_map[sort_by],
+                                  self._order_map[order])
+    
+    def run(self, cursor):
+        # TODO try except to ensure cursor is closed after error.
+        cursor.execute("""
+               %(select)s
+               %(from)s
+               %(where)s
+               %(sort)s;""" %
+            {"select": self._make_select_clause(self.variables),
+             "from": self._make_from_clause(self.variables, self.criteria),
+             "where": self._make_where_clause(self.criteria),
+             "sort": self._make_sort_clause(self.sort_by, self.order)})
+        self.rows = []
+        result = cursor.fetchall()
+        for row in result:
+            self.add(*row)
+        cursor.close()
 
     def add(self, *args):
         assert len(args) == len(self.variables)
@@ -954,103 +1069,7 @@ class Bugs(object):
         return Bug(self, bug_id)
 
     def search(self, search):
-        sort_by_map = {
-            "bug_id": "bugs.bug_id",
-            "priority": "priority_values.name",
-            "category": "category_values.name",
-            "reported_in": "reported_versions.name",
-            "fixed_in": "fixed_versions.name",
-            "closed_in": "closed_versions.name",
-            "title": "title"}
-        order_map = {
-            "ascending": "ASC",
-            "descending": "DESC"}
-        select_map = {   # TODO same as sort_by_map?
-            "bug_id": "bugs.bug_id",
-            "priority": "priority_values.name",
-            "category": "category_values.name",
-            "reported_in": "reported_versions.name",
-            "fixed_in": "fixed_versions.name",
-            "closed_in": "closed_versions.name",
-            "title": "title"}
-
-        class From:
-            bug_id = ""
-            title = ""
-            priority = """
-               ) LEFT OUTER JOIN priorities ON
-                (priorities.bug_id = bugs.bug_id)
-               ) LEFT OUTER JOIN priority_values ON
-                (priority_values.id = priorities.id)"""
-            category = """
-               ) LEFT OUTER JOIN categories ON
-                (categories.bug_id = bugs.bug_id)
-               ) LEFT OUTER JOIN category_values ON
-                (category_values.id = categories.id)"""
-            reported_in = """
-               ) LEFT OUTER JOIN reported_ins ON
-                (reported_ins.bug_id = bugs.bug_id)
-               ) LEFT OUTER JOIN versions AS reported_versions ON
-                (reported_versions.id = reported_ins.id)"""
-            fixed_in = """
-               ) LEFT OUTER JOIN fixed_ins ON
-                (fixed_ins.bug_id = bugs.bug_id)
-               ) LEFT OUTER JOIN versions AS fixed_versions ON
-                (fixed_versions.id = fixed_ins.id)"""
-            closed_in = """
-               ) LEFT OUTER JOIN closed_ins ON
-                (closed_ins.bug_id = bugs.bug_id)
-               ) LEFT OUTER JOIN versions AS closed_versions ON
-                (closed_versions.id = closed_ins.id)"""
-
-            def _get_from_clause(cls, variables):
-                return " ".join([getattr(cls, v) for v in variables])
-            get_from_clause = classmethod(_get_from_clause)
-            
-            def _get_from_brackets(variables):
-                # TODO does this -2 assume that bug_id and title are present?
-                return "((" * (len(variables) - 2)
-            get_from_brackets = staticmethod(_get_from_brackets)
-            
-        where_map = {
-            "status": "statuses.name = '%s'",
-            "status_regex": "statuses.name ~* '%s'",
-            "title": "title = '%s'",
-            "title_regex": "title ~* '%s'"
-            }
-
-        # TODO find better home for these asserts
-        assert search.sort_by in sort_by_map
-        assert search.order in order_map
-    
-        cursor = self.connection.cursor()
-
-        # TODO from_map needs to be used for all mentioned variables
-        # (either in criteria, or in output table).
-
-        cursor.execute("""
-                SELECT %(select)s
-                FROM %(from_brackets)s
-                     statuses INNER JOIN bugs ON
-                     (bugs.status_id = statuses.status_id)
-                     %(from)s
-                WHERE %(where)s
-                ORDER BY %(sort_by)s %(order)s;
-                """ % {"select":
-                       ",".join([select_map[v] for v in search.variables]),
-                       "from_brackets":
-                       From.get_from_brackets(search.variables),
-                       "from":
-                       From.get_from_clause(search.variables),
-                       "where": " AND ".join([where_map[c] % v for c,v in search.criteria.iteritems()]),
-                       "sort_by": sort_by_map[search.sort_by],
-                       "order": order_map[search.order]})
-        search.reset()
-        result = cursor.fetchall()
-        for row in result:
-            search.add(*row)
-        cursor.close()
-        return search
+        search.run(self.connection.cursor())
 
            
 class Application(object):

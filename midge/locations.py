@@ -169,9 +169,7 @@ class Login(Location):
             templates.paragraph(
                 wfile,
                 'Before you can create, view, or alter any bugs you must '
-                'first login using an existing user account. '
-                ' Please select a username, '
-                'enter the password, and click the "Login" button.')
+                'first login using an existing user account.')
             path = lib.join_url(self.path, values)
             templates.login_form(wfile, path, self.application.usernames)
             templates.hrule(wfile)
@@ -426,6 +424,11 @@ class List(Location):
             else:
                 templates.header(wfile, user)
                 templates.title(wfile, "List bugs")
+                templates.bullets(
+                    wfile,
+                    'Each bug list is designed for a particular objective.',
+                    'The number indicates the total number of bugs that '
+                    'are in each state.')
                 status_counts = self.application.get_status_counts(session_id)
                 templates.list_form(wfile, self.path, status_counts)
                 templates.footer(wfile, user)
@@ -448,7 +451,8 @@ class List(Location):
             templates.paragraph(
                 wfile,
                 "These bugs are all new and need to be reviewed.")
-            templates.table_of_bugs(wfile, self.path, "new", search)
+            url = lib.join_url(self.path, {"status": "new"})
+            templates.table_of_bugs(wfile, url, search)
         else:
             templates.paragraph(wfile, "There are no new bugs.")
 
@@ -467,7 +471,8 @@ class List(Location):
                 wfile,
                 "These bugs are ready to be scheduled "
                 "(priority 5 is most important).")
-            templates.table_of_bugs(wfile, self.path, "reviewed", search)
+            url = lib.join_url(self.path, {"status": "reviewed"})
+            templates.table_of_bugs(wfile, url, search)
         else:
             templates.paragraph(wfile,
                                 "There are no bugs in the reviewed state.")
@@ -487,7 +492,8 @@ class List(Location):
                 wfile,
                 "These bugs are ready to be fixed "
                 "(starting with priority 5).")
-            templates.table_of_bugs(wfile, self.path, "scheduled", search)
+            url = lib.join_url(self.path, {"status": "scheduled"})
+            templates.table_of_bugs(wfile, url, search)
         else:
             templates.paragraph(
                 wfile,
@@ -507,7 +513,8 @@ class List(Location):
             templates.paragraph(
                 wfile,
                 "These bugs are ready to be tested.")
-            templates.table_of_bugs(wfile, self.path, "fixed", search)
+            url = lib.join_url(self.path, {"status": "fixed"})
+            templates.table_of_bugs(wfile, url, search)
         else:
             templates.paragraph(
                 wfile,
@@ -527,7 +534,8 @@ class List(Location):
             templates.paragraph(
                 wfile,
                 "These bugs have all been closed (e.g. confirmed fixed).")
-            templates.table_of_bugs(wfile, self.path, "closed", search)
+            url = lib.join_url(self.path, {"status": "closed"})
+            templates.table_of_bugs(wfile, url, search)
         else:
             templates.paragraph(wfile,
                                 "There are no closed bugs.")
@@ -545,7 +553,8 @@ class List(Location):
             templates.paragraph(
                 wfile,
                 "These bugs have been cancelled (e.g. mistakenly filed).")
-            templates.table_of_bugs(wfile, self.path, "cancelled", search)
+            url = lib.join_url(self.path, {"status": "cancelled"})
+            templates.table_of_bugs(wfile, url, search)
         else:
             templates.paragraph(wfile,
                                 "There are no cancelled bugs.")
@@ -711,7 +720,7 @@ class View(Location):
                     'Please use the back-button of your browser to correct.')
             templates.footer(wfile, user)
         else:
-            self.redirect(Login.path, self.path)
+            self.redirect(Login.path, lib.join_url(self.path, values))
 
 
 class New(Location):
@@ -723,13 +732,12 @@ class New(Location):
         if user:
             templates.header(wfile, user)
             templates.title(wfile, "Add new bug")
-            templates.paragraph(
+            templates.bullets(
                 wfile,
-                'To add a new bug, please fill in as many fields '
-                'as possible and press the "Submit" button. You must '
-                'provide at least a title and a description. '
-                'You can use new values for the "Version", "Configuration", '
-                'and "Category" fields if the available ones are unsuitable.')
+                'Please fill in as many fields as possible and '
+                'press the "Submit" button.',
+                'You must provide at least a title and a description.',
+                'Use new values (e.g. for version) if the available ones are unsuitable.')
             templates.new_bug_form(wfile, self.path,
                                    self.application.versions,
                                    self.application.configurations,
@@ -802,6 +810,12 @@ class Search(Location):
                 self._search(session_id, wfile, values)
             else:
                 templates.title(wfile, "Search for bugs")
+                templates.bullets(
+                    wfile,
+                    'All criteria are combined with "And".',
+                    'Blank fields are ignored.',
+                    'The "regex" fields are for advanced searches '
+                    'and may be ignored.')
                 templates.search_form(wfile, self.path,
                             [""] + list(self.application.statuses),
                             self.application.priorities,
@@ -811,16 +825,35 @@ class Search(Location):
                             self.application.versions)
             templates.footer(wfile, user)
         else:
-            self.redirect(Login.path, self.path)
+            self.redirect(Login.path, lib.join_url(self.path, values))
             
     def _search(self, session_id, wfile, values):
-        del values["submit"]
+        sort_by = values.get("sort_by", "bug_id")
+        order = values.get("order", "ascending")
+        for k in "submit", "sort_by", "order":
+            if k in values:
+                del values[k]
+
+        criteria = {}
+        columns = ["bug_id", "title"]
         for key, value in values.items():
-            if not value:
-                del values[key]
-            else:
-                values[key] = lib.unquote(value)
-        wfile.write(str(values))
+            if value:
+                if key.endswith("_column"):
+                    columns.append(key[:-len("_column")])
+                else:
+                    criteria[key] = value
+        
+        search = application.Search(columns, sort_by, order, **criteria)
+        self.application.search(session_id, search)
+
+        templates.title(wfile, "Search result")
+        if search.rows:
+            url = lib.join_url(self.path, values)
+            templates.table_of_bugs(wfile, url, search)
+        else:
+            templates.paragraph(
+                wfile,
+                "No bugs match those criteria.")
 
 class Images(Location):
 

@@ -208,7 +208,6 @@ class TemplatesTest(unittest.TestCase):
         templates._table_headings(wfile,
                                   "a path",
                                   ["title1", "title"],
-                                  "a status",
                                   ["variable1", "variable"],
                                   "variable2",
                                   "ascending")

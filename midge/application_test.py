@@ -460,7 +460,7 @@ class BugTests(BaseTest):
         bug = self._add_bug()
         search = application.Search(("bug_id", "title"),
                         "bug_id", "ascending", status="cancelled")
-        search = self.app.search(self.session_id, search)
+        self.app.search(self.session_id, search)
         self.assertEqual(search.variables, ("bug_id", "title"))
         self.assertEqual(search.titles, ("Bug", "Title"))
         self.assertEqual(len(search.rows), 5)
@@ -530,27 +530,25 @@ class BugTests(BaseTest):
         
         bugs[1].change(user, status="reviewed")
 
-        self.assertEqual(
-            len(self.app.search(self.session_id, status="new").rows),
-            2)
-        self.assertEqual(
-            len(self.app.search(self.session_id, status="reviewed").rows),
-            1)
-        self.assertEqual(
-            len(self.app.search(self.session_id,
-                                status_regex="new|reviewed").rows),
-            3)
+        search = application.Search(("bug_id",), "bug_id", "ascending",
+                                    status="new")
 
-        self.assertEqual(
-            len(self.app.search(self.session_id, title="foobar").rows),
-            1)
-        self.assertEqual(
-            len(self.app.search(self.session_id, title_regex=".*title").rows),
-            2)
+        self.app.search(self.session_id, search)
+        search.criteria = {"status": "new"}
+        self.assertEqual(len(search.rows), 2)
+        
+        search.criteria = {"status": "reviewed"}
+        self.app.search(self.session_id, search)
+        self.assertEqual(len(search.rows), 1)
+        
+        search.criteria = {"status_regex": "new|reviewed"}
+        self.app.search(self.session_id, search)
+        self.assertEqual(len(search.rows), 3)
 
-        self.assertEqual(
-            len(self.app.search(self.session_id, title="foobar").rows),
-            1)
-        self.assertEqual(
-            len(self.app.search(self.session_id, title_regex=".*title").rows),
-                         2)
+        search.criteria = {"title": "foobar"}
+        self.app.search(self.session_id, search)
+        self.assertEqual(len(search.rows), 1)
+
+        search.criteria = {"title_regex": ".*title"}
+        self.app.search(self.session_id, search)
+        self.assertEqual(len(search.rows), 2)

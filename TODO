@@ -1,5 +1,8 @@
 User visible TODOs:
 
+- check everywhere redirecting when not logged in
+- search by comments
+- provide human readable description of search criteria on results page
 - map "Select one" from versions to "" (or possibly just remove it)
 - spawn bug (split a bug into two identical bugs, for separate tracking)
 - add hyperlinks to other bugs listed in posted text

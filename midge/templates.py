@@ -651,12 +651,6 @@ def list_form(wfile, path, status_counts):
             return "s"
         
     wfile.write('''
-  <p>Several different bug lists are available, each designed to enable
-     the user achieve particular objectives. To view one of these bug lists,
-     select an option below and click the "List bugs" button.
-  </p>
-  <p>The number indicates the total number of bugs that are in each state.
-  </p>
   <center><blockquote>  
    <form action="%(path)s">
     <table bgcolor="#DDDDDD" cellpadding="8" cellspacing="0" border="0">
@@ -727,7 +721,7 @@ def list_form(wfile, path, status_counts):
 
 
 def _table_headings(wfile, path, titles,
-                    status, variables, sorted_by, ordered):
+                    variables, sorted_by, ordered):
     wfile.write('''
     <tr>''')
     for heading, variable in zip(titles, variables):
@@ -736,8 +730,7 @@ def _table_headings(wfile, path, titles,
                          "descending": "ascending"}[ordered]
         else:
             new_order = "ascending"
-        url = lib.make_url(path, {"status": status,
-                                  "sort_by": variable,
+        url = lib.make_url(path, {"sort_by": variable,
                                   "order": new_order})
         wfile.write('''
      <th bgcolor="#cecece">
@@ -783,7 +776,7 @@ def _table_rows(wfile, rows):
     </tr>''') 
         colour_index = (colour_index + 1) % 2
 
-def table_of_bugs(wfile, path, status, search):
+def table_of_bugs(wfile, path, search):
     assert len(search.rows) > 0
     titles = search.titles
     variables = search.variables
@@ -793,7 +786,7 @@ def table_of_bugs(wfile, path, status, search):
   <center>
    <table cellpadding="2" cellspacing="3" border="0">''')
     _table_headings(wfile, path, titles,
-                    status, variables, sorted_by, ordered)
+                    variables, sorted_by, ordered)
     _table_rows(wfile, search.rows)
     wfile.write('''
    </table>
@@ -811,14 +804,24 @@ def search_form(wfile, path, statuses, priorities,
    </tr> 
    <tr bgcolor="#DDDDDD">
     <td><small><b>&nbsp;&nbsp;Title</b></small></td>
-    <td colspan="2">
+    <td>
      <input name="title" type="text"/>
+    </td>
+    <td>
+     <small>&nbsp;(regex</small>
+     <input type="text" name="title_regex"/>
+     <small>)</small>
     </td>
    </tr>
    <tr bgcolor="#DDDDDD">
     <td><small><b>&nbsp;&nbsp;Comments</b></small></td>
-    <td colspan="2">
+    <td>
      <input name="comments" type="text"/>
+    </td>
+    <td>
+     <small>&nbsp;(regex</small>
+     <input type="text" name="comments_regex"/>
+     <small>)</small>
     </td>
    </tr>
 
@@ -839,8 +842,9 @@ def search_form(wfile, path, statuses, priorities,
      </select>
     </td>
     <td>
-     <small><em>or</em> use a regex</small>
+     <small>&nbsp;(regex</small>
      <input type="text" name="status_regex"/>
+     <small>)</small>
     </td>
     <td bgcolor="#FFFFFF">&nbsp;</td>
     <td>
@@ -861,8 +865,9 @@ def search_form(wfile, path, statuses, priorities,
      </select>
     </td>
     <td>
-     <small><em>or</em> use a regex</small>
+     <small>&nbsp;(regex</small>
      <input type="text" name="priority_regex"/>
+     <small>)</small>
     </td>
     <td bgcolor="#FFFFFF">&nbsp;</td>
     <td>
@@ -890,8 +895,9 @@ def search_form(wfile, path, statuses, priorities,
      </select>
     </td>
     <td>
-     <small><em>or</em> use a regex</small>
+     <small>&nbsp;(regex</small>
      <input type="text" name="category_regex"/>
+     <small>)</small>
     </td>
     <td bgcolor="#FFFFFF">&nbsp;</td>
     <td>
@@ -914,8 +920,9 @@ def search_form(wfile, path, statuses, priorities,
      </select>
     </td>
     <td>
-     <small><em>or</em> use a regex</small>
+     <small>&nbsp;(regex</small>
      <input type="text" name="configuration_regex"/>
+     <small>)</small>
     </td>
     <td bgcolor="#FFFFFF">&nbsp;</td>
     <td>
@@ -938,8 +945,9 @@ def search_form(wfile, path, statuses, priorities,
      </select>
     </td>
     <td>
-     <small><em>or</em> use a regex</small>
+     <small>&nbsp;(regex</small>
      <input type="text" name="keyword_regex"/>
+     <small>)</small>
     </td>
     <td bgcolor="#FFFFFF">&nbsp;</td>
     <td>
@@ -968,8 +976,9 @@ def search_form(wfile, path, statuses, priorities,
      </select>
     </td>
     <td>
-     <small><em>or</em> use a regex</small>
+     <small>&nbsp;(regex</small>
      <input type="text" name="reported_in_regex"/>
+     <small>)</small>
     </td>
     <td bgcolor="#FFFFFF">&nbsp;</td>
     <td>
@@ -990,8 +999,9 @@ def search_form(wfile, path, statuses, priorities,
      </select>
     </td>
     <td>
-     <small><em>or</em> use a regex</small>
+     <small>&nbsp;(regex</small>
      <input type="text" name="fixed_in_regex"/>
+     <small>)</small>
     </td>
     <td bgcolor="#FFFFFF">&nbsp;</td>
     <td>
@@ -1013,8 +1023,9 @@ def search_form(wfile, path, statuses, priorities,
      </select>
     </td>
     <td>
-     <small><em>or</em> use a regex</small>
+     <small>&nbsp;(regex</small>
      <input type="text" name="closed_in_regex"/>
+     <small>)</small>
     </td>
     <td bgcolor="#FFFFFF">&nbsp;</td>
     <td>
