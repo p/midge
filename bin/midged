@@ -15,4 +15,11 @@ if __name__ == "__main__":
     config.read()
     logger.start(config.Logging.debugging)
     app = application.Application(connection.Connection())
-    server.Server(app, locations).start()
+    try:
+        server.Server(app, locations).start()
+    except Exception:
+        logger.error("Fatal error - exiting with traceback...")
+        lines = logger.get_exception_as_lines()
+        for line in lines:
+            logger.error(line)
+
