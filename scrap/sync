@@ -11,8 +11,8 @@ sudo bash <<EOF
   midge-admin setup
 EOF
 
-scp phpbt_extract.py trevor:/home/tcorbettclark/
+scp phpbt_extract.py trevor:/tmp/
 ssh trevor python phpbt_extract.py
-scp trevor:/home/tcorbettclark/{users.txt,bugs.txt,comments.txt} .
+scp trevor:/tmp/{users.txt,bugs.txt,comments.txt} .
 
 python importer.py

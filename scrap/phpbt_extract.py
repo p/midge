@@ -192,6 +192,11 @@ def map_status_values(cursor):
             SET status_name='reviewed'
             WHERE status_name='Reviewed'
     """)
+    cursor.execute("""
+    UPDATE status_t
+            SET status_name='cancelled'
+            WHERE status_name='Transfered to Story'
+    """)
 
 def map_category_values(cursor):
     cursor.execute("""
@@ -326,11 +331,15 @@ for bug in bugs:
     bugs_d[int(bug[0])] = bug
 
 comments_without_bugs = []
+sane_comments = []
 for comment in comments:
     if int(comment[0]) not in bugs_d:
         comments_without_bugs.append(comment[0])
+    else:
+        sane_comments.append(comment)
 if comments_without_bugs:
     print "Comments without bugs: %s" % str(comments_without_bugs)
+comments = sane_comments
 
 users_f = file("users.txt", "w")
 print "Writing users into 'users.txt'"
