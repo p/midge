@@ -53,7 +53,11 @@ def sendmail(to, message):
     """Attempt to send email, and return boolean success."""
     try:
         server = smtplib.SMTP(config.Email.smtp_host)
-        server.sendmail(config.Email.from_address, [to], message)
+	from_to_headers = "From: %s\r\nTo: %s\r\n" % (
+            config.Email.from_address, to)
+        subject = "Subject: Midge password\r\n"
+        server.sendmail(config.Email.from_address, [to],
+                        subject + from_to_headers + "\r\n" + message)
         server.quit()
         return True
     except (smtplib.SMTPException, socket.error):
