@@ -64,7 +64,7 @@ def header(wfile, title=None):
   <title>%(title)s</title>
   <style>
   .nowrap {
-    white-space:nowrap;
+    white-space: nowrap;
   }
   .expand {
     width: 100%%;
@@ -72,11 +72,11 @@ def header(wfile, title=None):
   </style>
  <script>
  <!--
- function sf(){document.mainform.elements[0].focus();}
+ function set_focus(){document.mainform.elements[0].focus();}
  // -->
  </script>
  </head>
- <body bgcolor="#ffffff" onLoad="sf()">
+ <body bgcolor="#ffffff" onLoad="set_focus()">
   <form action="view">
    <table cellspacing="0" cellpadding="3" border="0" width="100%%">
     <tr>
