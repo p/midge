@@ -522,6 +522,6 @@ class BugTests(BaseTest):
         self.app.search(self.session_id, search)
         self.assertEqual(len(search.rows), 1)
 
-        search.criteria = {"title_regex": ".*title"}
+        search.criteria = {"title": ".*title"}
         self.app.search(self.session_id, search)
         self.assertEqual(len(search.rows), 2)

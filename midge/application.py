@@ -851,8 +851,7 @@ class Search:
         "fixed_in_regex": "fixed_versions.name ~* '%s'",
         "closed_in": "closed_versions.name = '%s'",
         "closed_in_regex": "closed_versions.name ~* '%s'",
-        "title": "title ~* '.*%s.*'",
-        "title_regex": "title ~* '%s'"
+        "title": "title ~* '%s'",
         }
 
     def __init__(self, variables, sort_by, order, **criteria):

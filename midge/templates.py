@@ -796,21 +796,11 @@ def search_form(wfile, path, statuses, priorities,
     <td>
      <input name="title" type="text"/>
     </td>
-    <td>
-     <small>&nbsp;(regex</small>
-     <input type="text" name="title_regex"/>
-     <small>)</small>
-    </td>
    </tr>
    <tr bgcolor="#DDDDDD">
     <td><small><b>&nbsp;&nbsp;Comments</b></small></td>
     <td>
      <input name="comments" type="text"/>
-    </td>
-    <td>
-     <small>&nbsp;(regex</small>
-     <input type="text" name="comments_regex"/>
-     <small>)</small>
     </td>
    </tr>
 
