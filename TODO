@@ -1,14 +1,14 @@
 User visible TODOs:
 
 - set title bar to Bug <num> (<project>) - Midge"
+- remove logged in username from screen
 - cannot include quotes in search fields
+- cannot search title with spaces (quoting problem?)
+- search by comments
 - check that have not exceeded 100 characters in URL...
    - do redirect to minimise number when bookmarking
-- change "closed in" to "tested ok in"
 - change order of show bug - title, R/O status, comments, edit form
 - check everywhere redirecting when not logged in
-- still cannot search title with spaces
-- search by comments
 - provide human readable description of search criteria on results page
 - spawn bug (split a bug into two identical bugs, for separate tracking)
 - add hyperlinks to other bugs listed in posted text
@@ -17,9 +17,7 @@ User visible TODOs:
    - use a table within a table
 - fix email password
 - description alignment is wrong in add new bug form
-- make it possible to change the title of a bug (?)
-- make it possible to change ones username (?)
-- make forms default cursor to first field
+- make forms default cursor to first field (see google)
 - find a way of auto expanding text boxes (e.g. comments)
 - limit length of field in new state values
 - description label in add bug is not valign="top" under IE5!

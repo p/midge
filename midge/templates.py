@@ -593,7 +593,7 @@ def edit_bug_form(wfile, path, bug, statuses, priorities,
     </td>
    </tr>
    <tr bgcolor="#DDDDDD">
-    <td><small><b>&nbsp;&nbsp;Closed in</b></small></td>
+    <td><small><b>&nbsp;&nbsp;Tested ok in</b></small></td>
     <td>
      <select name="closed_in" size="1">
      ''')
@@ -991,7 +991,7 @@ def search_form(wfile, path, statuses, priorities,
     </td>
    </tr>
    <tr bgcolor="#DDDDDD">
-    <td><small><b>&nbsp;&nbsp;Closed in</b></small></td>
+    <td><small><b>&nbsp;&nbsp;Tested ok in</b></small></td>
     <td>
      <select name="closed_in" size="1">
      ''')
