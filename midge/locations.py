@@ -48,66 +48,23 @@ class Home(Location):
         user = self.application.get_user(session_id)
         if user:
             templates.header(wfile)
-            templates.title(wfile, "Welcome to Midge")
+            templates.title(wfile, "Home")
             templates.paragraph(
                 wfile,
                 'You are logged in as '
                 '<b>%s</b> with a username of <b>%s</b>.' %
                 (user.name, user.username))
-            templates.hrule(wfile)
             templates.paragraph(
                 wfile,
-                "A number of actions are now possible. You may file "
-                "a new bug, list and filter all the bugs in a table, "
-                "view a summary of the bugs, or view/modify an existing bug.")
-            templates.paragraph(
-                wfile,
-                "Note that these options are always available to you "
-                "in the header and footer of every page.")
-            templates.possible_actions(
-                wfile,
-                ("new", "Add a new bug"),
-                ("list", "List bugs in a table"),
-                ("search", "Search for a bug"),
-                ("view", 'View or edit a particular bug'))
-            templates.hrule(wfile)
-            templates.paragraph(
-                wfile,
-                "If you have finished managing bugs, you may simply logout. "
-                "Note that you will be automatically logged-out after "
-                "any period of inactivity. However before you logout, "
-                "you may wish to edit your user account details.")
-            templates.paragraph(
-                wfile,
-                "Again, note that user-orientated actions are always "
-                "available to you in the top right hand corner "
-                "of every page.")
+                "You will be automatically logged-out after "
+                "any (long) period of inactivity.")
             templates.possible_actions(wfile,
                                        ("logout", "Logout"),
                                        ("modifyuser", "Modify user account"))
             templates.footer(wfile)
         else:
             templates.header(wfile)
-            templates.title(wfile, "Welcome to Midge")
-            templates.paragraph(
-                wfile,
-                "Midge is a system for tracking bugs found during the "
-                "commercial development of a software product. "
-                "It is particularly suited to a process for which the filing, "
-                "managing, fixing, and testing are all undertaken by "
-                "different roles in a trusted environment.")
-            templates.paragraph(
-                wfile,
-                "Midge aims to be consistent, self-explanatory, "
-                "powerful enough to efficiently manage thousands of bugs, "
-                "require no administration, and be bug-free!")
-            templates.paragraph(
-                wfile,
-                "If you have any ideas, requests, or problems regarding "
-                " Midge, please "
-                '<a href="mailto:tcorbettclark@users.sf.net">send</a> '
-                "feedback.")
-            templates.hrule(wfile)
+            templates.title(wfile, "Home")
             templates.paragraph(
                 wfile,
                 "Either login with an existing username, "
@@ -153,7 +110,7 @@ class Login(Location):
             values["next"] = Home.path
         user = self.application.get_user(session_id)
         templates.header(wfile)
-        templates.title(wfile, "User login page")
+        templates.title(wfile, "User login")
         if user:
             templates.paragraph(
                 wfile,
@@ -166,16 +123,11 @@ class Login(Location):
                 'the "Login" button.')
             templates.login_form(wfile, self.path, self.application.usernames)
         else:
-            templates.paragraph(
-                wfile,
-                'Before you can create, view, or alter any bugs you must '
-                'first login using an existing user account.')
             path = lib.join_url(self.path, values)
             templates.login_form(wfile, path, self.application.usernames)
-            templates.hrule(wfile)
             templates.paragraph(
                 wfile,
-                'Alternatively, if you have not yet created a user account, '
+                'If you have not yet created a user account, '
                 'do so now.')
             templates.possible_actions(wfile,
                                        ("adduser", "Create new account"))
@@ -200,18 +152,18 @@ class Login(Location):
                     "<b>%s</b>." % username)
                 templates.paragraph(
                     wfile,
-                    "Please use the back-button of your browser to try again, "
+                    "Use the back-button of your browser to try again, "
                     "or click below to request that your password be emailed "
                     "to you.")
                 templates.possible_actions(
                     wfile,
                     ("emailpassword?username=%s" % username, 
-                     "Please email me my password"))
+                     "Email me my password"))
             else:
                 templates.paragraph(
                     wfile,
                     "You did not provide a username. "
-                    "Please use the back-button of your browser to try again.")
+                    "Use the back-button of your browser to try again.")
             templates.footer(wfile)
 
 
@@ -264,7 +216,7 @@ class AddUser(Location):
             templates.paragraph(
                 wfile,
                 'If you are sure that you do not already have a user account, '
-                'please fill in the following form and click the '
+                'fill in the following form and click the '
                 '"Create account" button.')
             templates.paragraph(
                 wfile,
@@ -295,8 +247,7 @@ class AddUser(Location):
                     templates.title(wfile, "New user account created ok")
                     templates.paragraph(
                         wfile,
-                        "To use this account, please continue to the login "
-                        "page.")
+                        "Continue to the login page to use this account.")
                     templates.possible_actions(wfile,
                                                ("login", "Login"))
                 except application.ValueInUseException:
@@ -305,14 +256,14 @@ class AddUser(Location):
                         wfile,
                         "The username you chose (<b>%s</b>) is already in "
                         "use by another user. " % username +
-                        "Please use the back-button of your browser and try "
+                        "Use the back-button of your browser and try "
                         "a different Username.")
             else:
                 templates.title(wfile, "Failed to create user account!")
                 templates.paragraph(
                     wfile,
-                    "The passwords you provided do not match. Please "
-                    "use the back-button of your browser to try again.")
+                    "The passwords you provided do not match. "
+                    "Use the back-button of your browser to try again.")
         else:
             templates.title(wfile, "Failed to create user account!")
             templates.paragraph(
@@ -329,7 +280,7 @@ class AddUser(Location):
             templates.bullets(wfile, *problems)
             templates.paragraph(
                 wfile,
-                "Please use the back-button of your browser to try again.")
+                "Use the back-button of your browser to try again.")
         templates.footer(wfile)
 
 
@@ -341,18 +292,10 @@ class ModifyUser(Location):
         user = self.application.get_user(session_id)
         if user:
             templates.header(wfile)
-            templates.title(wfile, "Modify existing user account")
-            templates.paragraph(
+            templates.title(wfile, 'Modify user account "%s"' % user.username)
+            templates.bullets(
                 wfile,
-                'Use the following form to modify the details of the user '
-                'account with username '
-                '<b>%s</b> and (current) name of <b>%s</b>. ' %
-                (user.username, user.name) +
-                'When you are ready, click the "Change details" button. ')
-            templates.paragraph(
-                wfile,
-                'Note that you do not have to supply the new passwords if you '
-                'are happy with your existing password.')
+                'Supplying a new password is optional.')
             templates.modify_user_form(wfile, self.path, user.name, user.email)
             templates.footer(wfile)
         else:
@@ -388,9 +331,8 @@ class ModifyUser(Location):
                         "Note that your password has <em>not</em> "
                         "been changed as the two new passwords you "
                         "provided do not match.")
-                templates.hrule(wfile)
                 templates.paragraph(
-                    wfile, "Please continue to the home page:")
+                    wfile, "Continue to the home page:")
                 templates.possible_actions(wfile, ("/home", "Home"))
             else:
                 templates.header(wfile)
@@ -398,7 +340,7 @@ class ModifyUser(Location):
                 templates.paragraph(
                     wfile,
                     "You failed to authenticate yourself by typing an "
-                    "incorrect password. Please use the "
+                    "incorrect password. Use the "
                     "back-button of your browser to try again.")
             templates.footer(wfile)
         else:
@@ -448,9 +390,9 @@ class List(Location):
         self.application.search(session_id, search)
         templates.title(wfile, "All new bugs")
         if search.rows:
-            templates.paragraph(
+            templates.bullets(
                 wfile,
-                "These bugs are all new and need to be reviewed.")
+                "Bugs that are new and need to be reviewed.")
             url = lib.join_url(self.path, {"status": "new"})
             templates.table_of_bugs(wfile, url, search)
         else:
@@ -467,9 +409,9 @@ class List(Location):
         self.application.search(session_id, search)
         templates.title(wfile, "All reviewed bugs")
         if search.rows:
-            templates.paragraph(
+            templates.bullets(
                 wfile,
-                "These bugs are ready to be scheduled "
+                "Bugs that are ready to be scheduled "
                 "(priority 5 is most important).")
             url = lib.join_url(self.path, {"status": "reviewed"})
             templates.table_of_bugs(wfile, url, search)
@@ -488,9 +430,9 @@ class List(Location):
         self.application.search(session_id, search)
         templates.title(wfile, "All scheduled bugs")
         if search.rows:
-            templates.paragraph(
+            templates.bullets(
                 wfile,
-                "These bugs are ready to be fixed "
+                "Bugs that are ready to be fixed "
                 "(starting with priority 5).")
             url = lib.join_url(self.path, {"status": "scheduled"})
             templates.table_of_bugs(wfile, url, search)
@@ -510,9 +452,9 @@ class List(Location):
         self.application.search(session_id, search)
         templates.title(wfile, "All fixed bugs")
         if search.rows:
-            templates.paragraph(
+            templates.bullets(
                 wfile,
-                "These bugs are ready to be tested.")
+                "Bugs that are ready to be tested.")
             url = lib.join_url(self.path, {"status": "fixed"})
             templates.table_of_bugs(wfile, url, search)
         else:
@@ -531,9 +473,6 @@ class List(Location):
         self.application.search(session_id, search)
         templates.title(wfile, "All closed bugs")
         if search.rows:
-            templates.paragraph(
-                wfile,
-                "These bugs have all been closed (e.g. confirmed fixed).")
             url = lib.join_url(self.path, {"status": "closed"})
             templates.table_of_bugs(wfile, url, search)
         else:
@@ -559,14 +498,13 @@ class View(Location):
                     templates.title(wfile, "No such Bug!")
                     templates.paragraph(
                         wfile,
-                        'No bug with number = "%s" exists. ' % bug_id +
-                        'Please try again.')
+                        'No bug with number = "%s" exists. ' % bug_id)
             else:
                 templates.header(wfile)
                 templates.title(wfile, "View particular bug")
                 templates.paragraph(
                     wfile,
-                    'To view a particular bug, please enter the bug '
+                    'To view a particular bug, enter the bug '
                     'number in the the "Find bug" box and either click '
                     'the "Go" button or press return.')
                 templates.paragraph(
@@ -693,7 +631,7 @@ class View(Location):
                 templates.paragraph(
                     wfile,
                     'One of the new values you have entered is invalid. '
-                    'Please use the back-button of your browser to correct.')
+                    'Use the back-button of your browser to correct.')
             templates.footer(wfile)
         else:
             self.redirect(Login.path, lib.join_url(self.path, values))
@@ -710,7 +648,7 @@ class New(Location):
             templates.title(wfile, "Add new bug")
             templates.bullets(
                 wfile,
-                'Please fill in as many fields as possible and '
+                'Fill in as many fields as possible and '
                 'press the "Submit" button.',
                 'You must provide at least a title and a description.',
                 'Use new values (e.g. for version) if the available ones are unsuitable.')
@@ -732,8 +670,8 @@ class New(Location):
                 templates.title(wfile, "Failed to add new bug!")
                 templates.paragraph(
                     wfile,
-                    "You have not filled in enough fields. Please "
-                    "use the back-button of your browser to correct this.")
+                    "You have not filled in enough fields. "
+                    "Use the back-button of your browser to correct this.")
             templates.footer(wfile)
         else:
             self.redirect(Login.path, self.path)
@@ -767,7 +705,7 @@ class New(Location):
             templates.paragraph(
                 wfile,
                 'One of the new values you have entered is invalid. '
-                'Please use the back-button of your browser to correct.')
+                'Use the back-button of your browser to correct.')
 
     def _form_complete(self, post_data):
         return post_data["title"] and post_data["description"]
@@ -841,7 +779,7 @@ class Search(Location):
             templates.title(wfile, "Invalid search criteria!")
             templates.paragraph(
                 wfile,
-                "Please use the back-button of your browser "
+                "Use the back-button of your browser "
                 "to correct your search.")
             templates.paragraph(
                 wfile,

@@ -71,32 +71,24 @@ def header(wfile, title=None):
  </head>
  <body onLoad="set_focus()">
   <form action="view">
-   <table id="header">
-    <tr>
-     <td>
-      <b>Midge</b> for project <b>%(project)s</b>
-     </td>
-     <td id="login_etc">
-      <a href="login">Login</a> |
-      <a href="adduser">Create new account</a> |
-      <a href="modifyuser">Modify user account</a> |
-      <a href="logout">Logout</a>
-     </td>
-    </tr>
-   </table>
-   <table class="banner">
-    <tr>
-     <td>
-      <a href="home">Home</a> | 
-      <a href="new">Add new bug</a> | 
-      <a href="list">List bugs</a> | 
-      <a href="search">Search bugs</a> | 
-        Find bug <input size="5" name="bug_id" type="text"/>
-      <input type="submit" value="Go"/>
-     </td>
-    </tr>
-   </table>
+   <div id="header">
+    <div id="headerTitle">
+     Midge
+    </div>
+    <div id="projectName">
+     Project: <b>%(project)s</b>
+    </div>
+   </div>
+   <div id="banner">
+    <a href="home">Home</a> &middot;
+    <a href="new">Add new bug</a> &middot;
+    <a href="list">List bugs</a> &middot; 
+    <a href="search">Search bugs</a> &middot; 
+      Find bug <input size="5" name="bug_id" type="text"/>
+    <input type="submit" value="Go"/>
+   </div>
   </form>
+  <div id="body">
 ''' % {"title": title, "project":config.Project.name})
 
 def vspace(wfile):
@@ -127,33 +119,21 @@ def possible_actions(wfile, *possible_actions):
 
 def footer(wfile):
     wfile.write('''
+  </div>
   <p></p>
-  <form action="view">
-   <table class="banner">
-    <tr>
-     <td>
-      <a href="home">Home</a> | 
-      <a href="new">Add new bug</a> | 
-      <a href="list">List bugs</a> | 
-      <a href="search">Search bugs</a> | 
-        Find bug <input size="5" name="bug_id" type="text"/>
-       <input type="submit" value="Go"/>
-     </td>
-    </tr>
-   </table>
-   <table id="footer">
-    <tr>
-     <td valign="top">
-      <em>Version %(version)s.</em>
-       See <a href="http://midge.sourceforge.net">
-       http://midge.sourceforge.net</a> for updates.
-     </td>
-     <td valign="top" align="right">
-      Copyright &copy; 2004, Timothy Corbett-Clark.<br/>
-     </td>
-    </tr>
-   </table>
-  </form>
+  <hr/>
+  <table id="footer">
+   <tr>
+    <td valign="top">
+     <em>Version %(version)s.</em>
+      See <a href="http://midge.sourceforge.net">
+      http://midge.sourceforge.net</a> for updates.
+    </td>
+    <td valign="top" align="right">
+     Copyright &copy; 2004, Timothy Corbett-Clark.<br/>
+    </td>
+   </tr>
+  </table>
  </body>
 </html>''' % {"version": get_version()})
 

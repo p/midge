@@ -20,6 +20,7 @@ release_0-2 (...)
 
   * Used thead and tbody to provide better printing of tables on multiple pages.
 
+  * Simplified main display by reducing clutter, duplicate links, user login etc.
 
 release_0-1 (15 Aug 2004)
 

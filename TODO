@@ -1,5 +1,20 @@
 User visible TODOs:
 
+- fix bug - if type \[\] in search...
+- allow the user to change their username
+- remove configuration category
+- add resolution (code changed, can't reproduce, won't fix, not
+  a bug, duplicate). Add resolution to closed and fixed lists.
+     and map from bugtracker
+- add site-specific help urls (one per page)
+
+- indicate number of rows in table
+- add ability to search by users
+- add ability to add attachements
+- history of changes to each bug
+- list of recently changed bugs
+
+- use nowrap option on all table cells, not just the titles
 - detect and prevent simultaneous attempts to change same data
 - check everywhere redirecting when not logged in
 - limit length of field in new state values
@@ -10,9 +25,11 @@ User visible TODOs:
 
 Underlying changes:
 
+- make sure matched substitutions never apply to each other
+- make it possible to run several midges (projects) on the same box (/etc/midge.conf)
+   - pass location of config file on command line 
 - write io tests
 - add server unittests
-- make sure matched substitutions never apply to each other
 - automatically clear unused user-set categories
 - rename to midge/src and htdocs
 - declare DTD
