@@ -1026,7 +1026,7 @@ class Bugs(object):
 
     def purge(self):
         """Remove unused keywords, versions, etc"""
-        # TODO
+        # TODO implement purge
         
     def _add_to_bugs_table(self, cursor, user, title):
         title = quote(title)

@@ -59,7 +59,6 @@ def read():
 
     """
     config = ConfigParser.SafeConfigParser()
-    config.read(["/etc/midge.conf"])
 
     def get(section, option):
         try:
@@ -89,6 +88,7 @@ def read():
             logger.exception()
             raise
 
+    config.read(["/etc/midge.conf"])
     Postgres.admin_user = get("Postgres", "admin_user")
     Database.user = get("Database", "user")
     Database.password = get("Database", "password")
