@@ -1,7 +1,9 @@
 User visible TODOs:
 
+- map "Select one" from versions to "" (or possibly just remove it)
 - spawn bug (split a bug into two identical bugs, for separate tracking)
 - add hyperlinks to other bugs listed in posted text
+   - map bug #123 etc all to standard format (bug:123)
 - fix alignment of "order triangle" under IE5
 - fix email password
 - description alignment is wrong in add new bug form
@@ -48,3 +50,20 @@ href="mystyle.css" />
 </head>
 
 In which case the external .css file should contain no tags
+
+
+
+search input:
+
+by status, by priority
+by text in comment or title OR regex
+by category, configuration, or keyword
+by reported_in or REGEX
+by fixed_in or REGEX
+by closed_in or REGEX
+
+Sentence summarising the search.
+
+Always show the bug id first and the title last.
+
+...table...
