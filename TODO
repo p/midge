@@ -3,6 +3,7 @@ User visible TODOs:
 - set title bar to Bug <num> (<project>) - Midge"
 - cannot include quotes in search fields
 - check that have not exceeded 100 characters in URL...
+   - do redirect to minimise number when bookmarking
 - change "closed in" to "tested ok in"
 - change order of show bug - title, R/O status, comments, edit form
 - check everywhere redirecting when not logged in

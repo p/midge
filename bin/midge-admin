@@ -21,30 +21,30 @@ function set_env_variables {
 }
 
 function create_user {
-    su ${POSTGRES_ADMIN_USER} -c "${POSTGRES_PATH}/createuser \
+    su ${POSTGRES_ADMIN_USER} -c "createuser \
 	${DATABASE_USER} --no-adduser --no-createdb"
 }
 
 function set_password {
     database=$1
-    su ${POSTGRES_ADMIN_USER} -c "${POSTGRES_PATH}/psql ${database} -c \
+    su ${POSTGRES_ADMIN_USER} -c "psql ${database} -c \
         \"ALTER USER ${DATABASE_USER} WITH PASSWORD '${DATABASE_PASSWORD}';\""
 }
 
 function drop_user {
-    su ${POSTGRES_ADMIN_USER} -c "${POSTGRES_PATH}/dropuser ${DATABASE_USER}"
+    su ${POSTGRES_ADMIN_USER} -c "dropuser ${DATABASE_USER}"
 }
 
 function create_database {
     database=$1
-    su ${POSTGRES_ADMIN_USER} -c "${POSTGRES_PATH}/createdb \
+    su ${POSTGRES_ADMIN_USER} -c "createdb \
 	-O ${DATABASE_USER} -T template1 ${database}"
     sleep 0.5
 }
 
 function drop_database {
     database=$1
-    su ${POSTGRES_ADMIN_USER} -c "${POSTGRES_PATH}/dropdb ${database}"
+    su ${POSTGRES_ADMIN_USER} -c "dropdb ${database}"
 }
 
 cd $(dirname $0)

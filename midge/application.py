@@ -937,7 +937,6 @@ class Search:
             "from": self._make_from_clause(self.variables, self.criteria),
             "where": self._make_where_clause(self.criteria),
             "sort": self._make_sort_clause(self.sort_by, self.order)}
-        print search_sql
         cursor.execute(search_sql)
         self.rows = []
         result = cursor.fetchall()

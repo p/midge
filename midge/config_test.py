@@ -13,7 +13,6 @@ class ConfigTests(unittest.TestCase):
     def test_can_read_config(self):
         """Check read config"""
         midge.config.read()
-        self.assertNotEqual(midge.config.Postgres.path, None)
         self.assertNotEqual(midge.config.Postgres.admin_user, None)
         self.assertNotEqual(midge.config.Database.user, None)
         self.assertNotEqual(midge.config.Database.password, None)
@@ -40,5 +39,5 @@ class ConfigTests(unittest.TestCase):
                 
         sys.stdout = MyStdout() 
         midge.config.print_env_variables()
-        self.assertEqual(len(sys.stdout.lines), 13)
+        self.assertEqual(len(sys.stdout.lines), 12)
         sys.stdout = sys.__stdout__

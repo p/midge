@@ -9,7 +9,6 @@ import midge.logger as logger
 
 class Postgres:
 
-    path = None
     admin_user = None
 
 
@@ -52,10 +51,7 @@ def read():
 
     """
     config = ConfigParser.SafeConfigParser()
-    config.read(["midge.conf",
-                 "../midge.conf",
-                 "/usr/local/etc/midge.conf",
-                 "/etc/midge.conf"])
+    config.read(["/etc/midge.conf"])
 
     def get(section, option):
         try:
@@ -78,7 +74,6 @@ def read():
             logger.exception()
             raise
 
-    Postgres.path = get("Postgres", "path")
     Postgres.admin_user = get("Postgres", "admin_user")
     Database.user = get("Database", "user")
     Database.password = get("Database", "password")
