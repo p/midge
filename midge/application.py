@@ -13,7 +13,7 @@ import midge.logger as logger
 
 
 def quote(x):
-    # TODO make more efficient - use translate?
+    # TODO make more efficient - use translate?, or re.escape ?
     x = x.replace("\b", r"\b")
     x = x.replace("\f", r"\f")
     x = x.replace("\r", r"\r")

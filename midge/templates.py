@@ -3,6 +3,8 @@
 
 """Functions for generating html."""
 
+import re
+
 import midge.config as config
 import midge.lib as lib
 
@@ -16,6 +18,8 @@ def format_comment(text):
       escaping any html-like tags,
       replacing newlines with <br/>, and
       replacing leading spaces with hardspaces (&nbsp;).
+
+    Also replace text to provide hyperlinks, as per midge.conf.
 
     """
     text = text.lstrip("\n")
@@ -31,6 +35,10 @@ def format_comment(text):
                 break
         rows.append(row.replace(" ", "&nbsp;", n_leading_spaces))
     text = "<br/>".join(rows)
+
+    for pattern, substitute in config.CommentMappings.mappings:
+        text = re.sub(pattern, substitute, text)
+
     return text
 
 

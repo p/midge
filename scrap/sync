@@ -5,14 +5,12 @@
 MIDGE_PATH=$(pwd)/../bin/
 
 sudo bash <<EOF
-  cd ${MIDGE_PATH}
-  source setup-paths.sh
   midge-admin teardown
   midge-admin setup
 EOF
 
-scp phpbt_extract.py trevor:
-ssh trevor python phpbt_extract.py
-scp trevor:{users.txt,bugs.txt,comments.txt} .
+scp phpbt_extract.py trevor.devel.cmedltd.com:
+ssh trevor.devel.cmedltd.com python phpbt_extract.py
+scp trevor.devel.cmedltd.com:{users.txt,bugs.txt,comments.txt} .
 
 python importer.py

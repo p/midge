@@ -3,6 +3,7 @@
 
 
 import ConfigParser
+import re
 
 import midge.logger as logger
 
@@ -43,6 +44,11 @@ class Images:
 
     directory = None
 
+
+class CommentMappings:
+
+    mappings = None
+
     
 def read():
     """Read the config files.
@@ -56,6 +62,13 @@ def read():
     def get(section, option):
         try:
             return config.get(section, option)
+        except Exception:
+            logger.exception()
+            raise
+
+    def items(section):
+        try:
+            return config.items(section)
         except Exception:
             logger.exception()
             raise
@@ -88,6 +101,18 @@ def read():
     Email.smtp_host = get("Email", "smtp_host")
     Images.directory = get("Images", "directory")
 
+    def read_comment_mappings():
+        separator = get("Comment Mappings", "SEPARATOR").strip()
+        mappings = []
+        for k,v in items("Comment Mappings"):
+            if k != "separator":
+                pattern, substitute = v.split(separator, 1)
+                mappings.append(
+                    (re.compile( pattern.strip()), substitute.strip()) )
+        CommentMappings.mappings = mappings
+
+    read_comment_mappings()
+    
 
 def print_env_variables():
     """Print the variables to standard out in bash format."""

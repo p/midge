@@ -1,14 +1,9 @@
 User visible TODOs:
 
 - search by comments
-- check that have not exceeded 100 characters in URL...
-   - do redirect to minimise number when bookmarking
 - change order of show bug - title, R/O status, comments, edit form
 - check everywhere redirecting when not logged in
 - provide human readable description of search criteria on results page
-- spawn bug (split a bug into two identical bugs, for separate tracking)
-- add hyperlinks to other bugs listed in posted text
-   - map bug #123 etc all to standard format (bug:123)
 - fix alignment of "order triangle"
    - use a table within a table
 - fix email password
@@ -20,9 +15,13 @@ User visible TODOs:
 - inform the user when their session has timed-out
 - fix: timed out session, then post. The post is not passed on after relogin
 - slight alignment problem in numbers and text of list bugs location
+- spawn bug (split a bug into two identical bugs, for separate tracking)
 
 Underlying changes:
 
+- check that have not exceeded 100 characters in URL...
+   - do redirect to minimise number when bookmarking
+- replace underlying closed_in with tested_ok_in
 - add some explicit means of migrating (import/export)
 - automatically clear unused user-set categories
 - add more unittests, particularly the server.
