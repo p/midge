@@ -43,6 +43,9 @@ class AdministrationTests(unittest.TestCase):
         """Check create and destroy tables"""
         cursor = self.connection.cursor()
 
+        cursor.execute("SELECT * FROM keyword_values;")
+        self.assertEqual(len(cursor.fetchall()), 0)
+
         cursor.execute("SELECT * FROM configuration_values;")
         self.assertEqual(len(cursor.fetchall()), 0)
 

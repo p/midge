@@ -236,6 +236,7 @@ def get_bugs(cursor):
             priority,
             category_name AS category,
             database_name AS configuration,
+            '',
             v1.version_name AS reported_in,
             v2.version_name AS fixed_in,
             v3.version_name AS closed_in

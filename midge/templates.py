@@ -413,8 +413,31 @@ class StatusHints(object):
     cancelled = ""
 
 
+def show_comments(wfile, bug):
+    for comment in bug.comments:
+        wfile.write('''
+  <table width="100%%">
+   <tr bgcolor="#CCCCCC">
+    <td>
+     <font size="-1">
+      Posted by <b>%(name)s</b> (%(username)s) on
+                <b>%(date)s</b> at
+                <b>%(time)s</b>
+     </font>
+   </td>
+   </tr>
+  </table>
+  <tt>%(text)s</tt>
+  <br/><br/>
+  ''' % {"name": comment.users_name,
+         "username": comment.username,
+         "date":lib.format_date(comment.date),
+         "time":lib.format_time(comment.date),
+         "text":format_comment(comment.text)})
+
+
 def edit_bug_form(wfile, path, bug, statuses, priorities,
-                  configurations, categories, versions):
+                  configurations, categories, keywords, versions):
     wfile.write('''
   <center><blockquote>
   <form action="%(path)s" method="POST">
@@ -509,11 +532,24 @@ def edit_bug_form(wfile, path, bug, statuses, priorities,
     </td>
    </tr>
    <tr bgcolor="#DDDDDD">
-    <td><small><b>&nbsp;&nbsp;<a href="/">Keywords</a></b></small></td>
+    <td><small><b>&nbsp;&nbsp;Keyword</b></small></td>
     <td>
-     <input type="text" name="keywords" value="comms, replication"/>
+     <select name="keyword" size="1">''')
+    for keyword in keywords:
+        if keyword == bug.keyword:
+            wfile.write('''
+      <option value="%s" selected="selected">%s</option>''' % (
+                keyword, keyword))
+        else:
+            wfile.write('''
+      <option value="%s">%s</option>''' % (
+                keyword, keyword))
+    wfile.write('''
+     </select>
     </td>
-    <td> </td>
+    <td align="right"><font size="-2">(or use a new keyword</font>
+        <input type="text" name="new_keyword"></input><small>)</small>
+    </td>
    </tr>
  
    <tr><td><table></table></td></tr>
@@ -604,26 +640,7 @@ def edit_bug_form(wfile, path, bug, statuses, priorities,
   
   <hr> </hr>
 ''')
-    for comment in bug.comments:
-        wfile.write('''
-  <table width="100%%">
-   <tr bgcolor="#CCCCCC">
-    <td>
-     <font size="-1">
-      Posted by <b>%(name)s</b> (%(username)s) on
-                <b>%(date)s</b> at
-                <b>%(time)s</b>
-     </font>
-   </td>
-   </tr>
-  </table>
-  <tt>%(text)s</tt>
-  <br/><br/>
-  ''' % {"name": comment.users_name,
-         "username": comment.username,
-         "date":lib.format_date(comment.date),
-         "time":lib.format_time(comment.date),
-         "text":format_comment(comment.text)})
+
   
 
 def list_form(wfile, path, status_counts):

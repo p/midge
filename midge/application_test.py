@@ -151,6 +151,14 @@ class VersionTests(BaseTest):
         self.assertEqual(len(self.app.versions), 1)
         self.assertEqual(self.app.versions[0], "")
 
+
+class KeywordTests(BaseTest):
+
+    def test_keywords_starts_empty(self):
+        """Check keyword starts blank"""
+        self.assertEqual(len(self.app.keywords), 1)
+        self.assertEqual(self.app.keywords[0], "")
+
         
 class BugTests(BaseTest):
 

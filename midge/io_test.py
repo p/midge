@@ -84,6 +84,7 @@ class ImporterTests(BaseTest):
                                  "2",
                                  "a category",
                                  "a configuration",
+                                 "a keyword",
                                  "a reported_in",
                                  "",
                                  "a closed_in")
@@ -95,6 +96,7 @@ class ImporterTests(BaseTest):
         self.assertEqual(bug.priority, "2")
         self.assertEqual(bug.category, "a category")
         self.assertEqual(bug.configuration, "a configuration")
+        self.assertEqual(bug.keyword, "a keyword")
         self.assertEqual(bug.reported_in, "a reported_in")
         self.assertEqual(bug.fixed_in, "")
         self.assertEqual(bug.closed_in, "a closed_in")

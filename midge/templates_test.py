@@ -166,6 +166,7 @@ class TemplatesTest(unittest.TestCase):
             priority = "priority1"
             category = "category1"
             configuration = "configuration1"
+            keyword = "keyword1"
             reported_in = "version2"
             fixed_in = "version2"
             closed_in = "version2"
@@ -180,6 +181,7 @@ class TemplatesTest(unittest.TestCase):
                                 ["priority1", "priority2"],
                                 ["configuration1", "configuration2"],
                                 ["category1", "category2"],
+                                ["keyword1", "keyword2"],
                                 ["version1", "version2"])
         wfile.write("</test>")
         self.assert_(self.is_well_formed(wfile))

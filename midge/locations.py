@@ -529,19 +529,15 @@ class View(Location):
                 try:
                     bug = self.application.get_bug(session_id, bug_id)
                     self._add_title(wfile, bug)
-                    templates.paragraph(
-                        wfile,
-                        'To alter this bug and/or add a comment, please '
-                        'change the fields and press the submit button. '
-                        'You can use new values for some of the fields '
-                        'if the available ones are unsuitable.')
                     templates.edit_bug_form(
                         wfile, self.path, bug,
                         self.application.statuses,
                         self.application.priorities,
                         self.application.configurations,
                         self.application.categories,
+                        self.application.keywords,
                         self.application.versions)
+                    templates.show_comments(wfile, bug)
                 except application.NoSuchBugException:
                     templates.title(wfile, "No such Bug!")
                     templates.paragraph(
@@ -590,9 +586,14 @@ class View(Location):
         if new_category:
             category = new_category
         if category != old_bug.category:
-            changes["category"] = category            
+            changes["category"] = category
 
-        # TODO keywords
+        keyword = post_data.get("keyword", None)
+        new_keyword = post_data.get("new_keyword", None)
+        if new_keyword:
+            keyword = new_keyword
+        if keyword != old_bug.keyword:
+            changes["keyword"] = keyword
 
         reported_in = post_data.get("reported_in", None)
         new_reported_in = post_data.get("new_reported_in", None)
@@ -654,7 +655,9 @@ class View(Location):
             self.application.priorities,
             self.application.configurations,
             self.application.categories,
+            self.application.keywords,
             self.application.versions)
+        templates.show_comments(wfile, new_bug)
 
     def handle_post(self, session_id, values, post_data, wfile):
         user = self.application.get_user(session_id)

@@ -1,12 +1,12 @@
 User visible TODOs:
 
+- spawn bug (split a bug into two identical bugs, for separate tracking)
 - add hyperlinks to other bugs listed in posted text
 - fix alignment of "order triangle" under IE5
 - fix email password
 - description alignment is wrong in add new bug form
 - make it possible to change the title of a bug (?)
 - make it possible to change ones username (?)
-- make keywords work
 - make forms default cursor to first field
 - find a way of auto expanding text boxes (e.g. comments)
 - limit length of field in new state values
