@@ -183,21 +183,22 @@ class ChangesTests(BaseTest):
         # change to refer to a valid bug and user.
         # Note that adding a bug creates some changes...
         self._setup()
-        previous_changes = changes.get_recent_changes()
+        previous_changes = changes.get_recent_changes("date", "descending")
 
         changes.add_change(1, MockUser(), "a change")
-        new_changes = changes.get_recent_changes()
+        new_changes = changes.get_recent_changes("date", "descending")
 
-        for change in previous_changes:
+        for change in previous_changes.rows:
             try:
-                new_changes.remove(change)
+                new_changes.rows.remove(change)
             except ValueError:
                 pass
+        rows = new_changes.rows
         
-        self.assertEqual(len(new_changes), 1)
-        self.assertEqual(new_changes[0].bug_id, 1)
-        self.assertEqual(new_changes[0].username, "test-username")
-        self.assertEqual(new_changes[0].description, "a change")
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0].bug_id, 1)
+        self.assertEqual(rows[0].username, "test-username")
+        self.assertEqual(rows[0].description, "a change")
         
         
 class BugTests(BaseTest):

@@ -81,6 +81,7 @@ Nov 10 13:08:18 localhost [midge] ERROR   File "/usr/lib/python2.3/traceback.py"
 Nov 10 13:08:18 localhost [midge] ERROR     file.write(str+terminator)
 Nov 10 13:08:18 localhost [midge] ERROR IOError: [Errno 5] Input/output error
 
+- don't record times in daylight savings time
 - make it possible to run several midges (projects) on the same box (/etc/midge.conf)
    - pass location of config file on command line?
 - write io tests

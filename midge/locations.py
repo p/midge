@@ -822,8 +822,10 @@ class History(Location):
             templates.title(wfile, "History")
             templates.bullets(
                 wfile,
-                'Recent <a href="/changes">changes</a>.',
-                'Recent <a href="/search">progress</a>.')
+                'List of recent <a href="/changes">changes made to bugs</a>,'
+                ' including addition of new bugs.',
+                'Graph of recent changes in <a href="/progress">'
+                ' number of bugs in each status</a>.')
             templates.footer(wfile)
         else:
             values["next"] = self.path
@@ -845,7 +847,9 @@ class Changes(Location):
             if len(changes.rows) > 0:
                 templates.table_of_changes(wfile, self.path, changes)
             else:
-                templates.paragraph(wfile, "There have been no recent changes.")
+                templates.paragraph(wfile,
+                                    "There have been no changes made in the last"
+                                    " %d days." % config.History.changes_max_age)
             templates.footer(wfile)
         else:
             values["next"] = self.path

@@ -8,6 +8,7 @@ import sets
 import textwrap
 import time
 
+import midge.config as config
 import midge.connection as connection
 import midge.lib as lib
 import midge.logger as logger
@@ -1040,7 +1041,15 @@ class Changes(object):
             cursor.close()
         
     def do_maintenance(self):
-        pass
+        cursor = self.connection.cursor()
+        try:
+            now = time.ctime(time.time() -
+                             config.History.changes_max_age * 60*60*24)
+            cursor.execute("""
+              DELETE FROM changes WHERE date<'%s'""" % now)
+            self.connection.commit()
+        finally:
+            cursor.close()
 
     def _make_sort_clause(self, sort_by, order):
         return 

@@ -30,6 +30,7 @@ class ConfigTests(unittest.TestCase):
         self.assertNotEqual(midge.config.Logging.facility, None)
         self.assertNotEqual(midge.config.Logging.debugging, None)
         self.assertNotEqual(midge.config.Presentation.directory, None)
+        self.assertNotEqual(midge.config.History.changes_max_age, None)
 
     def test_can_print_env_variables(self):
         """Check print config as bash env variables"""
@@ -44,5 +45,5 @@ class ConfigTests(unittest.TestCase):
                 
         sys.stdout = MyStdout() 
         midge.config.print_env_variables()
-        self.assertEqual(len(sys.stdout.lines), 16)
+        self.assertEqual(len(sys.stdout.lines), 17)
         sys.stdout = sys.__stdout__

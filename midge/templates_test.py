@@ -286,4 +286,29 @@ class TemplatesTests(unittest.TestCase):
         
     def test_changes_table(self):
         """Check table of changes"""
-        self.assertEqual(True, False)
+
+        class MockRow:
+            
+            bug_id = "334"
+
+            status = "new"
+            titles = ["title1", "title2"]
+            variables = ["variable1", "variable2"]
+            sorted_by = "variable2"
+            ordered = "descending"
+            
+            def get(self):
+                return [("variable1", "value1"), ("variable2", "value2")]
+            
+        class MockRecentChanges:
+
+            variables = "bug_id", "username", "date", "description"
+            titles = "Bug", "User", "Date", "Description"
+            sort_by = "date"
+            order = "ascending"
+            rows = [MockRow(), MockRow()]
+        
+        wfile = self.get_wfile()
+        templates.table_of_changes(wfile, "a path", MockRecentChanges())
+        self.assert_(self.is_well_formed(wfile))
+        
