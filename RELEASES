@@ -18,6 +18,8 @@ release_0-3 (???)
 
   * No longer tracebacks if entry \[\] in search.
 
+  * Fixed bug with recording times of new bugs.
+
 
 release_0-2 (05 Sept 2004)
 

@@ -5,6 +5,7 @@ User visible TODOs:
 - add ability to search by users
 - add ability to add attachements
 - history of changes (to each bug), and list of recently changed bugs
+- search by history?
 
 - detect and prevent simultaneous attempts to change same data
 - check everywhere redirecting when not logged in

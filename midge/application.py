@@ -6,6 +6,7 @@
 import re
 import sets
 import textwrap
+import time
 
 import midge.connection as connection
 import midge.lib as lib
@@ -310,7 +311,9 @@ class Comments(list):
         else:
             raise UnableToReadCommentsException, self.bug_id
 
-    def add(self, cursor, user, text, timestamp="now"):
+    def add(self, cursor, user, text, timestamp=None):
+        if timestamp is None:
+            timestamp = time.ctime()
         text = quote(text.strip())
         cursor.execute("""
                 INSERT INTO comments (bug_id, user_id, date, comment)
