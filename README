@@ -64,7 +64,7 @@ Install
     (as an ordinary user)
 
  8) Point your browser to http://localhost:8000
-    (or as per config file).
+    (or as per the config file).
 
 
 Importing/exporting bugs
@@ -80,19 +80,36 @@ and
 
 This uses 3 csv files to store the complete state of the bug database.
 
-The easiest way of finding out the format is to start midge, enter a
-few bugs, and run midge-export...
+The columns of these csv files have titles; the easiest way of finding
+out the format is to start midge, enter a few bugs, and run
+midge-export...
 
 
 Logging
 =======
 
-Logging information is sent to the syslog daemon (port 514) on
-localhost under the LOG_USER facility. Note that you will need to have
-UDP logging switched on, typically by passing "-r" to syslogd.
+By default, logging information is sent to the syslog daemon (port
+514) on localhost under the DAEMON facility. Both the host and the
+facility are configurable (see /etc/midge.conf).
+
+Note that you will need to have UDP logging switched on, typically by
+passing "-r" to syslogd.
 
 More verbose logging may be switched on by setting "debugging: yes" in
-the Server section of /etc/midge.conf.
+the Logging section of /etc/midge.conf.
+
+Adding users and passwords
+==========================
+
+Midge is intended to be used in a trusted environment. Anyone can add
+a new user account, and if you forget your password it will be emailed
+to you in the clear. So the password is not about security but about
+preventing accidents (e.g. selecting the wrong username on login).
+
+So don't use a secure password.
+
+For the same reasons, passwords are not hashed in the underling
+database.
 
 States
 ======
@@ -121,7 +138,8 @@ Approach:
     useful to know which machine a bug occured on, it is most unlikely
     that one would need to search on this.
 
-status
+The key state variable is the "status":
+
   new		a new unread (or reopened) bug
   reviewed	acknowledged useful entry, but don't fix yet
   scheduled     ready to be fixed now
@@ -130,55 +148,5 @@ status
 
   Note that all new bugs start as new. Typically, Managers take new to
   reviewed or cancelled, and to scheduled if ready to fix; Developers
-  take scheduled to fixed, tackling them in order of priority);
+  take scheduled to fixed, tackling them in order of priority;
   Testers take fixed to closed, cancelled, or new.
-
-*category
-  Dynamically chosen by user (e.g. eDC, eDM, config, etc)
-
-*reported in version
-  Dynamically chosen by user (e.g. release_3-1, 2.8.3pre3)
-
-priority
-  A number from 1 to 5, where 5 is the most important. Note priority
-  does not mean severity (and severity is indicated in the users text).
-
-fixed in version
-  Dynamically chosen by user (e.g. release_3-1, 2.8.2pre3).
-
-tested ok in version
-  Dynamically chosen by user (e.g. release_3-1, 2.8.2pre3)
-
-keyword
-
-  Dynamically chosen by the user, and allows bugs to be grouped
-  (e.g. comms, release management). Note that this includes grouping
-  duplicates (which should be closed off together). A bug can belong
-  to more than one group. Note that "category" is simply a keyword in
-  a separate namespace.
-
-
-* items are asked on adding new bug.
-
-Listings
-========
-
-all new bugs
-  sort by priority
-  -> bug id, priority category, title
-
-all reviewed bugs
-  sort by priority
-  -> bug id, priority, category, title
-
-all scheduled bugs
-  sort by priority
-  -> bug id, priority, category, reported in, title
-
-all fixed bugs
-  sort by fixed in
-  -> bug id, priority, category, fixed in, title
-
-all closed bugs
-  sort by closed in
-  -> bug id, priority, closed in, title

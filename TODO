@@ -36,7 +36,8 @@ Oct  1 18:11:49 localhost [midge] ERROR   File "/usr/lib/python2.3/socket.py", l
 Oct  1 18:11:49 localhost [midge] ERROR     self._sock.sendall(buffer)
 Oct  1 18:11:49 localhost [midge] ERROR error: (32, 'Broken pipe')
 
-
+- fix javascript
+- use text/css MIME type for default.css
 - make it possible to run several midges (projects) on the same box (/etc/midge.conf)
    - pass location of config file on command line 
 - write io tests
