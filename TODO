@@ -2,21 +2,19 @@ User visible TODOs:
 
 - detect and prevent simultaneous attempts to change same data
 - check everywhere redirecting when not logged in
-- make forms default cursor to first field (see google)
 - limit length of field in new state values
 - description label in add bug is not valign="top" under IE5!
 - inform the user when their session has timed-out
 - fix: timed out session, then post. The post is not passed on after relogin
 - slight alignment problem in numbers and text of list bugs location
-- spawn bug (split a bug into two identical bugs, for separate tracking)
 
 Underlying changes:
 
+- write io tests
+- add server unittests
 - make sure matched substitutions never apply to each other
 - automatically clear unused user-set categories
-- write io tests
 - rename to midge/src and htdocs
-- add more unittests, particularly the server
 - declare DTD
 - automatically validate the pages with http://validator.w3.org/
 - use style sheets (remove all <font> tags), in a separate file

@@ -12,8 +12,9 @@ release_0-2 (...)
 
   * Always maximise width of title and comment text boxes.
 
-  * Log client address (when debugging switched on)
+  * Log client address (when debugging switched on).
 
+  * Always default initial position of cursor to the most useful field.
 
 release_0-1 (15 Aug 2004)
 

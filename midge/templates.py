@@ -70,8 +70,13 @@ def header(wfile, title=None):
     width: 100%%;
   }
   </style>
+ <script>
+ <!--
+ function sf(){document.mainform.elements[0].focus();}
+ // -->
+ </script>
  </head>
- <body bgcolor="#ffffff">
+ <body bgcolor="#ffffff" onLoad="sf()">
   <form action="view">
    <table cellspacing="0" cellpadding="3" border="0" width="100%%">
     <tr>
@@ -161,7 +166,7 @@ def possible_actions(wfile, *possible_actions):
 def footer(wfile):
     wfile.write('''
   <p></p>
-  <form action="view" name="main">
+  <form action="view">
    <table cellspacing="0" cellpadding="3" border="0" width="100%%">
     <tr bgcolor="#FFCC55">
     <td>
@@ -198,7 +203,7 @@ def footer(wfile):
 def login_form(wfile, path, usernames):
     wfile.write('''
   <center><blockquote>
-   <form action="%s" method="POST">
+   <form name="mainform" action="%s" method="POST">
     <table cellpadding="5" cellspacing="0" border="0">
      <tr bgcolor="#DDDDDD">
       <td valign="baseline"><small><b>Username</b></small></td>
@@ -232,7 +237,7 @@ def login_form(wfile, path, usernames):
 def add_user_form(wfile, path):
     wfile.write('''
   <center><blockquote>
-   <form action="%(path)s" method="POST">
+   <form name="mainform" action="%(path)s" method="POST">
     <table cellpadding="5" cellspacing="0" border="0">
      <tr bgcolor="#DDDDDD">
       <td valign="baseline"><small><b>Username</b></small></td>
@@ -278,7 +283,7 @@ def add_user_form(wfile, path):
 def modify_user_form(wfile, path, name, email):
     wfile.write('''
   <center><blockquote>
-   <form action="%(path)s" method="POST">
+   <form name="mainform" action="%(path)s" method="POST">
     <table cellpadding="5" cellspacing="0" border="0">
      <tr bgcolor="#DDDDDD">
       <td valign="baseline"><small><b>Name</b></small></td>
@@ -327,7 +332,7 @@ def modify_user_form(wfile, path, name, email):
 def new_bug_form(wfile, path, versions, configurations, categories):
     wfile.write('''
   <center><blockquote>
-   <form action="%(path)s" method="POST">
+   <form name="mainform" action="%(path)s" method="POST">
     <table cellpadding="5" cellspacing="0" border="0">
      <tr bgcolor="#DDDDDD">
       <td valign="baseline"><small><b>Title</b></small></td>
@@ -468,7 +473,7 @@ def edit_bug_form(wfile, path, bug, statuses, priorities,
     wfile.write('''
   <center><blockquote>
   <a name="editbugform" id="editbugform"></a>
-  <form action="%(path)s" method="POST">
+  <form name="mainform" action="%(path)s" method="POST">
   <input type="hidden" name="bug_id" value="%(bug_id)s"/>
   <table cellpadding="3" cellspacing="0" border="0">
    <tr>
@@ -675,7 +680,7 @@ def list_form(wfile, path, status_counts):
         
     wfile.write('''
   <center><blockquote>  
-   <form action="%(path)s">
+   <form name="mainform" action="%(path)s">
     <table bgcolor="#DDDDDD" cellpadding="8" cellspacing="0" border="0">
      <tr>
       <td>
@@ -818,7 +823,7 @@ def search_form(wfile, path, statuses, priorities,
                 configurations, categories, keywords, versions):
     wfile.write('''
   <center><blockquote>
-  <form action="%(path)s">
+  <form name="mainform" action="%(path)s">
   <table cellpadding="3" cellspacing="0" border="0">
    <tr>
     <td bgcolor="#EEEEEE"><small><em>Text</em></small></td>
