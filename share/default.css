@@ -1,0 +1,118 @@
+
+/* Set styles on certain tags */
+body {
+	background-color: #ffffff;
+}
+
+h1 {
+	font-size: x-large;
+}
+
+
+
+/* Primarily used to prevent wrapping in table cells */
+.nowrap {
+	white-space: nowrap;
+}
+
+/* Used to expand table cells in forms and lists of bugs */
+.expand {
+	width: 100%;
+}
+
+
+/* The banner containing the links to Home, Add new bug, etc */
+.banner {
+	width: 100%;
+	background-color: #ffcc55;
+	padding: 0px;
+	margin: 0px;
+}
+
+
+/* The header containing "Midge for project..." and the login, logout links etc */
+#header {
+	width: 100%;
+	padding: 0px;
+	margin: 0px;
+}
+
+
+/* The footer containing the link to the web site etc */
+#footer {
+	font-size: x-small;
+	width: 100%;
+	padding: 0px;
+	margin: 0px;
+}
+
+#login_etc {
+	font-size: small;
+	text-align: right;
+}
+
+.comments-heading {
+	width: 100%;
+	background-color: #cccccc;
+	font-size: small;
+}
+
+th.column-heading {
+	background-color: #cecece;
+	white-space: nowrap;
+	font-size: x-small;	
+	padding: 2px;
+}
+
+th.last-column-heading {
+	background-color: #cecece;
+	width: 100%;
+	font-size: x-small;
+	padding: 2px;
+}
+
+table.list-of-bugs {
+	padding: 0px;
+	border: 0px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+tr.row {
+	font-size: small;
+}
+
+td.even-row {
+	background-color: #d5dfef;
+	padding: 2px;
+}
+
+td.odd-row {
+	background-color: #eeeeee;
+	padding: 2px;
+}
+
+.centered {
+	margin-left: auto;
+	margin-right: auto;
+}
+
+tr.form {
+	background-color: #dddddd;
+}
+
+td.form-tab {
+	text-align: center;
+	background-color: #eeeeee;
+	font-size: small;
+	font-style: italic;
+}
+
+td.form-row-heading {
+	font-size: small;
+	font-weight: bold;
+}
+
+.white {
+	background-color: #ffffff
+}	font-size: small;

@@ -87,25 +87,6 @@ class TemplatesTest(unittest.TestCase):
         wfile.write("</body>")
         self.assert_(self.is_well_formed(wfile))
 
-        wfile = self.get_wfile()
-        wfile.write("<body>")
-        templates.title(wfile, "a title", "a second title")
-        wfile.write("</body>")
-        self.assert_(self.is_well_formed(wfile))
-
-    def test_table(self):
-        """Check table"""
-        wfile = self.get_wfile()
-        wfile.write("<test>\n")
-        templates.table(wfile,
-                        [("href1", "column1"),
-                         ("href2", "column2")],
-                        [("1", "2"),
-                         ("3", "4")])
-        wfile.write("</test>")
-                   
-        self.assert_(self.is_well_formed(wfile))
-
     def test_paragraph(self):
         """Check paragraph"""
         wfile = self.get_wfile()

@@ -62,39 +62,30 @@ def header(wfile, title=None):
 <html>
  <head>
   <title>%(title)s</title>
-  <style>
-  .nowrap {
-    white-space: nowrap;
-  }
-  .expand {
-    width: 100%%;
-  }
-  </style>
- <script>
- <!--
- function set_focus(){document.mainform.elements[0].focus();}
- // -->
- </script>
+  <link rel="stylesheet" type="text/css" href="default.css"/>
+  <script>
+  <!--
+  function set_focus(){document.mainform.elements[0].focus();}
+  // -->
+  </script>
  </head>
- <body bgcolor="#ffffff" onLoad="set_focus()">
+ <body onLoad="set_focus()">
   <form action="view">
-   <table cellspacing="0" cellpadding="3" border="0" width="100%%">
+   <table id="header">
     <tr>
      <td>
       <b>Midge</b> for project <b>%(project)s</b>
      </td>
-     <td align="right">
-      <font size="-1">
-       <a href="login">Login</a> |
-       <a href="adduser">Create new account</a> |
-       <a href="modifyuser">Modify user account</a> |
-       <a href="logout">Logout</a>
-      </font>
+     <td id="login_etc">
+      <a href="login">Login</a> |
+      <a href="adduser">Create new account</a> |
+      <a href="modifyuser">Modify user account</a> |
+      <a href="logout">Logout</a>
      </td>
     </tr>
    </table>
-   <table cellspacing="0" cellpadding="3" border="0" width="100%%">
-    <tr bgcolor="#FFCC55">
+   <table class="banner">
+    <tr>
      <td>
       <a href="home">Home</a> | 
       <a href="new">Add new bug</a> | 
@@ -114,38 +105,9 @@ def vspace(wfile):
 def hrule(wfile):
     wfile.write("<hr/>")
 
-def title(wfile, title, title2=None):
-    if title2:
-        wfile.write('<font size="+1"><b>%s</b></font> - %s' % (title, title2))
-    else:
-        wfile.write('<h2>%s</h2>' % title)
+def title(wfile, title):
+    wfile.write('<h1>%s</h1>' % title)
         
-def table(wfile, titles, rows):
-    wfile.write('''
-<p></p>
-<table cellpadding="2" cellspacing="3" border="0">
- <tr>''')
-    for url, name in titles:
-        wfile.write('''
-  <th bgcolor="#cecece">
-   <a href="%s">%s</a>
-  </th>''' % (url, name))
-    wfile.write('''
- </tr>''')
-    colours = ("#d5dfef", "#eeeeee")
-    colour_index = 0
-    for row in rows:
-        wfile.write('''
- <tr>''')
-        for entry in row:
-            wfile.write('''
-  <td bgcolor="%s">%s</td>''' % (colours[colour_index], entry))
-        wfile.write('''
- </tr>''')
-        colour_index = (colour_index + 1) % 2
-    wfile.write('''
-</table>''')
-
 def paragraph(wfile, text):
     wfile.write('<p>')
     wfile.write(text)
@@ -167,31 +129,27 @@ def footer(wfile):
     wfile.write('''
   <p></p>
   <form action="view">
-   <table cellspacing="0" cellpadding="3" border="0" width="100%%">
-    <tr bgcolor="#FFCC55">
-    <td>
-     <a href="home">Home</a> | 
-     <a href="new">Add new bug</a> | 
-     <a href="list">List bugs</a> | 
-     <a href="search">Search bugs</a> | 
+   <table class="banner">
+    <tr>
+     <td>
+      <a href="home">Home</a> | 
+      <a href="new">Add new bug</a> | 
+      <a href="list">List bugs</a> | 
+      <a href="search">Search bugs</a> | 
         Find bug <input size="5" name="bug_id" type="text"/>
-      <input type="submit" value="Go"/>
-    </td>
-   </tr>
-  </table>
-  <table cellspacing="0" cellpadding="3" border="0" width="100%%">
-   <tr>
-    <td valign="top">
-      <font size="-2">
-       <em>Version %(version)s.</em>
+       <input type="submit" value="Go"/>
+     </td>
+    </tr>
+   </table>
+   <table id="footer">
+    <tr>
+     <td valign="top">
+      <em>Version %(version)s.</em>
        See <a href="http://midge.sourceforge.net">
-        http://midge.sourceforge.net</a> for updates.
-      </font>
+       http://midge.sourceforge.net</a> for updates.
      </td>
      <td valign="top" align="right">
-      <font size="-2">
-       Copyright &copy; 2004, Timothy Corbett-Clark.<br/>
-      </font>   
+      Copyright &copy; 2004, Timothy Corbett-Clark.<br/>
      </td>
     </tr>
    </table>
@@ -202,10 +160,9 @@ def footer(wfile):
 
 def login_form(wfile, path, usernames):
     wfile.write('''
-  <center><blockquote>
    <form name="mainform" action="%s" method="POST">
-    <table cellpadding="5" cellspacing="0" border="0">
-     <tr bgcolor="#DDDDDD">
+    <table class="centered" cellpadding="5" cellspacing="0" border="0">
+     <tr class="form">
       <td valign="baseline"><small><b>Username</b></small></td>
       <td>
        <select name="username">
@@ -218,52 +175,51 @@ def login_form(wfile, path, usernames):
        </select>
       </td>
      </tr>
-     <tr bgcolor="#DDDDDD">
+     <tr class="form">
       <td valign="baseline"><small><b>Password</b></small></td>
       <td>
        <input type="password" name="password"/>
       </td>
      </tr>
+     <tr><td><table></table></td></tr>
      <tr>
       <td colspan="3" align="right">
        <input type="submit" value="Login"/>
       </td>
      </tr>
     </table>
-   </form>
-  </blockquote></center>''')
+   </form>''')
 
 
 def add_user_form(wfile, path):
     wfile.write('''
-  <center><blockquote>
    <form name="mainform" action="%(path)s" method="POST">
-    <table cellpadding="5" cellspacing="0" border="0">
-     <tr bgcolor="#DDDDDD">
+    <table class="centered" cellpadding="5" cellspacing="0" border="0">
+     <tr class="form">
       <td valign="baseline"><small><b>Username</b></small></td>
       <td>
        <input type="text" size="40" name="username"/>
       </td>
      </tr>
-     <tr bgcolor="#DDDDDD">
+     <tr class="form">
       <td valign="baseline"><small><b>Name</b></small></td>
       <td>
        <input type="text" size="40" name="name"/>
       </td>
      </tr>
-     <tr bgcolor="#DDDDDD">
+     <tr class="form">
       <td valign="baseline"><small><b>Email</b></small></td>
       <td>
        <input type="text" size="40" name="email"/>
       </td>
      </tr>
-     <tr bgcolor="#DDDDDD">
+     <tr class="form">
       <td valign="baseline"><small><b>Password</b></small></td>
       <td>
        <input type="password" size="40" name="password"/>
       </td>
      </tr>
-     <tr bgcolor="#DDDDDD">
+     <tr class="form">
       <td valign="baseline"><small><b>Password (again)</b></small></td>
       <td>
        <input type="password" size="40" name="password_again"/>
@@ -276,28 +232,26 @@ def add_user_form(wfile, path):
       </td>
      </tr>
     </table>
-   </form>
-  </blockquote></center>''' % {"path": path})
+   </form>''' % {"path": path})
 
 
 def modify_user_form(wfile, path, name, email):
     wfile.write('''
-  <center><blockquote>
    <form name="mainform" action="%(path)s" method="POST">
-    <table cellpadding="5" cellspacing="0" border="0">
-     <tr bgcolor="#DDDDDD">
+    <table class="centered" cellpadding="5" cellspacing="0" border="0">
+     <tr class="form">
       <td valign="baseline"><small><b>Name</b></small></td>
       <td>
        <input type="text" size="40" name="name" value="%(name)s"/>
       </td>
      </tr>
-     <tr bgcolor="#DDDDDD">
+     <tr class="form">
       <td valign="baseline"><small><b>Email</b></small></td>
       <td>
        <input type="text" size="40" name="email" value="%(email)s"/>
       </td>
      </tr>
-     <tr bgcolor="#DDDDDD">
+     <tr class="form">
       <td valign="baseline"><small><b>Existing Password</b></small></td>
       <td>
        <input type="password" size="40" name="password"/>
@@ -306,13 +260,13 @@ def modify_user_form(wfile, path, name, email):
 
      <tr><td><table></table></td></tr>
       
-     <tr bgcolor="#DDDDDD">
+     <tr class="form">
       <td valign="baseline"><small><b>New password</b></small></td>
       <td>
        <input type="password" size="40" name="new_password"/>
       </td>
      </tr>
-     <tr bgcolor="#DDDDDD">
+     <tr class="form">
       <td valign="baseline"><small><b>New password (again)</b></small></td>
       <td>
        <input type="password" size="40" name="new_password_again"/>
@@ -325,23 +279,21 @@ def modify_user_form(wfile, path, name, email):
       </td>
      </tr>
     </table>
-   </form>
-  </blockquote></center>''' % {"path": path, "name": name, "email": email})
+   </form>''' % {"path": path, "name": name, "email": email})
 
 
 def new_bug_form(wfile, path, versions, configurations, categories):
     wfile.write('''
-  <center><blockquote>
    <form name="mainform" action="%(path)s" method="POST">
-    <table cellpadding="5" cellspacing="0" border="0">
-     <tr bgcolor="#DDDDDD">
-      <td valign="baseline"><small><b>Title</b></small></td>
+    <table class="centered" cellpadding="5" cellspacing="0" border="0">
+     <tr class="form">
+      <td class="form-row-heading" valign="baseline">Title</td>
       <td colspan="3">
        <input class="expand" type="text" maxlength="60" name="title"/>
       </td>
      </tr>
-     <tr bgcolor="#DDDDDD">
-      <td valign="baseline"><small><b>Version</b></small></td>
+     <tr class="form">
+      <td class="form-row-heading" valign="baseline">Version</td>
       <td>
        <select name="version" size="1">''' % {"path": path})
     for version in versions:
@@ -358,8 +310,8 @@ def new_bug_form(wfile, path, versions, configurations, categories):
        <input type="text" name="new_version"/><small>)</small>
       </td>
      </tr>
-     <tr bgcolor="#DDDDDD">
-      <td valign="baseline"><small><b>Category</b></small></td>
+     <tr class="form">
+      <td class="form-row-heading" valign="baseline">Category</td>
       <td>
        <select name="category" size="1">''')
     for category in categories:
@@ -376,8 +328,8 @@ def new_bug_form(wfile, path, versions, configurations, categories):
        <input type="text" name="new_category"/><small>)</small>
       </td>
      </tr>
-     <tr bgcolor="#DDDDDD">
-      <td valign="baseline"><small><b>Configuration</b></small></td>
+     <tr class="form">
+      <td class="form-row-heading" valign="baseline">Configuration</td>
       <td>
        <select name="configuration" size="1">''')
     for configuration in configurations:
@@ -395,8 +347,8 @@ def new_bug_form(wfile, path, versions, configurations, categories):
       </td>
      </tr>
 
-     <tr bgcolor="#DDDDDD">
-      <td valign="baseline"><small><b>Description</b></small></td>
+     <tr class="form">
+      <td class="form-row-heading" valign="baseline">Description</td>
       <td colspan="3">
        <textarea class="expand" name="description" rows="8"></textarea>
       </td>
@@ -408,8 +360,7 @@ def new_bug_form(wfile, path, versions, configurations, categories):
       </td>
      </tr>
     </table>
-   </form>
-  </blockquote></center>''')
+   </form>''')
 
 
 class StatusHints(object):
@@ -430,14 +381,12 @@ class StatusHints(object):
 def show_comments(wfile, bug):
     for comment in bug.comments:
         wfile.write('''
-  <table width="100%%">
-   <tr bgcolor="#CCCCCC">
+  <table class="comments-heading"">
+   <tr>
     <td>
-     <font size="-1">
-      Posted by <b>%(name)s</b> (%(username)s) on
-                <b>%(date)s</b> at
-                <b>%(time)s</b>
-     </font>
+     Posted by <b>%(name)s</b> (%(username)s) on
+               <b>%(date)s</b> at
+               <b>%(time)s</b>
    </td>
    </tr>
   </table>
@@ -471,16 +420,16 @@ def bug_status_summary(wfile, bug):
 def edit_bug_form(wfile, path, bug, statuses, priorities,
                   configurations, categories, keywords, versions):
     wfile.write('''
-  <center><blockquote>
+  <br/>
   <a name="editbugform" id="editbugform"></a>
   <form name="mainform" action="%(path)s" method="POST">
   <input type="hidden" name="bug_id" value="%(bug_id)s"/>
-  <table cellpadding="3" cellspacing="0" border="0">
+  <table class="centered" cellpadding="3" cellspacing="0" border="0">
    <tr>
-    <td bgcolor="#EEEEEE"><small><em>States</em></small></td>
+    <td class="form-tab">States</td>
    </tr> 
-   <tr bgcolor="#DDDDDD">
-    <td><small><b>&nbsp;&nbsp;Status</b></small></td>
+   <tr class="form">
+    <td class="form-row-heading">Status</td>
     <td>
      <select name="status" size="1">''' % {"bug_id":bug.bug_id, "path": path})
     for status in statuses:
@@ -499,8 +448,8 @@ def edit_bug_form(wfile, path, bug, statuses, priorities,
      </small>
     </td>
    </tr>
-   <tr bgcolor="#DDDDDD">
-    <td><small><b>&nbsp;&nbsp;Priority</b></small></td>
+   <tr class="form">
+    <td class="form-row-heading">Priority</td>
     <td>
      <select name="priority" size="1">''' % getattr(StatusHints, bug.status))
     for priority in priorities:
@@ -524,10 +473,10 @@ def edit_bug_form(wfile, path, bug, statuses, priorities,
    <tr><td><table></table></td></tr>
   
    <tr>
-    <td bgcolor="#EEEEEE"><small><em>Groupings</em></small></td>
+    <td class="form-tab">Groupings</td>
    </tr> 
-   <tr bgcolor="#DDDDDD">
-    <td><small><b>&nbsp;&nbsp;Category</b></small></td>
+   <tr class="form">
+    <td class="form-row-heading">Category</td>
     <td>
      <select name="category" size="1">''')
     for category in categories:
@@ -544,8 +493,8 @@ def edit_bug_form(wfile, path, bug, statuses, priorities,
         <input type="text" name="new_category"></input><small>)</small>
     </td>
    </tr>
-   <tr bgcolor="#DDDDDD">
-    <td><small><b>&nbsp;&nbsp;Configuration</b></small></td>
+   <tr class="form">
+    <td class="form-row-heading">Configuration</td>
     <td>
      <select name="configuration" size="1">''')
     for configuration in configurations:
@@ -564,8 +513,8 @@ def edit_bug_form(wfile, path, bug, statuses, priorities,
         <input type="text" name="new_configuration"></input><small>)</small>
     </td>
    </tr>
-   <tr bgcolor="#DDDDDD">
-    <td><small><b>&nbsp;&nbsp;Keyword</b></small></td>
+   <tr class="form">
+    <td class="form-row-heading">Keyword</td>
     <td>
      <select name="keyword" size="1">''')
     for keyword in keywords:
@@ -589,10 +538,10 @@ def edit_bug_form(wfile, path, bug, statuses, priorities,
    <tr><td><table></table></td></tr>
   
    <tr>
-    <td bgcolor="#EEEEEE"><small><em>Versions</em></small></td>
+    <td class="form-tab">Versions</td>
    </tr> 
-   <tr bgcolor="#DDDDDD">
-    <td><small><b>&nbsp;&nbsp;Reported in</b></small></td>
+   <tr class="form">
+    <td class="form-row-heading">Reported in</td>
     <td>
      <select name="reported_in" size="1">''')
     for version in versions:
@@ -609,8 +558,8 @@ def edit_bug_form(wfile, path, bug, statuses, priorities,
         <input type="text" name="new_reported_in"></input><small>)</small>
     </td>
    </tr>
-   <tr bgcolor="#DDDDDD">
-    <td><small><b>&nbsp;&nbsp;Fixed in</b></small></td>
+   <tr class="form">
+    <td class="form-row-heading">Fixed in</td>
     <td>
      <select name="fixed_in" size="1">''')
     for version in versions:
@@ -627,8 +576,8 @@ def edit_bug_form(wfile, path, bug, statuses, priorities,
         <input type="text" name="new_fixed_in"></input><small>)</small>
     </td>
    </tr>
-   <tr bgcolor="#DDDDDD">
-    <td><small><b>&nbsp;&nbsp;Tested ok in</b></small></td>
+   <tr class="form">
+    <td class="form-row-heading">Tested ok in</td>
     <td>
      <select name="tested_ok_in" size="1">
      ''')
@@ -651,9 +600,9 @@ def edit_bug_form(wfile, path, bug, statuses, priorities,
    <tr><td><table></table></td></tr>
   
    <tr>
-    <td bgcolor="#EEEEEE"><small><em>Add comment</em></small></td>
+    <td class="form-tab">Add comment</td>
    </tr> 
-   <tr bgcolor="#DDDDDD">
+   <tr class="form">
     <td colspan="3">
      <textarea class="expand" name="comment" rows="8"></textarea>
     </td>
@@ -667,8 +616,7 @@ def edit_bug_form(wfile, path, bug, statuses, priorities,
     </td>
    </tr>
   </table>
-  </form>
-  </blockquote></center>''')
+  </form>''')
   
 
 def list_form(wfile, path, status_counts):
@@ -679,52 +627,50 @@ def list_form(wfile, path, status_counts):
             return "s"
         
     wfile.write('''
-  <center><blockquote>  
    <form name="mainform" action="%(path)s">
-    <table bgcolor="#DDDDDD" cellpadding="8" cellspacing="0" border="0">
-     <tr>
+    <table class="centered" cellpadding="8" cellspacing="0" border="0">
+     <tr class="form">
       <td>
        <input type="radio" name="status" value="new" checked="checked"/>
        %(n_new)s
       </td>
       <td><b>new</b> bug%(new_plural)s in need of review</td>
      </tr>
-     <tr>
+     <tr class="form">
       <td>
        <input type="radio" name="status" value="reviewed"/>
        %(n_reviewed)s
       </td>
       <td><b>reviewed</b> bug%(reviewed_plural)s ready to be scheduled</td>
      </tr>
-     <tr>
+     <tr class="form">
       <td>
        <input type="radio" name="status" value="scheduled"/>
        %(n_scheduled)s
       </td>
       <td><b>scheduled</b> bug%(scheduled_plural)s waiting to be fixed</td>
      </tr>
-     <tr>
+     <tr class="form">
       <td>
        <input type="radio" name="status" value="fixed"/>
        %(n_fixed)s
       </td>
       <td><b>fixed</b> bug%(fixed_plural)s waiting to be tested</td>
      </tr>
-     <tr>
+     <tr class="form">
       <td>
        <input type="radio" name="status" value="closed"/>
        %(n_closed)s
       </td>
       <td><b>closed</b> bug%(closed_plural)s</td>
      </tr>
-     <tr align="right" valign="bottom" bgcolor="#FFFFFF">
+     <tr align="right" valign="bottom" class="white">
       <td colspan="2" align="right">
        <input type="submit" value="List bugs"/>
       </td>
      </tr>
     </table>
-   </form>
-  </blockquote></center>''' %
+   </form>''' %
                 {"path": path,
                  "n_new": status_counts.new,
                  "n_reviewed": status_counts.reviewed,
@@ -753,14 +699,14 @@ def _table_headings(wfile, path, titles,
             lib.join_url(path, {"sort_by": variable,
                                 "order": new_order}))
         if variable == variables[-1]:
-            css_class = "expand"
+            css_class = "last-column-heading"
         else:
-            css_class = "nowrap"
+            css_class = "column-heading"
         wfile.write('''
-     <th class="%(css_class)s" bgcolor="#cecece">
-      <a href="%(url)s"><font size="-2">
+     <th class="%(css_class)s">
+      <a href="%(url)s">
        %(heading)s
-      </font></a>''' % {"heading": heading,
+      </a>''' % {"heading": heading,
                         "url": url,
                         "css_class": css_class})
         if variable == sorted_by:
@@ -774,33 +720,25 @@ def _table_headings(wfile, path, titles,
     </tr>''')
 
 def _table_rows(wfile, rows):
-    colours = ("#d5dfef", "#eeeeee")
-    colour_index = 0
+    styles = ("odd-row", "even-row")
+    row_index = 0
     for row in rows:
+        row_index += 1
+        style = styles[row_index % 2]
         wfile.write('''
-    <tr>''')
+    <tr class="row">''')
         for variable, value in row.get():
             if variable == "bug_id":
-                wfile.write('''
-     <td bgcolor="%(colour)s">
-      <font size="-1">
-       <a href="/view?bug_id=%(bug_id)s">%(bug_id)s</a>
-      </font>
+                value = '<a href="/view?bug_id=%(bug_id)s">%(bug_id)s</a>' % \
+                        {"bug_id": value}
+            wfile.write('''
+     <td class="%(style)s">
+      %(value)s
      </td>
-  ''' % {"colour": colours[colour_index],
-         "bug_id": row.bug_id})
-            else:
-                wfile.write('''
-     <td bgcolor="%(colour)s">
-      <font size="-1">
-       %(value)s
-      </font>
-     </td>
-  ''' % {"colour": colours[colour_index],
+  ''' % {"style": style,
          "value": value})
         wfile.write('''
     </tr>''') 
-        colour_index = (colour_index + 1) % 2
 
 def table_of_bugs(wfile, path, search):
     assert len(search.rows) > 0
@@ -809,33 +747,35 @@ def table_of_bugs(wfile, path, search):
     sorted_by = search.sort_by
     ordered = search.order
     wfile.write('''
-  <center>
-   <table cellpadding="2" cellspacing="3" border="0">''')
+   <table class="list-of-bugs">
+    <thead>''')
     _table_headings(wfile, path, titles,
                     variables, sorted_by, ordered)
+    wfile.write('''
+    </thead>
+    <tbody>''')
     _table_rows(wfile, search.rows)
     wfile.write('''
-   </table>
-  </center>''')
+    </tbody>
+   </table>''')
 
 
 def search_form(wfile, path, statuses, priorities,
                 configurations, categories, keywords, versions):
     wfile.write('''
-  <center><blockquote>
   <form name="mainform" action="%(path)s">
-  <table cellpadding="3" cellspacing="0" border="0">
+  <table class="centered" cellpadding="3" cellspacing="0" border="0">
    <tr>
-    <td bgcolor="#EEEEEE"><small><em>Text</em></small></td>
+    <td class="form-tab">Text</td>
    </tr> 
-   <tr bgcolor="#DDDDDD">
-    <td><small><b>&nbsp;&nbsp;Title</b></small></td>
+   <tr class="form">
+    <td class="form-row-heading">Title</td>
     <td>
      <input name="title" type="text"/>
     </td>
    </tr>
-   <tr bgcolor="#DDDDDD">
-    <td><small><b>&nbsp;&nbsp;Comments</b></small></td>
+   <tr class="form">
+    <td class="form-row-heading">Comments</td>
     <td>
      <input name="comments" type="text"/>
     </td>
@@ -845,10 +785,10 @@ def search_form(wfile, path, statuses, priorities,
    <tr><td><table></table></td></tr>
   
    <tr>
-    <td bgcolor="#EEEEEE"><small><em>States</em></small></td>
+    <td class="form-tab">States</td>
    </tr> 
-   <tr bgcolor="#DDDDDD">
-    <td><small><b>&nbsp;&nbsp;Status</b></small></td>
+   <tr class="form">
+    <td class="form-row-heading">Status</td>
     <td>
      <select name="status" size="1">''' % {"path": path})
     for status in statuses:
@@ -862,7 +802,7 @@ def search_form(wfile, path, statuses, priorities,
      <input type="text" name="status_regex"/>
      <small>)</small>
     </td>
-    <td bgcolor="#FFFFFF">&nbsp;</td>
+    <td class="white">&nbsp;</td>
     <td>
      <small><label>
       <input type="checkbox" name="status_column" value="on">Show column
@@ -870,8 +810,8 @@ def search_form(wfile, path, statuses, priorities,
      </label></small>
     </td>
    </tr>
-   <tr bgcolor="#DDDDDD">
-    <td><small><b>&nbsp;&nbsp;Priority</b></small></td>
+   <tr class="form">
+    <td class="form-row-heading">Priority</td>
     <td>
      <select name="priority" size="1">''')
     for priority in priorities:
@@ -885,7 +825,7 @@ def search_form(wfile, path, statuses, priorities,
      <input type="text" name="priority_regex"/>
      <small>)</small>
     </td>
-    <td bgcolor="#FFFFFF">&nbsp;</td>
+    <td class="white">&nbsp;</td>
     <td>
      <small><label>
       <input type="checkbox" name="priority_column" value="on">Show column
@@ -898,10 +838,10 @@ def search_form(wfile, path, statuses, priorities,
    <tr><td><table></table></td></tr>
   
    <tr>
-    <td bgcolor="#EEEEEE"><small><em>Groupings</em></small></td>
+    <td class="form-tab">Groupings</td>
    </tr> 
-   <tr bgcolor="#DDDDDD">
-    <td><small><b>&nbsp;&nbsp;Category</b></small></td>
+   <tr class="form">
+    <td class="form-row-heading">Category</td>
     <td>
      <select name="category" size="1">''')
     for category in categories:
@@ -915,7 +855,7 @@ def search_form(wfile, path, statuses, priorities,
      <input type="text" name="category_regex"/>
      <small>)</small>
     </td>
-    <td bgcolor="#FFFFFF">&nbsp;</td>
+    <td class="white">&nbsp;</td>
     <td>
      <small><label>
       <input type="checkbox" name="category_column" value="on">Show column
@@ -924,8 +864,8 @@ def search_form(wfile, path, statuses, priorities,
     </td>
 
    </tr>
-   <tr bgcolor="#DDDDDD">
-    <td><small><b>&nbsp;&nbsp;Configuration</b></small></td>
+   <tr class="form">
+    <td class="form-row-heading">Configuration</td>
     <td>
      <select name="configuration" size="1">''')
     for configuration in configurations:
@@ -940,7 +880,7 @@ def search_form(wfile, path, statuses, priorities,
      <input type="text" name="configuration_regex"/>
      <small>)</small>
     </td>
-    <td bgcolor="#FFFFFF">&nbsp;</td>
+    <td class="white">&nbsp;</td>
     <td>
      <small><label>
       <input type="checkbox" name="configuration_column" value="on">Show column
@@ -949,8 +889,8 @@ def search_form(wfile, path, statuses, priorities,
     </td>
 
    </tr>
-   <tr bgcolor="#DDDDDD">
-    <td><small><b>&nbsp;&nbsp;Keyword</b></small></td>
+   <tr class="form">
+    <td class="form-row-heading">Keyword</td>
     <td>
      <select name="keyword" size="1">''')
     for keyword in keywords:
@@ -965,7 +905,7 @@ def search_form(wfile, path, statuses, priorities,
      <input type="text" name="keyword_regex"/>
      <small>)</small>
     </td>
-    <td bgcolor="#FFFFFF">&nbsp;</td>
+    <td class="white">&nbsp;</td>
     <td>
      <small><label>
       <input type="checkbox" name="keyword_column" value="on">Show column
@@ -979,10 +919,10 @@ def search_form(wfile, path, statuses, priorities,
    <tr><td><table></table></td></tr>
   
    <tr>
-    <td bgcolor="#EEEEEE"><small><em>Versions</em></small></td>
+    <td class="form-tab">Versions</td>
    </tr> 
-   <tr bgcolor="#DDDDDD">
-    <td><small><b>&nbsp;&nbsp;Reported in</b></small></td>
+   <tr class="form">
+    <td class="form-row-heading">Reported in</td>
     <td>
      <select name="reported_in" size="1">''')
     for version in versions:
@@ -996,7 +936,7 @@ def search_form(wfile, path, statuses, priorities,
      <input type="text" name="reported_in_regex"/>
      <small>)</small>
     </td>
-    <td bgcolor="#FFFFFF">&nbsp;</td>
+    <td class="white">&nbsp;</td>
     <td>
      <small><label>
       <input type="checkbox" name="reported_in_column" value="on">Show column
@@ -1004,8 +944,8 @@ def search_form(wfile, path, statuses, priorities,
      </label></small>
     </td>
    </tr>
-   <tr bgcolor="#DDDDDD">
-    <td><small><b>&nbsp;&nbsp;Fixed in</b></small></td>
+   <tr class="form">
+    <td class="form-row-heading">Fixed in</td>
     <td>
      <select name="fixed_in" size="1">''')
     for version in versions:
@@ -1019,7 +959,7 @@ def search_form(wfile, path, statuses, priorities,
      <input type="text" name="fixed_in_regex"/>
      <small>)</small>
     </td>
-    <td bgcolor="#FFFFFF">&nbsp;</td>
+    <td class="white">&nbsp;</td>
     <td>
      <small><label>
       <input type="checkbox" name="fixed_in_column" value="on">Show column
@@ -1027,8 +967,8 @@ def search_form(wfile, path, statuses, priorities,
      </label></small>
     </td>
    </tr>
-   <tr bgcolor="#DDDDDD">
-    <td><small><b>&nbsp;&nbsp;Tested ok in</b></small></td>
+   <tr class="form">
+    <td class="form-row-heading">Tested ok in</td>
     <td>
      <select name="tested_ok_in" size="1">
      ''')
@@ -1043,7 +983,7 @@ def search_form(wfile, path, statuses, priorities,
      <input type="text" name="tested_ok_in_regex"/>
      <small>)</small>
     </td>
-    <td bgcolor="#FFFFFF">&nbsp;</td>
+    <td class="white">&nbsp;</td>
     <td>
      <small><label>
       <input type="checkbox" name="tested_ok_in_column" value="on">Show column
@@ -1061,6 +1001,4 @@ def search_form(wfile, path, statuses, priorities,
     </td>
    </tr>
   </table>
-  </form>
-  </blockquote></center>
-''')
+ </form>''')

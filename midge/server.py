@@ -106,7 +106,7 @@ class RequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 
     def _send_standard_header(self, session_id):
         self.send_response(HttpCodes.OK)
-        self.send_header("Content-type", "text/html")
+        self.send_header("Content-type", "text/html; charset=utf-8")
         self.send_header("Server", self.SERVER_NAME)
         self.send_header("Set-Cookie", "%s=%s" % (self.SESSION_COOKIE_NAME,
                                                   session_id))

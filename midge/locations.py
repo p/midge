@@ -868,6 +868,17 @@ class Images(Location):
     def handle_get(self, session_id, values, wfile):
         name = values.get("name", None)
         if name:
-            f = file(os.path.join(config.Images.directory, "%s" % name))
+            f = file(os.path.join(config.Presentation.directory, "%s" % name))
             wfile.write(f.read())
             f.close()
+
+
+class DefaultCSS(Location):
+
+    path = "/default.css"
+
+    def handle_get(self, session_id, values, wfile):
+        filename = os.path.join(config.Presentation.directory, "default.css")
+        f = file(filename)
+        wfile.write(f.read())
+        f.close()

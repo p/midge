@@ -21,4 +21,6 @@ distutils.core.setup(
                                     "bin/midge-import"]),
                 ("/usr/local/sbin", ["bin/midge-admin"]),
                 ("/usr/local/share/midge",
-                 ["images/up.gif", "images/down.gif"])])
+                 ["share/up.gif",
+                  "share/down.gif",
+                  "share/default.css"])])

@@ -41,7 +41,7 @@ class Email:
     smtp_host = None
     
 
-class Images:
+class Presentation:
 
     directory = None
 
@@ -101,7 +101,7 @@ def read():
     Server.debugging = get_boolean("Server", "debugging")
     Email.from_address = get("Email", "from_address")
     Email.smtp_host = get("Email", "smtp_host")
-    Images.directory = get("Images", "directory")
+    Presentation.directory = get("Presentation", "directory")
 
     def read_comment_mappings():
         separator = get("Comment Mappings", "SEPARATOR").strip()

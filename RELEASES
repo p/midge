@@ -16,6 +16,11 @@ release_0-2 (...)
 
   * Always default initial position of cursor to the most useful field.
 
+  * Added style sheet and generalised images directory.
+
+  * Used thead and tbody to provide better printing of tables on multiple pages.
+
+
 release_0-1 (15 Aug 2004)
 
   * First release!

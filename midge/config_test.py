@@ -26,6 +26,7 @@ class ConfigTests(unittest.TestCase):
         self.assertNotEqual(midge.config.Server.debugging, None)
         self.assertNotEqual(midge.config.Email.smtp_host, None)
         self.assertNotEqual(midge.config.Email.from_address, None)
+        self.assertNotEqual(midge.config.Presentation.directory, None)
 
     def test_can_print_env_variables(self):
         """Check print config as bash env variables"""
