@@ -286,8 +286,16 @@ def get_comments(cursor):
                 users_t.user_id = phpbt_comment.created_by
     """)
     comments += cursor.fetchall()
+
+    def unquote(text):
+        text = text.replace("&quot;", '"')
+        text = text.replace("&amp;", "&")
+        text = text.replace("&lt;", "<")
+        text = text.replace("&gt;", ">")
+        return text
+    
     return [(bug_id, username,
-             time.ctime(timestamp), description)
+             time.ctime(timestamp), unquote(description))
             for bug_id, username, timestamp, description in comments]
 
 
