@@ -234,7 +234,9 @@ class BugTests(BaseTest):
         bug = self._add_bug()
         bug.change(user, comment="more comments")
         self.assertEqual(len(bug.comments), 2)
-        self.assertEqual(bug.comments[1].text, "more comments")
+        # As timestamps are only to the nearest second, the new
+        # comment could be in one of two places.
+        self.assert_("more comments" in (bug.comments[0].text, bug.comments[1].text))
 
     def test_change_status(self):
         """Check change bug status"""

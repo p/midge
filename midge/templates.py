@@ -65,7 +65,15 @@ def header(wfile, title=None):
   <link rel="stylesheet" type="text/css" href="default.css"/>
   <script>
   <!--
-  function set_focus(){document.mainform.elements[0].focus();}
+  function set_focus() {
+     for (i=0; i<document.forms.length; i++) {
+        form = document.forms[i]
+        if (form.name == "mainform") {
+             form.elements[0].focus();
+             break;
+        }
+    }
+  }
   // -->
   </script>
  </head>
@@ -725,7 +733,7 @@ def table_of_bugs(wfile, path, search):
    </table>''')
 
 
-def search_form(wfile, path,
+def search_form(wfile, path, values,
                 statuses, priorities, resolutions,
                 categories, keywords, versions):
     wfile.write('''
@@ -737,13 +745,13 @@ def search_form(wfile, path,
    <tr class="form">
     <td class="form-row-heading">Title</td>
     <td>
-     <input name="title" type="text"/>
+     <input name="title" value="%(title)s" type="text"/>
     </td>
    </tr>
    <tr class="form">
     <td class="form-row-heading">Comments</td>
     <td>
-     <input name="comments" type="text"/>
+     <input name="comments" value="%(comments)s" type="text"/>
     </td>
    </tr>
 
@@ -756,22 +764,32 @@ def search_form(wfile, path,
    <tr class="form">
     <td class="form-row-heading">Status</td>
     <td>
-     <select name="status" size="1">''' % {"path": path})
+     <select name="status" size="1">''' % {"path": path,
+                                           "title": values.get("title", ""),
+                                           "comments": values.get("comments", "")})
     for status in statuses:
-        wfile.write('''
+        if values.get("status", None) == status:
+            wfile.write('''
+      <option value="%s" selected="selected">%s</option>''' % (status, status))
+        else:
+            wfile.write('''
       <option value="%s">%s</option>''' % (status, status))
+    if values.get("status_column", None):
+        checked = 'checked="yes"'
+    else:
+        checked = ""        
     wfile.write('''
      </select>
     </td>
     <td>
      <small>&nbsp;(regex</small>
-     <input type="text" name="status_regex"/>
+     <input type="text" value="%(status_regex)s" name="status_regex"/>
      <small>)</small>
     </td>
     <td class="white">&nbsp;</td>
     <td>
      <small><label>
-      <input type="checkbox" name="status_column" value="on">Show column
+      <input type="checkbox" %(checked)s name="status_column" value="on">Show column
       </input>
      </label></small>
     </td>
@@ -779,22 +797,32 @@ def search_form(wfile, path,
    <tr class="form">
     <td class="form-row-heading">Priority</td>
     <td>
-     <select name="priority" size="1">''')
+     <select name="priority" size="1">''' % \
+                {"status_regex": values.get("status_regex", ""),
+                 "checked": checked})
     for priority in priorities:
-        wfile.write('''
+        if values.get("priority", None) == priority:
+            wfile.write('''
+      <option value="%s" selected="selected">%s</option>''' % (priority, priority))
+        else:
+            wfile.write('''
       <option value="%s">%s</option>''' % (priority, priority))
+    if values.get("priority_column", None):
+        checked = 'checked="yes"'
+    else:
+        checked = ""        
     wfile.write('''
      </select>
     </td>
     <td>
      <small>&nbsp;(regex</small>
-     <input type="text" name="priority_regex"/>
+     <input type="text" value="%(priority_regex)s" name="priority_regex"/>
      <small>)</small>
     </td>
     <td class="white">&nbsp;</td>
     <td>
      <small><label>
-      <input type="checkbox" name="priority_column" value="on">Show column
+      <input type="checkbox" %(checked)s name="priority_column" value="on">Show column
       </input>
      </label></small>
     </td>
@@ -802,7 +830,11 @@ def search_form(wfile, path,
    <tr class="form">
     <td class="form-row-heading">Resolution</td>
     <td>
-     <select name="resolution" size="1">''')
+     <select name="resolution" size="1">''' % \
+                {"priority_regex": values.get("priority_regex", ""),
+                 "checked": checked})
+
+
     for resolution in resolutions:
         wfile.write('''
       <option value="%s">%s</option>''' % (resolution, resolution))

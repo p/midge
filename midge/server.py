@@ -104,9 +104,9 @@ class RequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     _locations = None
     _sessions = None
 
-    def _send_standard_header(self, session_id):
+    def _send_standard_header(self, session_id, mime_type):
         self.send_response(HttpCodes.OK)
-        self.send_header("Content-type", "text/html; charset=utf-8")
+        self.send_header("Content-type", "%s; charset=utf-8" % mime_type)
         self.send_header("Server", self.SERVER_NAME)
         self.send_header("Set-Cookie", "%s=%s" % (self.SESSION_COOKIE_NAME,
                                                   session_id))
@@ -179,7 +179,7 @@ class RequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
                 try:
                     wfile = cStringIO.StringIO()
                     location.handle_get(session_id, values, wfile)
-                    self._send_standard_header(session_id)
+                    self._send_standard_header(session_id, location.mime_type)
                     self.wfile.write(wfile.getvalue())
                 except RedirectException, e:
                     self._send_redirect(e.path)
@@ -209,7 +209,7 @@ class RequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
                         post_data = self._decode_raw_post_data(raw_post_data)
                         location.handle_post(session_id, values,
                                              post_data, wfile)
-                        self._send_standard_header(session_id)
+                        self._send_standard_header(session_id, location.mime_type)
                         self.wfile.write(wfile.getvalue())
                     except RedirectException, e:
                         self._send_redirect(e.path)

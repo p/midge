@@ -20,6 +20,8 @@ class Location:
 
     """
 
+    mime_type = "text/html"
+
     def __init__(self, application):
         self.application = application
 
@@ -624,7 +626,7 @@ class View(Location):
     def handle_post(self, session_id, values, post_data, wfile):
         user = self.application.get_user(session_id)
         if user:
-            templates.header(wfile)
+            templates.header(wfile, "Bug %s" % post_data.get("bug_id"))
             try:
                 self._make_changes(session_id, user, post_data, wfile)
             except application.InvalidValueException:
@@ -714,28 +716,18 @@ class Search(Location):
     path = "/search"    
 
     def handle_get(self, session_id, values, wfile):
+        self._reload_if_url_can_be_simplified(values)
         user = self.application.get_user(session_id)
         if user:
             templates.header(wfile)
-            if values:
-                self._reload_if_url_can_be_simplified(values)
-                self._search(session_id, wfile, values)
-            else:
+            if len(values) == 0:
                 templates.title(wfile, "Search for bugs")
-                templates.bullets(
-                    wfile,
-                    'All criteria are combined with "And".',
-                    'Blank fields are ignored.',
-                    'Searches are case insensitive.',
-                    'The "regex" fields are for advanced searches '
-                    '(and may be ignored).')
-                templates.search_form(wfile, self.path,
-                                      [""] + list(self.application.statuses),
-                                      self.application.priorities,
-                                      self.application.resolutions,
-                                      self.application.categories,
-                                      self.application.keywords,
-                                      self.application.versions)
+                self._search_form(wfile, values)
+            elif "refine" in values:
+                templates.title(wfile, "Refine search for bugs")
+                self._search_form(wfile, values)
+            else:
+                self._search(session_id, wfile, values)
             templates.footer(wfile)
         else:
             self.redirect(Login.path, lib.join_url(self.path, values))
@@ -747,6 +739,22 @@ class Search(Location):
                 new_values[k] = v
         if new_values != values:
             self.redirect(lib.join_url(self.path, new_values))
+
+    def _search_form(self, wfile, values):
+        templates.bullets(
+            wfile,
+            'All criteria are combined with "And".',
+            'Blank fields are ignored.',
+            'Searches are case insensitive.',
+            'The "regex" fields are for advanced searches '
+            '(and may be ignored).')
+        templates.search_form(wfile, self.path, values,
+                              [""] + list(self.application.statuses),
+                              self.application.priorities,
+                              self.application.resolutions,
+                              self.application.categories,
+                              self.application.keywords,
+                              self.application.versions)
             
     def _search(self, session_id, wfile, values):
         sort_by = values.pop("sort_by", "bug_id")
@@ -765,7 +773,7 @@ class Search(Location):
         try:
             self.application.search(session_id, search)
             templates.title(wfile, "Search result (%d)" % len(search.rows))
-            self._pretty_print_search(wfile, criteria)
+            self._pretty_print_search(wfile, criteria, values)
             if search.rows:
                 url = lib.join_url(self.path, values)
                 templates.table_of_bugs(wfile, url, search)
@@ -784,7 +792,7 @@ class Search(Location):
                 "Malformed regex expressions are a probable cause. "
                 "For example, mismatched parentheses.")
 
-    def _pretty_print_search(self, wfile, criteria):
+    def _pretty_print_search(self, wfile, criteria, values):
 
         def clean_name(s):
             s = s.replace("regex", "(regex)")
@@ -794,6 +802,12 @@ class Search(Location):
         bullets = []
         for k,v in criteria.iteritems():
             bullets.append("%s = %s" % (clean_name(k),v))
+
+        copy_of_values = values.copy()
+        copy_of_values["refine"] = "yes"
+        url = lib.html_entity_escape(lib.join_url(self.path, copy_of_values))
+        bullets.append('<a href="%s">Refine search</a>' % url)
+
         templates.bullets(wfile, *bullets)
         
         
@@ -812,12 +826,14 @@ class Images(Location):
 class DefaultCSS(Location):
 
     path = "/default.css"
+    mime_type = "text/css"
 
     def handle_get(self, session_id, values, wfile):
         filename = os.path.join(config.Presentation.directory, "default.css")
         f = file(filename)
         wfile.write(f.read())
         f.close()
+
 
 class Help(Location):
 
@@ -859,4 +875,3 @@ class Help(Location):
             "http://midge.sourceforge.net</a> for more "
             "information, releases, <em>etc</em>.")
         templates.footer(wfile)
-        
