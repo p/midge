@@ -545,6 +545,13 @@ class Priorities(StateTable):
                 self.create_new_value(value)
 
 
+class Resolutions(StateTable):
+
+    valid_value = re.compile(r"^[a-zA-Z0-9. _/-]+$")
+    bug_table = "resolutions"
+    value_table = "resolution_values"
+
+
 class Categories(StateTable):
 
     valid_value = re.compile(r"^[a-zA-Z0-9. _/-]+$")
@@ -626,6 +633,7 @@ class Bug(object):
         self.title = None
         self.status = None
         self.priority = None
+        self.resolution = None
         self.category = None
         self.keyword = None
         self.reported_in = None
@@ -641,12 +649,13 @@ class Bug(object):
                        title,
                        statuses.name,
                        priority_values.name,
+                       resolution_values.name,
                        category_values.name,
                        keyword_values.name,
                        reported_versions.name,
                        fixed_versions.name,
                        tested_ok_versions.name                       
-                FROM (((((((((((((
+                FROM (((((((((((((((
                            statuses INNER JOIN bugs ON
                            (bugs.status_id = statuses.status_id)
 
@@ -654,6 +663,11 @@ class Bug(object):
                            (priorities.bug_id = %(bug_id)s)
                          ) LEFT OUTER JOIN priority_values ON
                            (priority_values.id = priorities.id)
+
+                         ) LEFT OUTER JOIN resolutions ON
+                           (resolutions.bug_id = %(bug_id)s)
+                         ) LEFT OUTER JOIN resolution_values ON
+                           (resolution_values.id = resolutions.id)
 
                          ) LEFT OUTER JOIN categories ON
                            (categories.bug_id = %(bug_id)s)
@@ -689,6 +703,7 @@ class Bug(object):
              title,
              self.status,
              priority,
+             resolution,
              category,
              keyword,
              reported_in,
@@ -696,6 +711,7 @@ class Bug(object):
              tested_ok_in) = result
             # Convert None's into ""s
             self.priority = priority or ""
+            self.resolution = resolution or ""
             self.category = category or ""
             self.keyword = keyword or ""
             self.reported_in = reported_in or ""
@@ -730,6 +746,10 @@ class Bug(object):
                     priority = args.pop("priority")
                     self.bugs.priorities.set_for_bug(
                         cursor, self.bug_id, priority)
+                if "resolution" in args:
+                    resolution = args.pop("resolution")
+                    self.bugs.resolutions.set_for_bug(
+                        cursor, self.bug_id, resolution)
                 if "category" in args:
                     category = args.pop("category")
                     self.bugs.categories.set_for_bug(
@@ -773,6 +793,7 @@ class Search:
     _all = (("bug_id", "Bug"),
             ("status", "Status"),
             ("priority", "Priority"),
+            ("resolution", "Resolution"),
             ("category", "Category"),
             ("keyword", "Keyword"),
             ("reported_in", "Reported in"),
@@ -788,6 +809,7 @@ class Search:
         bug_id = "bugs.bug_id",
         status = "statuses.name",
         priority = "priority_values.name",
+        resolution = "resolution_values.name",
         category = "category_values.name",
         keyword = "keyword_values.name",
         reported_in = "reported_versions.name",
@@ -801,6 +823,11 @@ class Search:
                 (priorities.bug_id = bugs.bug_id)
                ) LEFT OUTER JOIN priority_values ON
                 (priority_values.id = priorities.id)""",
+        resolution = """
+               ) LEFT OUTER JOIN resolutions ON
+                (resolutions.bug_id = bugs.bug_id)
+               ) LEFT OUTER JOIN resolution_values ON
+                (resolution_values.id = resolutions.id)""",
         category = """
                ) LEFT OUTER JOIN categories ON
                 (categories.bug_id = bugs.bug_id)
@@ -836,6 +863,8 @@ class Search:
         "status_regex": "statuses.name ~* '%s'",
         "priority": "priority_values.name = '%s'",
         "priority_regex": "priority_values.name ~* '%s'",
+        "resolution": "resolution_values.name = '%s'",
+        "resolution_regex": "resolution_values.name ~* '%s'",
         "category": "category_values.name = '%s'",
         "category_regex": "category_values.name ~* '%s'",
         "keyword": "keyword_values.name = '%s'",
@@ -987,6 +1016,7 @@ class Bugs(object):
         self.connection = connection
         self.statuses = Statuses(connection)
         self.priorities = Priorities(connection)
+        self.resolutions = Resolutions(connection)
         self.categories = Categories(connection)
         self.keywords = Keywords(connection)
         self.reported_ins = ReportedIns(connection)
@@ -1039,7 +1069,8 @@ class Bugs(object):
         cursor.close()
         return bug_id
 
-    def import_bug(self, bug_id, user, timestamp, title, status, priority,
+    def import_bug(self, bug_id, user, timestamp, title,
+                   status, priority, resolution,
                    category, keyword,
                    reported_in, fixed_in, tested_ok_in):
         cursor = self.connection.cursor()
@@ -1047,6 +1078,7 @@ class Bugs(object):
         bug = self.get(bug_id)
         changes = {"status": status,
                    "priority": priority,
+                   "resolution": resolution,
                    "category": category,
                    "keyword": keyword,
                    "reported_in": reported_in,
@@ -1066,12 +1098,13 @@ class Bugs(object):
                         title,
                         statuses.name,
                         priority_values.name,
+                        resolution_values.name,
                         category_values.name,
                         keyword_values.name,
                         reported_versions.name,
                         fixed_versions.name,
                         tested_ok_versions.name
-        FROM (((((((((((((
+        FROM (((((((((((((((
                statuses INNER JOIN bugs ON
                 (bugs.status_id = statuses.status_id)
                ) LEFT OUTER JOIN users ON
@@ -1100,10 +1133,15 @@ class Bugs(object):
                 (priorities.bug_id = bugs.bug_id)
                ) LEFT OUTER JOIN priority_values ON
                 (priority_values.id = priorities.id)
+               ) LEFT OUTER JOIN resolution ON
+                (resolutions.bug_id = bugs.bug_id)
+               ) LEFT OUTER JOIN resolution_values ON
+                (resolution_values.id = resolutions.id)
         ORDER BY bugs.bug_id ASC;
                 """)
             rows = cursor.fetchall()
-            rows.insert(0, ("Bug", "Username", "Date", "Title", "Status", "Priority",
+            rows.insert(0, ("Bug", "Username", "Date", "Title", "Status",
+                            "Priority", "Resolution",
                             "Category", "Keyword",
                             "Reported in", "Fixed in", "Tested ok in"))
             return rows
@@ -1209,6 +1247,11 @@ class Application(object):
         return self.bugs.priorities.values
 
     priorities = property(_get_priorities)
+
+    def _get_resolutions(self):
+        return self.bugs.resolutions.values
+
+    resolutions = property(_get_resolutions)
 
     def _get_categories(self):
         return self.bugs.categories.values

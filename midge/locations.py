@@ -447,7 +447,7 @@ class List(Location):
         if not order:
             order = "ascending"
         search = application.Search(
-            ("bug_id", "priority", "category", "fixed_in", "title"),
+            ("bug_id", "priority", "resolution", "category", "fixed_in", "title"),
             sort_by, order, status="fixed")
         self.application.search(session_id, search)
         templates.title(wfile, "All fixed bugs")
@@ -468,7 +468,7 @@ class List(Location):
         if not order:
             order = "ascending"
         search = application.Search(
-            ("bug_id", "priority", "category", "tested_ok_in", "title"),
+            ("bug_id", "priority", "resolution", "category", "tested_ok_in", "title"),
             sort_by, order, status="closed")
         self.application.search(session_id, search)
         templates.title(wfile, "All closed bugs")
@@ -526,6 +526,7 @@ class View(Location):
             wfile, self.path, bug,
             self.application.statuses,
             self.application.priorities,
+            self.application.resolutions,
             self.application.categories,
             self.application.keywords,
             self.application.versions)
@@ -542,6 +543,13 @@ class View(Location):
         priority = post_data.get("priority", None)
         if priority != old_bug.priority:
             changes["priority"] = priority
+
+        resolution = post_data.get("resolution", None)
+        new_resolution = post_data.get("new_resolution", None)
+        if new_resolution:
+            resolution = new_resolution
+        if resolution != old_bug.resolution:
+            changes["resolution"] = resolution
 
         category = post_data.get("category", None)
         new_category = post_data.get("new_category", None)
@@ -721,11 +729,12 @@ class Search(Location):
                     'The "regex" fields are for advanced searches '
                     '(and may be ignored).')
                 templates.search_form(wfile, self.path,
-                            [""] + list(self.application.statuses),
-                            self.application.priorities,
-                            self.application.categories,
-                            self.application.keywords,
-                            self.application.versions)
+                                      [""] + list(self.application.statuses),
+                                      self.application.priorities,
+                                      self.application.resolutions,
+                                      self.application.categories,
+                                      self.application.keywords,
+                                      self.application.versions)
             templates.footer(wfile)
         else:
             self.redirect(Login.path, lib.join_url(self.path, values))

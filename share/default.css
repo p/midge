@@ -47,6 +47,7 @@ hr {
 	white-space: nowrap;
 }
 
+
 /* Used to expand table cells in forms and lists of bugs */
 .expand {
 	width: 100%;
@@ -131,12 +132,24 @@ tr.row {
 	font-size: small;
 }
 
-td.even-row {
+td.even-row-not-last {
+	background-color: #d5dfef;
+	padding: 2px;
+	white-space: nowrap;
+}
+
+td.odd-row-not-last {
+	background-color: #eeeeee;
+	padding: 2px;
+	white-space: nowrap;
+}
+
+td.even-row-last {
 	background-color: #d5dfef;
 	padding: 2px;
 }
 
-td.odd-row {
+td.odd-row-last {
 	background-color: #eeeeee;
 	padding: 2px;
 }

@@ -2,10 +2,6 @@ User visible TODOs:
 
 - fix bug - if type \[\] in search...
 - allow the user to change their username
-- add resolution (code changed, can't reproduce, won't fix, not
-  a bug, duplicate). Add resolution to closed and fixed lists.
-     and map from bugtracker
-  in bug summary at head of bug, indicate why closed/fixed
 
 - indicate number of rows in table
 - add ability to search by users
@@ -13,7 +9,6 @@ User visible TODOs:
 - history of changes to each bug
 - list of recently changed bugs
 
-- use nowrap option on all table cells, not just the titles
 - detect and prevent simultaneous attempts to change same data
 - check everywhere redirecting when not logged in
 - limit length of field in new state values

@@ -26,6 +26,8 @@ release_0-2 (...)
 
   * Removed configuation grouping.
 
+  * Added resolution state.
+
 release_0-1 (15 Aug 2004)
 
   * First release!

@@ -81,6 +81,7 @@ class ImporterTests(BaseTest):
                                  "a title",
                                  "reviewed",
                                  "2",
+                                 "a resolution",
                                  "a category",
                                  "a keyword",
                                  "a reported_in",
@@ -92,6 +93,7 @@ class ImporterTests(BaseTest):
         self.assertEqual(bug.title, "a title")
         self.assertEqual(bug.status, "reviewed")
         self.assertEqual(bug.priority, "2")
+        self.assertEqual(bug.resolution, "a resolution")
         self.assertEqual(bug.category, "a category")
         self.assertEqual(bug.keyword, "a keyword")
         self.assertEqual(bug.reported_in, "a reported_in")

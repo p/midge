@@ -155,6 +155,7 @@ class TemplatesTest(unittest.TestCase):
             bug_id = 3
             status = "new"
             priority = "priority1"
+            resolution = "resolution1"
             category = "category1"
             keyword = "keyword1"
             reported_in = "version2"
@@ -169,6 +170,7 @@ class TemplatesTest(unittest.TestCase):
                                 MockBug(),
                                 ["status1", "status2"],
                                 ["priority1", "priority2"],
+                                ["resolution1", "resolution2"],
                                 ["category1", "category2"],
                                 ["keyword1", "keyword2"],
                                 ["version1", "version2"])
@@ -188,6 +190,7 @@ class TemplatesTest(unittest.TestCase):
             title = "whatever"
             status = "new"
             priority = "priority1"
+            resolution = "resolution1"
             category = "category1"
             keyword = "keyword1"
             reported_in = "version2"
@@ -267,6 +270,7 @@ class TemplatesTest(unittest.TestCase):
         templates.search_form(wfile, "a path",
                               ["a status"],
                               ["a priority"],
+                              ["a resolution"],
                               ["a category"],
                               ["a keyword"],
                               ["a version"])

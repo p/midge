@@ -45,6 +45,9 @@ class AdministrationTests(unittest.TestCase):
         cursor.execute("SELECT * FROM keyword_values;")
         self.assertEqual(len(cursor.fetchall()), 0)
 
+        cursor.execute("SELECT * FROM resolution_values;")
+        self.assertEqual(len(cursor.fetchall()), 0)
+
         cursor.execute("SELECT * FROM category_values;")
         self.assertEqual(len(cursor.fetchall()), 0)
 

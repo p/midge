@@ -34,6 +34,7 @@ def create_bug_t_from_phpbt_bug(cursor):
                     fixed_in_id int,
                     closed_in_id int,
                     priority int,
+                    resolution_id int,
                     description text,
                     created_by int,
                     created_date bigint
@@ -49,6 +50,7 @@ def create_bug_t_from_phpbt_bug(cursor):
                     fixed_in_id,
                     closed_in_id,
                     priority,
+                    resolution_id,
                     description,
                     created_by,
                     created_date
@@ -62,6 +64,7 @@ def create_bug_t_from_phpbt_bug(cursor):
                     closed_in_version_id,
                     closed_in_version_id,
                     priority,
+                    resolution_id,
                     description,
                     created_by,
                     created_date
@@ -119,6 +122,63 @@ def create_category_t_from_phpbt_component(cursor):
             SELECT component_id, component_name
             FROM phpbt_component
     """)
+
+def create_resolution_t_from_phpbt_component(cursor):
+    cursor.execute("""
+    CREATE TEMPORARY TABLE resolution_t (resolution_id int, resolution_name text)
+    """)
+    cursor.execute("""
+    INSERT INTO resolution_t (resolution_id, resolution_name)
+            SELECT resolution_id, resolution_name
+            FROM phpbt_resolution
+    """)
+    cursor.execute("""
+    INSERT INTO resolution_t (resolution_id, resolution_name)
+    VALUES (0, "")
+    """)
+
+def map_resolution_values(cursor):
+    cursor.execute("""
+    UPDATE resolution_t
+            SET resolution_name='Code changed'
+            WHERE resolution_name='Fixed'
+    """)
+    cursor.execute("""
+    UPDATE resolution_t
+            SET resolution_name='Cannot reproduce'
+            WHERE resolution_name='Works for me'
+    """)
+    cursor.execute("""
+    UPDATE resolution_t
+            SET resolution_name='Will not fix'
+            WHERE resolution_name='Refactored / Too Hard'
+    """)
+    cursor.execute("""
+    UPDATE resolution_t
+            SET resolution_name='Will not fix'
+            WHERE resolution_name='Obsolete'
+    """)
+    cursor.execute("""
+    UPDATE resolution_t
+            SET resolution_name='Code changed'
+            WHERE resolution_name='Temp Fix'
+    """)
+    cursor.execute("""
+    UPDATE resolution_t
+            SET resolution_name='Not a bug'
+            WHERE resolution_name='Modified Test Case'
+    """)
+    cursor.execute("""
+    UPDATE resolution_t
+            SET resolution_name='Will not fix'
+            WHERE resolution_name='No change'
+    """)
+    cursor.execute("""
+    UPDATE resolution_t
+            SET resolution_name='Will not fix'
+            WHERE resolution_name='Use Workaround'
+    """)
+
 
 def create_version_t_from_phpbt_version(cursor):
     cursor.execute("""
@@ -192,6 +252,11 @@ def map_category_values(cursor):
             SET category_name='Not Sure'
             WHERE category_name='Old Roundup Bug'
     """)
+    cursor.execute("""
+    UPDATE category_t
+            SET category_name='Test'
+            WHERE category_name='TestConfig'
+    """)
 
 def map_version_values(cursor):
     cursor.execute("""
@@ -224,6 +289,7 @@ def get_bugs(cursor):
             bug_t.title,
             status_name AS status,
             priority,
+            resolution_name AS resolution,
             category_name AS category,
             '',
             v1.version_name AS reported_in,
@@ -233,12 +299,14 @@ def get_bugs(cursor):
             bug_t,
             status_t,
             category_t,
+            resolution_t,
             version_t v1,
             version_t v2,
             version_t v3,
             users_t
     WHERE bug_t.status_id = status_t.status_id
       AND bug_t.category_id = category_t.category_id
+      AND bug_t.resolution_id = resolution_t.resolution_id
       AND bug_t.reported_in_id = v1.version_id
       AND bug_t.fixed_in_id = v2.version_id
       AND bug_t.closed_in_id = v3.version_id
@@ -299,10 +367,12 @@ create_bug_t_from_phpbt_bug(cursor)
 create_users_t_from_phpbt_auth_user(cursor)
 create_status_t_from_phpbt_status(cursor)
 create_category_t_from_phpbt_component(cursor)
+create_resolution_t_from_phpbt_component(cursor)
 create_version_t_from_phpbt_version(cursor)
 remove_roundup_bugs(cursor)
 map_status_values(cursor)
 map_category_values(cursor)
+map_resolution_values(cursor)
 map_version_values(cursor)
 
 users = get_users(cursor)

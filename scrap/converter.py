@@ -19,10 +19,13 @@ if __name__ == "__main__":
     bugs = eval(file("bugs.txt").read())
     f = file("bugs.csv", "w")
     writer = csv.writer(f)
-    writer.writerow( ("Bug", "Username", "Date", "Title", "Status", "Priority",
+    writer.writerow( ("Bug", "Username", "Date", "Title", "Status",
+                      "Priority", "Resolution",
                       "Category", "Keyword",
                       "Reported in", "Fixed in", "Tested ok in") )
     for row in bugs:
+        for i in 6, 7:
+            row[i] = row[i].lower()
         writer.writerow(row)
     f.close()
     print "done"

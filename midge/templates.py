@@ -370,24 +370,26 @@ def show_comments(wfile, bug):
 
 
 def bug_status_summary(wfile, bug):
-    if bug.priority:
-        wfile.write('''
-  <p>
-   <strong>Bug %(bug_id)s, %(status)s,
-   priority %(priority)s</strong> (<a href="#editbugform">more</a>)
-  </p>''' % {"bug_id": bug.bug_id,
-             "status": bug.status,
-             "priority": bug.priority})
+    if bug.resolution:
+        resolution = " (%s)" % bug.resolution
     else:
-        wfile.write('''
+        resolution = ""
+    if bug.priority:
+        priority = ", priority %s" % bug.priority
+    else:
+        priority = ""
+    wfile.write('''
   <p>
-   <strong>Bug %(bug_id)s, %(status)s</strong>
+   <strong>Bug %(bug_id)s, %(status)s%(resolution)s%(priority)s</strong>
    (<a href="#editbugform">more</a>)
   </p>''' % {"bug_id": bug.bug_id,
-             "status": bug.status.capitalize()})
-  
+             "status": bug.status,
+             "resolution": resolution,
+             "priority": priority})
+ 
     
-def edit_bug_form(wfile, path, bug, statuses, priorities,
+def edit_bug_form(wfile, path, bug,
+                  statuses, priorities, resolutions,
                   categories, keywords, versions):
     wfile.write('''
   <br/>
@@ -436,6 +438,24 @@ def edit_bug_form(wfile, path, bug, statuses, priorities,
      <small>
       (<b>1</b> is lowest, <b>5</b> is highest)
      </small>
+    </td>
+   </tr>
+   <tr class="form">
+    <td class="form-row-heading">Resolution</td>
+    <td>
+     <select name="resolution" size="1">''')
+    for resolution in resolutions:
+        if bug.resolution == resolution:
+            wfile.write('''
+      <option value="%s" selected="selected">%s</option>''' % (resolution, resolution))
+        else:
+            wfile.write('''
+      <option value="%s">%s</option>''' % (resolution, resolution))
+    wfile.write('''
+     </select>
+    </td>
+    <td align="right"><small>(or use a new resolution</small>
+        <input type="text" name="new_resolution"></input><small>)</small>
     </td>
    </tr>
   
@@ -666,13 +686,16 @@ def _table_rows(wfile, rows):
     row_index = 0
     for row in rows:
         row_index += 1
-        style = styles[row_index % 2]
         wfile.write('''
     <tr class="row">''')
         for variable, value in row.get():
             if variable == "bug_id":
                 value = '<a href="/view?bug_id=%(bug_id)s">%(bug_id)s</a>' % \
                         {"bug_id": value}
+            if variable == "title":
+                style = styles[row_index % 2] + "-last"
+            else:
+                style = styles[row_index % 2] + "-not-last"
             wfile.write('''
      <td class="%(style)s">
       %(value)s
@@ -702,7 +725,8 @@ def table_of_bugs(wfile, path, search):
    </table>''')
 
 
-def search_form(wfile, path, statuses, priorities,
+def search_form(wfile, path,
+                statuses, priorities, resolutions,
                 categories, keywords, versions):
     wfile.write('''
   <form name="mainform" action="%(path)s">
@@ -771,6 +795,29 @@ def search_form(wfile, path, statuses, priorities,
     <td>
      <small><label>
       <input type="checkbox" name="priority_column" value="on">Show column
+      </input>
+     </label></small>
+    </td>
+   </tr>
+   <tr class="form">
+    <td class="form-row-heading">Resolution</td>
+    <td>
+     <select name="resolution" size="1">''')
+    for resolution in resolutions:
+        wfile.write('''
+      <option value="%s">%s</option>''' % (resolution, resolution))
+    wfile.write('''
+     </select>
+    </td>
+    <td>
+     <small>&nbsp;(regex</small>
+     <input type="text" name="resolution_regex"/>
+     <small>)</small>
+    </td>
+    <td class="white">&nbsp;</td>
+    <td>
+     <small><label>
+      <input type="checkbox" name="resolution_column" value="on">Show column
       </input>
      </label></small>
     </td>
