@@ -388,7 +388,7 @@ class List(Location):
             ("bug_id", "category", "reported_in", "title"),
             sort_by, order, status="new")
         self.application.search(session_id, search)
-        templates.title(wfile, "All new bugs")
+        templates.title(wfile, "All new bugs (%d)" % len(search.rows))
         if search.rows:
             templates.bullets(
                 wfile,
@@ -407,12 +407,11 @@ class List(Location):
             ("bug_id", "priority", "category", "reported_in", "title"),
             sort_by, order, status="reviewed")
         self.application.search(session_id, search)
-        templates.title(wfile, "All reviewed bugs")
+        templates.title(wfile, "All reviewed bugs (%d)" % len(search.rows))
         if search.rows:
             templates.bullets(
                 wfile,
-                "Bugs that are ready to be scheduled "
-                "(priority 5 is most important).")
+                "Bugs that are ready to be scheduled.")
             url = lib.join_url(self.path, {"status": "reviewed"})
             templates.table_of_bugs(wfile, url, search)
         else:
@@ -428,12 +427,11 @@ class List(Location):
             ("bug_id", "priority", "category", "reported_in", "title"),
             sort_by, order, status="scheduled")
         self.application.search(session_id, search)
-        templates.title(wfile, "All scheduled bugs")
+        templates.title(wfile, "All scheduled bugs (%d)" % len(search.rows))
         if search.rows:
             templates.bullets(
                 wfile,
-                "Bugs that are ready to be fixed "
-                "(starting with priority 5).")
+                "Bugs that are ready to be fixed.")
             url = lib.join_url(self.path, {"status": "scheduled"})
             templates.table_of_bugs(wfile, url, search)
         else:
@@ -450,7 +448,7 @@ class List(Location):
             ("bug_id", "priority", "resolution", "category", "fixed_in", "title"),
             sort_by, order, status="fixed")
         self.application.search(session_id, search)
-        templates.title(wfile, "All fixed bugs")
+        templates.title(wfile, "All fixed bugs (%d)" % len(search.rows))
         if search.rows:
             templates.bullets(
                 wfile,
@@ -471,8 +469,11 @@ class List(Location):
             ("bug_id", "priority", "resolution", "category", "tested_ok_in", "title"),
             sort_by, order, status="closed")
         self.application.search(session_id, search)
-        templates.title(wfile, "All closed bugs")
+        templates.title(wfile, "All closed bugs (%d)" % len(search.rows))
         if search.rows:
+            templates.bullets(
+                wfile,
+                "Bugs which require no further action.")
             url = lib.join_url(self.path, {"status": "closed"})
             templates.table_of_bugs(wfile, url, search)
         else:
@@ -763,7 +764,7 @@ class Search(Location):
         search = application.Search(columns, sort_by, order, **criteria)
         try:
             self.application.search(session_id, search)
-            templates.title(wfile, "Search result")
+            templates.title(wfile, "Search result (%d)" % len(search.rows))
             self._pretty_print_search(wfile, criteria)
             if search.rows:
                 url = lib.join_url(self.path, values)

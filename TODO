@@ -1,17 +1,7 @@
 User visible TODOs:
 
-- add a comment ending in a \
-  (also, use of \\ should I think show a \ in the comment)
-
-- change instructions for putting failed fixes back to scheduled to
-  new instead
-
-- fix bug - if type \[\] in search...
-- fix bug - type in large int to jump to bug
-
 - allow the user to change their username
 
-- indicate number of rows in table
 - add ability to search by users
 - add ability to add attachements
 - history of changes (to each bug), and list of recently changed bugs
@@ -23,12 +13,10 @@ User visible TODOs:
 - inform the user when their session has timed-out
 - fix: timed out session, then post. The post is not passed on after relogin
 - slight alignment problem in numbers and text of list bugs location
-- don't provide list of valid locations when enter invalid URL
 - possible bug with recording time of comment (see once)
 
 Underlying changes:
 
-- make sure matched substitutions never apply to each other
 - make it possible to run several midges (projects) on the same box (/etc/midge.conf)
    - pass location of config file on command line 
 - write io tests

@@ -8,6 +8,11 @@ import logging.handlers
 import sys
 import traceback
 
+import midge.config
+
+
+SYSLOG_PORT = 514
+
 
 _logger = None
 _handler = None
@@ -16,7 +21,8 @@ def start(debugging=False):
     global _logger, _handler
     if not _logger:
         _logger = logging.getLogger("midge")
-        _handler = logging.handlers.SysLogHandler()
+        _handler = logging.handlers.SysLogHandler(
+            (midge.config.Logging.host, SYSLOG_PORT), midge.config.Logging.facility)
         formatter = logging.Formatter('[%(name)s] %(message)s')
         _handler.setFormatter(formatter)
         _logger.addHandler(_handler)

@@ -33,13 +33,19 @@ class Server:
     port = None
     session_timeout = None
     maintenance_period = None
-    debugging = None
     
 
 class Email:
 
     from_address = None
     smtp_host = None
+    
+
+class Logging:
+
+    host = None
+    facility = None
+    debugging = None
     
 
 class Presentation:
@@ -100,9 +106,11 @@ def read():
     Server.port = get_int("Server", "port")
     Server.session_timeout = get_int("Server", "session_timeout")
     Server.maintenance_period = get_int("Server", "maintenance_period")
-    Server.debugging = get_boolean("Server", "debugging")
     Email.from_address = get("Email", "from_address")
     Email.smtp_host = get("Email", "smtp_host")
+    Logging.host = get("Logging", "host")
+    Logging.facility = get("Logging", "facility")
+    Logging.debugging = get_boolean("Logging", "debugging")
     Presentation.directory = get("Presentation", "directory")
 
     def read_comment_mappings():
@@ -113,6 +121,7 @@ def read():
                 pattern, substitute = v.split(separator, 1)
                 mappings.append(
                     (re.compile( pattern.strip()), substitute.strip()) )
+        mappings.sort()
         CommentMappings.mappings = mappings
 
     read_comment_mappings()
@@ -120,7 +129,7 @@ def read():
 
 def print_env_variables():
     """Print the variables to standard out in bash format."""
-    for cls in (Postgres, Database, Project, Server, Email):
+    for cls in (Postgres, Database, Project, Server, Email, Logging):
         for name in dir(cls):
             if not name.startswith("__"):
                 print "%s_%s=%s" % (cls.__name__.upper(),

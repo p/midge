@@ -128,12 +128,7 @@ class RequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write("<html><body><h1>No such location!</h1>"
                          "<p>The location <b>%s</b> does not exist." % path)
-        self.wfile.write(" Perhaps you meant one of the following:<ul>")
-        paths = self._locations.keys()
-        paths.sort()
-        for path in paths:
-            self.wfile.write('<li><a href="%s">%s</a></li>' % (path, path))
-        self.wfile.write("</ul></body></html>")
+        self.wfile.write("</body></html>")
 
     def _send_exception(self):
         lines = logger.get_exception_as_lines()

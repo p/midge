@@ -13,6 +13,6 @@ import midge.server as server
 
 if __name__ == "__main__":
     config.read()
-    logger.start(config.Server.debugging)
+    logger.start(config.Logging.debugging)
     app = application.Application(connection.Connection())
     server.Server(app, locations).start()

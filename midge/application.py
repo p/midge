@@ -15,13 +15,14 @@ import midge.logger as logger
 def quote(x):
     # TODO make more efficient - use translate?, or re.escape ?
     # and make sure coverage complete.
+    # NB the order of these replacements is very important...
+    x = x.replace("\\", r"\\")
     x = x.replace("\b", r"\b")
     x = x.replace("\f", r"\f")
     x = x.replace("\r", r"\r")
     x = x.replace("\n", r"\n")
     x = x.replace("\t", r"\t")
     x = x.replace("'", r"\047")
-    x = x.replace(r"\\", r"\\\\")
     return x
 
 
@@ -625,7 +626,7 @@ class Bug(object):
     """A single bug cached from the database."""
 
     def __init__(self, bugs, bug_id):
-        assert isinstance(bug_id, int)
+        assert isinstance(bug_id, (int, long))
         self.bugs = bugs
         self.bug_id = bug_id
         self.user_id = None

@@ -343,7 +343,7 @@ class StatusHints(object):
     scheduled = "(set to <b>fixed</b> once ready for testing)"
 
     fixed = ("(set to <b>closed</b> once confirmed fixed, or "
-             "<b>scheduled</b> if still broken)")
+             "<b>new</b> if still broken)")
 
     closed = ""
 

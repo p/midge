@@ -1,6 +1,23 @@
 release_0-3 (???)
 
-  * Added /etc/init.d start/stop script
+  * Added /etc/init.d start/stop script.
+
+  * No longer tracebacks if enter very large integer into find bug field.
+
+  * Display number of bugs in searches and lists.
+
+  * Make syslog facility configurable.
+
+  * Don't provide list of valid locations when enter invalid URL.
+
+  * Order the matches so that http substitutions don't interfer with others.
+
+  * Failed fixes now instructed to be put back to new rather than scheuled.
+
+  * Comments entry box now effectively ignores escaped (\) characters.
+
+  * No longer tracebacks if entry \[\] in search.
+
 
 release_0-2 (05 Sept 2004)
 
@@ -31,6 +48,7 @@ release_0-2 (05 Sept 2004)
   * Removed configuation grouping.
 
   * Added resolution state.
+
 
 release_0-1 (15 Aug 2004)
 
