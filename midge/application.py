@@ -743,47 +743,54 @@ class Bug(object):
         try:
             try:
                 if "status" in args:
-                    status = args.pop("status")
+                    status = args["status"]
                     self.bugs.statuses.set_for_bug(
                         cursor, self.bug_id, status)
                 if "priority" in args:
-                    priority = args.pop("priority")
+                    priority = args["priority"]
                     self.bugs.priorities.set_for_bug(
                         cursor, self.bug_id, priority)
                 if "resolution" in args:
-                    resolution = args.pop("resolution")
+                    resolution = args["resolution"]
                     self.bugs.resolutions.set_for_bug(
                         cursor, self.bug_id, resolution)
                 if "category" in args:
-                    category = args.pop("category")
+                    category = args["category"]
                     self.bugs.categories.set_for_bug(
                         cursor, self.bug_id, category)
                 if "keyword" in args:
-                    keyword = args.pop("keyword")
+                    keyword = args["keyword"]
                     self.bugs.keywords.set_for_bug(
                         cursor, self.bug_id, keyword)
                 if "reported_in" in args:
-                    reported_in = args.pop("reported_in")
+                    reported_in = args["reported_in"]
                     self.bugs.reported_ins.set_for_bug(
                         cursor, self.bug_id, reported_in)
                 if "fixed_in" in args:
-                    fixed_in = args.pop("fixed_in")
+                    fixed_in = args["fixed_in"]
                     self.bugs.fixed_ins.set_for_bug(
                         cursor, self.bug_id, fixed_in)
                 if "tested_ok_in" in args:
-                    tested_ok_in = args.pop("tested_ok_in")
+                    tested_ok_in = args["tested_ok_in"]
                     self.bugs.tested_ok_ins.set_for_bug(
                         cursor, self.bug_id, tested_ok_in)
                 if "comment" in args:
-                    comment = args.pop("comment")
+                    comment = args["comment"]
                     if "timestamp" in args:
-                        timestamp = args.pop("timestamp")
+                        timestamp = args["timestamp"]
                         self.comments.add(cursor, user, comment, timestamp)
                     else:
                         self.comments.add(cursor, user, comment)
-                if args:
-                    raise TypeError, "excess keyword arguments: %s" % args
                 self.bugs.connection.commit()
+                for variable, value in args.iteritems():
+                    if variable == "comment":
+                        self.bugs.changes.add_change(
+                            self.bug_id, user, "Added comment")
+                    else:
+                        pretty_variable = variable.replace("_", " ").capitalize()
+                        self.bugs.changes.add_change(
+                            self.bug_id, user, "Set %s to %s" % (pretty_variable,
+                                                                 value))
             except:
                 self.bugs.connection.rollback()
                 raise
@@ -1013,6 +1020,21 @@ class Row:
     def __len__(self):
         return len(self.variable_names)
 
+
+class Changes(object):
+
+    def __init__(self, connection):
+        self.connection = connection
+
+    def add_change(self, bug_id, user, description):
+        print "Change: %s | %s | %s" % (bug_id, user.user_id, description)
+
+    def do_maintenance(self):
+        pass
+
+    def get_changes(self):
+        return []
+    
         
 class Bugs(object):
 
@@ -1027,9 +1049,11 @@ class Bugs(object):
         self.fixed_ins = FixedIns(connection)
         self.tested_ok_ins = TestedOkIns(connection)
         self.summary = Summary(connection)
+        self.changes = Changes(connection)
 
-    def purge(self):
+    def do_maintenance(self):
         """Remove unused keywords, versions, etc"""
+        self.changes.do_maintenance()
         # TODO implement purge
         
     def _add_to_bugs_table(self, cursor, user, title):
@@ -1068,6 +1092,7 @@ class Bugs(object):
             changes["comment"] = description
         if changes:
             bug = self.get(bug_id)
+            self.changes.add_change(bug_id, user, "Added a new bug")
             bug.change(user, cursor, **changes)
         self.connection.commit()
         cursor.close()
@@ -1177,9 +1202,9 @@ class Bugs(object):
         try:
             search.run(cursor)
         finally:
-           cursor.close()
+            cursor.close()
 
-           
+
 class Application(object):
 
     def __init__(self, connection):
@@ -1273,5 +1298,5 @@ class Application(object):
     keywords = property(_get_keywords)
 
     def do_maintenance(self):
-        self.bugs.purge()
+        self.bugs.do_maintenance()
 
