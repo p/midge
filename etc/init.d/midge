@@ -1,0 +1,66 @@
+#!/bin/sh
+# $Id$
+#
+# Init.d script for Midge
+#
+# Initial contribution from Andrew Hamilton
+
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+DAEMON=/usr/local/bin/midged
+NAME=midged
+DESC="Midge"
+MIDGE_USER=midge
+
+
+if ! grep /etc/passwd -e $MIDGE_USER > /dev/null; then
+    useradd midge -d /
+fi
+
+
+start_server() 
+{
+    if /usr/bin/pgrep -f $DAEMON > /dev/null; then
+	echo "Already started $DESC: $NAME."
+	exit 0
+    fi
+    echo -n "Starting $DESC: $NAME"
+    su - $MIDGE_USER -c "$DAEMON" &
+    echo "."
+}
+
+
+stop_server() 
+{
+    echo -n "Stopping $DESC: $NAME"
+    if ! /usr/bin/pkill -f $DAEMON; then
+	echo -n " - not running"
+    fi
+    echo "."
+}
+
+
+test -x $DAEMON || exit 0
+
+set -e
+
+case "$1" in
+    start)
+        start_server
+	;;
+    stop)
+        stop_server
+	;;
+    restart|force-reload)
+	echo "Restarting $DESC: $NAME"
+        stop_server
+        start_server
+	;;
+    *)
+	N=/etc/init.d/$NAME
+	echo "Usage: $N {start|stop|restart|force-reload}" >&2
+	exit 1
+	;;
+esac
+
+exit 0
+

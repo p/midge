@@ -14,6 +14,7 @@ distutils.core.setup(
     url="http://midge.sourceforge.net",
     packages=["midge"],
     data_files=[("/etc", ["etc/midge.conf"]),
+                ("/etc/init.d", ["etc/init.d/midge"]),
                 ("/usr/local/bin", ["bin/midged",
                                     "bin/midge-test",
                                     "bin/midge-config",

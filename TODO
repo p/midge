@@ -1,5 +1,8 @@
 User visible TODOs:
 
+- add a comment ending in a \
+  (also, use of \\ should I think show a \ in the comment)
+
 - change instructions for putting failed fixes back to scheduled to
   new instead
 
@@ -21,6 +24,7 @@ User visible TODOs:
 - fix: timed out session, then post. The post is not passed on after relogin
 - slight alignment problem in numbers and text of list bugs location
 - don't provide list of valid locations when enter invalid URL
+- possible bug with recording time of comment (see once)
 
 Underlying changes:
 
