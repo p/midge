@@ -1,8 +1,6 @@
 User visible TODOs:
 
 - set title bar to Bug <num> (<project>) - Midge"
-- cannot include quotes in search fields
-- cannot search title with spaces (quoting problem?)
 - search by comments
 - check that have not exceeded 100 characters in URL...
    - do redirect to minimise number when bookmarking
@@ -20,8 +18,6 @@ User visible TODOs:
 - find a way of auto expanding text boxes (e.g. comments)
 - limit length of field in new state values
 - description label in add bug is not valign="top" under IE5!
-- bug summary views
-   - #bugs moved into certain states as histogram or by date
 - inform the user when their session has timed-out
 - fix: timed out session, then post. The post is not passed on after relogin
 - slight alignment problem in numbers and text of list bugs location
@@ -42,7 +38,7 @@ Underlying changes:
 - log source address etc in server
 - logs should more clearly contain who is viewing what pages etc.
 - locations.py should probably contain no html (all in templates.py)
-- raise exceptions rather than return None in Application is not logged in
+- raise exceptions rather than return None in Application if not logged in
 
 If inside HEAD:
 <style type="text/css">
@@ -58,17 +54,3 @@ href="mystyle.css" />
 </head>
 
 In which case the external .css file should contain no tags
-
-
-Search:
-
-   - provide instructions to search page
-   - unquote "+"/spaces in GET parameters
-   - unittests for each search type
-   - produce table
-      - always show the bug id first and the title last
-      - add sentence summarising the search.
-      - selectable columns
-      - make columns orderable (default order by increasing bug id)      
-   - refactor into list functionality (?)
-      - don't make "status" a special case in Row class

@@ -27,9 +27,3 @@ class LibTests(unittest.TestCase):
         for base, params, url in url_splits:
             self.assertEqual(midge.lib.join_url(base, params), url)
             self.assertEqual(midge.lib.split_url(url), (base, params))
-
-    def test_make_url(self):
-        """Check make url"""
-        self.assertEqual(
-            midge.lib.make_url("a/b", {"x":"foo", "y":"bar"}),
-            "a/b?y=bar&amp;x=foo")

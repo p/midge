@@ -13,21 +13,9 @@ import midge.config as config
 import midge.logger as logger
 
 
-def quote(x):
-    xs = x.split(" ")
-    return "+".join([urllib.quote(x) for x in xs])
-
-def unquote(x):
-    return urllib.unquote(x.replace("+", " "))
-    
-
-def make_url(path, dictionary=None):
-    return html_entity_escape(join_url(path, dictionary))
-
-
 def join_url(path, dictionary=None):
     if dictionary:
-        attr = "&".join(["%s=%s" % (key, quote(value))
+        attr = "&".join(["%s=%s" % (key, urllib.quote_plus(value))
                          for key, value in dictionary.iteritems()])
         if "?" in path:
             return "%s&%s" % (path, attr)
@@ -43,7 +31,7 @@ def split_url(url):
         path, variable_value_pairs = url.split("?", 1)
         for variable_value in variable_value_pairs.split("&"):
             variable, value = variable_value.split("=")
-            values[variable] = unquote(value)
+            values[variable] = urllib.unquote_plus(value)
     else:
         path = url
     return path, values

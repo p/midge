@@ -472,7 +472,7 @@ class BugTests(BaseTest):
             self.assertEqual(getattr(counts, status), count)
         
     def test_search(self):
-        """Check search for bugs by title"""
+        """Check search for bugs"""
         user = self._login()
 
         bugs = []
@@ -518,6 +518,10 @@ class BugTests(BaseTest):
         self.app.search(self.session_id, search)
         self.assertEqual(len(search.rows), 3)
 
+        search.criteria = {"status_regex": ".*n.*"}
+        self.app.search(self.session_id, search)
+        self.assertEqual(len(search.rows), 2)
+
         search.criteria = {"title": "first title"}
         self.app.search(self.session_id, search)
         self.assertEqual(len(search.rows), 1)
@@ -529,3 +533,7 @@ class BugTests(BaseTest):
         search.criteria = {"title": ".*title"}
         self.app.search(self.session_id, search)
         self.assertEqual(len(search.rows), 2)
+
+        search.criteria = {"title": "'"}
+        self.app.search(self.session_id, search)
+        self.assertEqual(len(search.rows), 0)

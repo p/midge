@@ -12,6 +12,17 @@ import midge.lib as lib
 import midge.logger as logger
 
 
+def quote(x):
+    # TODO make more efficient - use translate?
+    x = x.replace("\b", r"\b")
+    x = x.replace("\f", r"\f")
+    x = x.replace("\r", r"\r")
+    x = x.replace("\n", r"\n")
+    x = x.replace("\t", r"\t")
+    x = x.replace("'", r"\047")
+    return x
+
+
 class MidgeException(Exception):
     pass
 
@@ -54,7 +65,7 @@ class User(object):
         
     def _get_user_id(self, username):
         user_id = None
-        username = lib.quote(username)
+        username = quote(username)
         cursor = self.connection.cursor()
         cursor.execute("""
                 SELECT user_id FROM users
@@ -68,7 +79,7 @@ class User(object):
 
     def authenticate(self, password):
         assert self.user_id
-        password = lib.quote(password)
+        password = quote(password)
         cursor = self.connection.cursor()
         cursor.execute("""
                 SELECT * FROM users
@@ -81,12 +92,12 @@ class User(object):
 
     def get_password(self):
         if self.user_id is not None:
-            return lib.unquote(self._get_attribute("password"))
+            return self._get_attribute("password")
         return None
 
     def set_password(self, password):
         if self.user_id is not None:
-            password = lib.quote(password)
+            password = quote(password)
             return self._set_attribute("password", password)
         return False
 
@@ -102,13 +113,13 @@ class User(object):
                 """ % (attribute, self.user_id))
         ans = cursor.fetchone()
         if ans is not None:
-            value = lib.unquote(ans[0])
+            value = ans[0]
         cursor.close()
         return value
 
     def _set_attribute(self, attribute, value):
         assert self.user_id
-        value = lib.quote(value)
+        value = quote(value)
         cursor = self.connection.cursor()
         cursor.execute("""
                 UPDATE users SET %s='%s'
@@ -178,10 +189,10 @@ class Users(object):
 
     def create_new_user(self, username, name, email, password):
         cursor = self.connection.cursor()
-        username = lib.quote(username)
-        name = lib.quote(name)
-        email = lib.quote(email)
-        password = lib.quote(password)
+        username = quote(username)
+        name = quote(name)
+        email = quote(email)
+        password = quote(password)
         try:
             cursor.execute("""
                 INSERT INTO users (username, password, name, email)
@@ -225,7 +236,7 @@ class Users(object):
         cursor.execute("""
                 SELECT username FROM users ORDER BY username;
                 """)
-        usernames = [lib.unquote(row[0]) for row in cursor.fetchall()]
+        usernames = [row[0] for row in cursor.fetchall()]
         return usernames
 
     usernames = property(_get_usernames)
@@ -274,9 +285,6 @@ class Comments(list):
         if results is not None:
             for result in results:
                 users_name, username, date, text = result
-                text = lib.unquote(text)
-                users_name = lib.unquote(users_name)
-                username = lib.unquote(username)
                 self.append(Comment(self.bug_id,
                                     users_name,
                                     username,
@@ -286,7 +294,7 @@ class Comments(list):
             raise UnableToReadCommentsException, self.bug_id
 
     def add(self, cursor, user, text, timestamp="now"):
-        text = lib.quote(text.strip())
+        text = quote(text.strip())
         cursor.execute("""
                 INSERT INTO comments (bug_id, user_id, date, comment)
                        VALUES (%d, %d, '%s', '%s');
@@ -697,7 +705,7 @@ class Bug(object):
             self.reported_in = reported_in or ""
             self.fixed_in = fixed_in or ""
             self.closed_in = closed_in or ""
-            self.title = lib.unquote(title)
+            self.title = title
         else:
             raise NoSuchBugException, self.bug_id
 
@@ -914,8 +922,8 @@ class Search:
                                  "from": " ".join(clauses)}
 
     def _make_where_clause(self, criteria):
-        if "title" in criteria:
-            criteria["title"] = lib.quote(criteria["title"])
+        for key in criteria:
+            criteria[key] = quote(criteria[key])
         clauses = [self._where_map[c] % v for c,v in criteria.iteritems()]
         if clauses:
             return "WHERE " + " AND ".join(clauses)
@@ -965,11 +973,7 @@ class Row:
         self.variable_names = variable_names
         assert len(args) == len(self.variable_names)
         for variable, value in zip(self.variable_names, args):
-            if variable == "title":
-                # TODO should the unquoting be done here?
-                self.title = lib.unquote(value)
-            else:
-                setattr(self, variable, value or "")
+            setattr(self, variable, value or "")
     
     def get(self):
         """Return a list of all values in correct order."""
@@ -1002,7 +1006,7 @@ class Bugs(object):
         self.closed_ins.purge()
         
     def _add_to_bugs_table(self, cursor, user, title):
-        title = lib.quote(title)
+        title = quote(title)
         cursor.execute("""
                 INSERT INTO bugs (user_id, date, title, status_id)
                        VALUES (%d, 'now', '%s', %d);
@@ -1012,7 +1016,7 @@ class Bugs(object):
         return bug_id
 
     def _import_into_bugs_table(self, cursor, user, timestamp, bug_id, title):
-        title = lib.quote(title)
+        title = quote(title)
         cursor.execute("""
                 INSERT INTO bugs (bug_id, user_id, date, title, status_id)
                        VALUES (%d, %d, '%s', '%s', %d);

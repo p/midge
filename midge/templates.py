@@ -705,8 +705,9 @@ def _table_headings(wfile, path, titles,
                          "descending": "ascending"}[ordered]
         else:
             new_order = "ascending"
-        url = lib.make_url(path, {"sort_by": variable,
-                                  "order": new_order})
+        url = lib.html_entity_escape(
+            lib.join_url(path, {"sort_by": variable,
+                                "order": new_order}))
         wfile.write('''
      <th bgcolor="#cecece">
       <a href="%(url)s"><font size="-2">

@@ -15,6 +15,7 @@ import midge.templates_test as templates_test
 
 import midge.config as config
 
+
 if __name__ == "__main__":
 
     config.read()
