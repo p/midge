@@ -735,53 +735,56 @@ class Bug(object):
 
     status_hint = property(_get_status_hint)
 
-    def change(self, user, cursor=None, **args):
-        own_cursor = False
-        if not cursor:
-            cursor = self.bugs.connection.cursor()
-            own_cursor = True
+    def change(self, user, **args):
+        cursor = self.bugs.connection.cursor()
         try:
-            try:
-                if "status" in args:
-                    status = args["status"]
-                    self.bugs.statuses.set_for_bug(
-                        cursor, self.bug_id, status)
-                if "priority" in args:
-                    priority = args["priority"]
-                    self.bugs.priorities.set_for_bug(
-                        cursor, self.bug_id, priority)
-                if "resolution" in args:
-                    resolution = args["resolution"]
-                    self.bugs.resolutions.set_for_bug(
-                        cursor, self.bug_id, resolution)
-                if "category" in args:
-                    category = args["category"]
-                    self.bugs.categories.set_for_bug(
-                        cursor, self.bug_id, category)
-                if "keyword" in args:
-                    keyword = args["keyword"]
-                    self.bugs.keywords.set_for_bug(
-                        cursor, self.bug_id, keyword)
-                if "reported_in" in args:
-                    reported_in = args["reported_in"]
-                    self.bugs.reported_ins.set_for_bug(
-                        cursor, self.bug_id, reported_in)
-                if "fixed_in" in args:
-                    fixed_in = args["fixed_in"]
-                    self.bugs.fixed_ins.set_for_bug(
-                        cursor, self.bug_id, fixed_in)
-                if "tested_ok_in" in args:
-                    tested_ok_in = args["tested_ok_in"]
-                    self.bugs.tested_ok_ins.set_for_bug(
-                        cursor, self.bug_id, tested_ok_in)
-                if "comment" in args:
-                    comment = args["comment"]
-                    if "timestamp" in args:
-                        timestamp = args["timestamp"]
-                        self.comments.add(cursor, user, comment, timestamp)
-                    else:
-                        self.comments.add(cursor, user, comment)
-                self.bugs.connection.commit()
+            self._change(user, cursor, log_changes=True, **args)
+        finally:
+            cursor.close()
+
+    def _change(self, user, cursor, log_changes=False, **args):
+        try:
+            if "status" in args:
+                status = args["status"]
+                self.bugs.statuses.set_for_bug(
+                    cursor, self.bug_id, status)
+            if "priority" in args:
+                priority = args["priority"]
+                self.bugs.priorities.set_for_bug(
+                    cursor, self.bug_id, priority)
+            if "resolution" in args:
+                resolution = args["resolution"]
+                self.bugs.resolutions.set_for_bug(
+                    cursor, self.bug_id, resolution)
+            if "category" in args:
+                category = args["category"]
+                self.bugs.categories.set_for_bug(
+                    cursor, self.bug_id, category)
+            if "keyword" in args:
+                keyword = args["keyword"]
+                self.bugs.keywords.set_for_bug(
+                    cursor, self.bug_id, keyword)
+            if "reported_in" in args:
+                reported_in = args["reported_in"]
+                self.bugs.reported_ins.set_for_bug(
+                    cursor, self.bug_id, reported_in)
+            if "fixed_in" in args:
+                fixed_in = args["fixed_in"]
+                self.bugs.fixed_ins.set_for_bug(
+                    cursor, self.bug_id, fixed_in)
+            if "tested_ok_in" in args:
+                tested_ok_in = args["tested_ok_in"]
+                self.bugs.tested_ok_ins.set_for_bug(
+                    cursor, self.bug_id, tested_ok_in)
+            if "comment" in args:
+                comment = args["comment"]
+                if "timestamp" in args:
+                    timestamp = args["timestamp"]
+                    self.comments.add(cursor, user, comment, timestamp)
+                else:
+                    self.comments.add(cursor, user, comment)
+            self.bugs.connection.commit()
+            if log_changes:
                 for variable, value in args.iteritems():
                     if variable == "comment":
                         self.bugs.changes.add_change(
@@ -791,12 +794,9 @@ class Bug(object):
                         self.bugs.changes.add_change(
                             self.bug_id, user, "Set %s to %s" % (pretty_variable,
                                                                  value))
-            except:
-                self.bugs.connection.rollback()
-                raise
-        finally:
-            if own_cursor:
-                cursor.close()
+        except:
+            self.bugs.connection.rollback()
+            raise
 
 
 class Search:
@@ -992,17 +992,7 @@ class Search:
    
 class Row:
 
-    """A Search has a list of Rows."""
-
     def __init__(self, variable_names, *args):
-        """Initialise a row forming part of a Search.
-
-        Only to be called from within the Search class.
-
-        Once constructed, the values are accessed as attributes or
-        using the get method.
-
-        """
         self.variable_names = variable_names
         assert len(args) == len(self.variable_names)
         for variable, value in zip(self.variable_names, args):
@@ -1017,23 +1007,71 @@ class Row:
         """Return a list of all values in correct order."""
         return [getattr(self, variable) for variable in self.variable_names]
 
+    def __eq__(self, other):
+        if isinstance(other, Row):
+            return self.get() == other.get()
+        else:
+            return False
+        
     def __len__(self):
         return len(self.variable_names)
 
 
 class Changes(object):
 
+    _order_map = dict(
+        ascending = "ASC",
+        descending = "DESC")
+
     def __init__(self, connection):
         self.connection = connection
-
+        
     def add_change(self, bug_id, user, description):
-        print "Change: %s | %s | %s" % (bug_id, user.user_id, description)
-
+        cursor = self.connection.cursor()
+        try:
+            description = quote(description)
+            timestamp = time.ctime()
+            cursor.execute("""
+            INSERT INTO changes (bug_id, user_id, date, description)
+            VALUES ('%s', '%s', '%s', '%s');
+            """ % (bug_id, user.user_id, timestamp, description))
+            self.connection.commit()
+        finally:
+            cursor.close()
+        
     def do_maintenance(self):
         pass
 
-    def get_changes(self):
-        return []
+    def _make_sort_clause(self, sort_by, order):
+        return 
+
+    def get_recent_changes(self, sort_by, order):
+        
+        class RecentChanges:
+
+            variables = "bug_id", "username", "date", "description"
+            titles = "Bug", "User", "Date", "Description"
+
+            def __init__(self, sort_by, order, rows):
+                self.sort_by = sort_by
+                self.order = order
+                self.rows = rows
+                
+        assert sort_by in RecentChanges.variables
+        assert order in self._order_map
+
+        cursor = self.connection.cursor()
+        try:
+            cursor.execute("""
+            SELECT bug_id, username, date, description
+            FROM changes, users
+            WHERE changes.user_id=users.user_id
+            ORDER BY %s %s;""" % (sort_by, self._order_map[order]))
+            return RecentChanges(sort_by, order,
+                                 [Row(RecentChanges.variables, *change)
+                                  for change in cursor.fetchall()])
+        finally:
+            cursor.close()
     
         
 class Bugs(object):
@@ -1092,8 +1130,8 @@ class Bugs(object):
             changes["comment"] = description
         if changes:
             bug = self.get(bug_id)
-            self.changes.add_change(bug_id, user, "Added a new bug")
-            bug.change(user, cursor, **changes)
+            self.changes.add_change(bug_id, user, "New bug: %s" % title)
+            bug._change(user, cursor, **changes)
         self.connection.commit()
         cursor.close()
         return bug_id
@@ -1113,7 +1151,7 @@ class Bugs(object):
                    "reported_in": reported_in,
                    "fixed_in": fixed_in,
                    "tested_ok_in": tested_ok_in}
-        bug.change(user, cursor, **changes)
+        bug._change(user, cursor, **changes)
         self.connection.commit()
         cursor.close()
 

@@ -28,7 +28,7 @@ class ErrorHandler(xml.sax.handler.ErrorHandler):
                 e.getMessage(), e.getLineNumber()-1, e.getColumnNumber())
 
 
-class TemplatesTest(unittest.TestCase):
+class TemplatesTests(unittest.TestCase):
 
     def get_wfile(self, string=None):
         wfile = cStringIO.StringIO()
@@ -223,11 +223,19 @@ class TemplatesTest(unittest.TestCase):
         """Check table headings"""
         wfile = self.get_wfile()
         templates._table_headings(wfile,
-                                  "a path",
                                   ["title1", "title"],
-                                  ["variable1", "variable"],
-                                  "variable2",
-                                  "ascending")
+                                  ["variable1", "variable"])
+        self.assert_(self.is_well_formed(wfile))
+
+    def test_sortable_table_headings(self):
+        """Check sortable table headings"""
+        wfile = self.get_wfile()
+        templates._sortable_table_headings(wfile,
+                                           "a path",
+                                           ["title1", "title"],
+                                           ["variable1", "variable"],
+                                           "variable2",
+                                           "ascending")
         self.assert_(self.is_well_formed(wfile))
 
     def test_table_rows(self):
@@ -276,3 +284,6 @@ class TemplatesTest(unittest.TestCase):
                               ["a version"])
         self.assert_(self.is_well_formed(wfile))
         
+    def test_changes_table(self):
+        """Check table of changes"""
+        self.assertEqual(True, False)

@@ -809,7 +809,49 @@ class Search(Location):
         bullets.append('<a href="%s">Refine search</a>' % url)
 
         templates.bullets(wfile, *bullets)
-        
+
+
+class History(Location):
+
+    path = "/history"
+
+    def handle_get(self, session_id, values, wfile):
+        user = self.application.get_user(session_id)
+        if user:
+            templates.header(wfile)
+            templates.title(wfile, "History")
+            templates.bullets(
+                wfile,
+                'Recent <a href="/changes">changes</a>.',
+                'Recent <a href="/search">progress</a>.')
+            templates.footer(wfile)
+        else:
+            values["next"] = self.path
+            path = lib.join_url(Login.path, values)
+            self.redirect(path)
+
+class Changes(Location):
+
+    path = "/changes"
+
+    def handle_get(self, session_id, values, wfile):
+        user = self.application.get_user(session_id)
+        if user:
+            templates.header(wfile)
+            templates.title(wfile, "Recent changes to bugs")
+            sort_by = values.get("sort_by", "date")
+            order = values.get("order", "descending")
+            changes = self.application.bugs.changes.get_recent_changes(sort_by, order)
+            if len(changes.rows) > 0:
+                templates.table_of_changes(wfile, self.path, changes)
+            else:
+                templates.paragraph(wfile, "There have been no recent changes.")
+            templates.footer(wfile)
+        else:
+            values["next"] = self.path
+            path = lib.join_url(Login.path, values)
+            self.redirect(path)
+
         
 class Images(Location):
 

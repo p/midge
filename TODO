@@ -1,11 +1,17 @@
 USER VISIBLE
 
+- keep history of last 100 changes (bug, timestamp, who, what)
+
+- keep history of last 100 snapshots of counts of bugs in different
+states (display as differences)
+
 - update the web site to use e.g. perhaps like www.openzaurus.org
 
+- enforce lower case usernames(?)
 - add ability to edit title
 - add ability for the user to change their username
 - add ability to search by users
-- add ability to add attachements
+- add ability to add attachments
 - history of changes (to each bug), and list of recently changed bugs
 - search by history?
 

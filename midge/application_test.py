@@ -158,6 +158,47 @@ class KeywordTests(BaseTest):
         self.assertEqual(len(self.app.keywords), 1)
         self.assertEqual(self.app.keywords[0], "")
 
+
+class ChangesTests(BaseTest):
+
+    def _setup(self):
+        self.app.login(self.session_id,
+                       "test-username",
+                       "test-password")
+        self.app.add_bug(
+            self.session_id,
+            title="a title",
+            version="a version",
+            category="a category",
+            description="a description")
+
+    def test_add_change(self):
+        """Check can add change"""
+        changes = application.Changes(self.connection)
+
+        class MockUser:
+            user_id = 1
+
+        # The underlying tables have constraints which require the
+        # change to refer to a valid bug and user.
+        # Note that adding a bug creates some changes...
+        self._setup()
+        previous_changes = changes.get_recent_changes()
+
+        changes.add_change(1, MockUser(), "a change")
+        new_changes = changes.get_recent_changes()
+
+        for change in previous_changes:
+            try:
+                new_changes.remove(change)
+            except ValueError:
+                pass
+        
+        self.assertEqual(len(new_changes), 1)
+        self.assertEqual(new_changes[0].bug_id, 1)
+        self.assertEqual(new_changes[0].username, "test-username")
+        self.assertEqual(new_changes[0].description, "a change")
+        
         
 class BugTests(BaseTest):
 

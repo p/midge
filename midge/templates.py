@@ -90,7 +90,8 @@ def header(wfile, title=None):
      <td align="left">
       <a href="home">Home</a> &middot;
       <a href="new">Add new bug</a> &middot;
-      <a href="list">List bugs</a> &middot; 
+      <a href="list">List bugs</a> &middot;
+      <a href="history">History</a> &middot;
       <a href="search">Search bugs</a> &middot; 
         Find bug <input size="5" name="bug_id" type="text"/>
       <input type="submit" value="Go"/>
@@ -651,8 +652,8 @@ def list_form(wfile, path, status_counts):
                  "n_closed": status_counts.closed})
 
 
-def _table_headings(wfile, path, titles,
-                    variables, sorted_by, ordered):
+def _sortable_table_headings(wfile, path, titles,
+                             variables, sorted_by, ordered):
     wfile.write('''
     <tr>''')
     for heading, variable in zip(titles, variables):
@@ -685,6 +686,23 @@ def _table_headings(wfile, path, titles,
     wfile.write('''                
     </tr>''')
 
+def _table_headings(wfile, titles, variables):
+    wfile.write('''
+    <tr>''')
+    for heading, variable in zip(titles, variables):
+        if variable == variables[-1]:
+            css_class = "last-column-heading"
+        else:
+            css_class = "column-heading"
+        wfile.write('''
+     <th class="%(css_class)s">
+       %(heading)s''' % {"heading": heading,
+                         "css_class": css_class})
+        wfile.write('''
+     </th>''')
+    wfile.write('''                
+    </tr>''')
+
 def _table_rows(wfile, rows):
     styles = ("odd-row", "even-row")
     row_index = 0
@@ -709,17 +727,34 @@ def _table_rows(wfile, rows):
         wfile.write('''
     </tr>''') 
 
-def table_of_bugs(wfile, path, search):
-    assert len(search.rows) > 0
-    titles = search.titles
-    variables = search.variables
-    sorted_by = search.sort_by
-    ordered = search.order
+def table_of_changes(wfile, path, recent_changes):
+    assert len(recent_changes.rows) > 0
     wfile.write('''
    <table class="list-of-bugs">
     <thead>''')
-    _table_headings(wfile, path, titles,
-                    variables, sorted_by, ordered)
+    _sortable_table_headings(wfile, path,
+                             recent_changes.titles,
+                             recent_changes.variables,
+                             recent_changes.sort_by,
+                             recent_changes.order)
+    wfile.write('''
+    </thead>
+    <tbody>''')
+    _table_rows(wfile, recent_changes.rows)
+    wfile.write('''
+    </tbody>
+   </table>''')
+
+def table_of_bugs(wfile, path, search):
+    assert len(search.rows) > 0
+    wfile.write('''
+   <table class="list-of-bugs">
+    <thead>''')
+    _sortable_table_headings(wfile, path,
+                             search.titles,
+                             search.variables,
+                             search.sort_by,
+                             search.order)
     wfile.write('''
     </thead>
     <tbody>''')

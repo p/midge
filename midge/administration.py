@@ -46,6 +46,7 @@ def run_sql(database, sql_commands):
 
 
 def drop_tables(database):
+    drop_changes(database)
     drop_state(database, "tested_ok_ins")
     drop_state(database, "fixed_ins")
     drop_state(database, "reported_ins")
@@ -81,6 +82,7 @@ def create_tables(database):
     create_state(database, "reported_ins", "versions")
     create_state(database, "fixed_ins", "versions")
     create_state(database, "tested_ok_ins", "versions")
+    create_changes(database)
 
 
 def have_tables(database):
@@ -188,6 +190,24 @@ def create_comments(database):
 def drop_comments(database):
     return run_sql(database, """
         DROP TABLE comments;
+        """)
+
+
+def create_changes(database):
+    return run_sql(database, """
+        CREATE TABLE changes (bug_id INTEGER
+                                     NOT NULL
+                                     REFERENCES bugs (bug_id),
+                              user_id INTEGER
+                                      NOT NULL
+                                      REFERENCES users (user_id),
+                              date TIMESTAMP,
+                              description TEXT);
+                              """)
+
+def drop_changes(database):
+    return run_sql(database, """
+        DROP TABLE changes;
         """)
 
 
