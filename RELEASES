@@ -31,7 +31,7 @@ release_0-3 (22 Sept 2004)
 
   * Don't provide list of valid locations when enter invalid URL.
 
-  * Order the comment mappings so that substitutions don't interfer
+  * Order the comment mappings so that substitutions don't interfere
     with each other.
 
   * Failed fixes now instructed to be put back to new rather than
