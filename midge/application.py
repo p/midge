@@ -1133,7 +1133,7 @@ class Bugs(object):
                 (priorities.bug_id = bugs.bug_id)
                ) LEFT OUTER JOIN priority_values ON
                 (priority_values.id = priorities.id)
-               ) LEFT OUTER JOIN resolution ON
+               ) LEFT OUTER JOIN resolutions ON
                 (resolutions.bug_id = bugs.bug_id)
                ) LEFT OUTER JOIN resolution_values ON
                 (resolution_values.id = resolutions.id)
