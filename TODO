@@ -12,6 +12,7 @@ User visible TODOs:
 
 Underlying changes:
 
+- make sure matched substitutions never apply to each other
 - automatically clear unused user-set categories
 - write io tests
 - rename to midge/src and htdocs
@@ -34,7 +35,5 @@ Underlying changes:
 - group template.py functions into classes
 - consolidate status strings into Statuses object in application.py
 - grep *.py TODO
-- log source address etc in server
-- logs should more clearly contain who is viewing what pages etc.
 - locations.py should probably contain no html (all in templates.py)
 - raise exceptions rather than return None in Application if not logged in

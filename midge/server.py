@@ -175,7 +175,10 @@ class RequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
             session_id = self._sessions.get_valid_session_id(
                 proposed_session_id)
             path, values = lib.split_url(self.path)
-            logger.debug("http get %s for session: %s" % (path, session_id))
+            host = self.client_address[0]
+            logger.debug("http get %s from host %s (session %s)" % (path,
+                                                                    host,
+                                                                    session_id))
             location = self._locations.get(path)
             if location:
                 try:

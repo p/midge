@@ -84,6 +84,16 @@ The easiest way of finding out the format is to start midge, enter a
 few bugs, and run midge-export...
 
 
+Logging
+=======
+
+Logging information is sent to the syslog daemon (port 514) on
+localhost under the LOG_USER facility. Note that you will need to have
+UDP logging switched on, typically by passing "-r" to syslogd.
+
+More verbose logging may be switched on by setting "debugging: yes" in
+the Server section of /etc/midge.conf.
+
 States
 ======
 

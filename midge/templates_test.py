@@ -57,7 +57,7 @@ class TemplatesTest(unittest.TestCase):
         """Check format comment"""
         self.assertEqual("foobar", templates.format_comment("\nfoobar"))
         self.assertEqual("foobar", templates.format_comment("foobar"))
-        self.assertEqual("foo<br/>bar", templates.format_comment("foo\nbar"))
+        self.assertEqual("foo\n<br/>\nbar", templates.format_comment("foo\nbar"))
         self.assertEqual("&nbsp;foobar", templates.format_comment(" foobar"))
         self.assertEqual("&nbsp;&nbsp;foo", templates.format_comment("  foo"))
 
