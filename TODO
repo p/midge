@@ -4,7 +4,6 @@ User visible TODOs:
 - fix alignment of "order triangle" under IE5
 - fix email password
 - description alignment is wrong in add new bug form
-- list bugs button in wrong place under IE (on list bugs screen)
 - make it possible to change the title of a bug (?)
 - make it possible to change ones username (?)
 - make keywords work

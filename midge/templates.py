@@ -674,8 +674,7 @@ def list_form(wfile, path, status_counts):
        </td>
        <td><b>cancelled</b> bug%(cancelled_plural)s</td>
       </tr>
-      
-      <tr align="right" bgcolor="#FFFFFF"     
+      <tr align="right" valign="bottom" bgcolor="#FFFFFF">
        <td colspan="3" align="right">
         <input type="submit" value="List bugs">
        </td>
