@@ -4,6 +4,7 @@
 """The main bugtracking application with concepts of users, bugs, etc."""
 
 import re
+import textwrap
 
 import midge.connection as connection
 import midge.lib as lib
@@ -221,7 +222,7 @@ class Users(object):
     def _get_usernames(self):
         cursor = self.connection.cursor()
         cursor.execute("""
-                SELECT username FROM users;
+                SELECT username FROM users ORDER BY username;
                 """)
         usernames = [lib.unquote(row[0]) for row in cursor.fetchall()]
         return usernames
@@ -251,6 +252,8 @@ class Comment:
 class Comments(list):
 
     """A list of comments for a particular bug, cached from the database."""
+
+    WIDTH = 80
 
     def __init__(self, connection, bug_id):
         list.__init__(self)
@@ -282,9 +285,17 @@ class Comments(list):
                                     text))
         else:
             raise UnableToReadCommentsException, self.bug_id
-        
+
+    def format(self, text):
+        lines = []
+        for line in text.strip().split("\n"):
+            if not line.startswith(" "):
+                line = textwrap.fill(line, self.WIDTH)
+            lines.append(line)
+        return "\n".join(lines)
+    
     def add(self, cursor, user, text, timestamp="now"):
-        text = lib.quote(text.strip())
+        text = lib.quote(self.format(text))
         cursor.execute("""
                 INSERT INTO comments (bug_id, user_id, date, comment)
                        VALUES (%d, %d, '%s', '%s');
@@ -524,14 +535,14 @@ class Priorities(StateTable):
 
 class Configurations(StateTable):
 
-    valid_value = re.compile("^[a-zA-Z0-9. ]+$")
+    valid_value = re.compile("^[a-zA-Z0-9. \-_\/]+$")
     bug_table = "configurations"
     value_table = "configuration_values"
 
 
 class Categories(StateTable):
 
-    valid_value = re.compile("^[a-zA-Z0-9. ]+$")
+    valid_value = re.compile("^[a-zA-Z0-9. \-_\/]+$")
     bug_table = "categories"
     value_table = "category_values"
 
@@ -839,12 +850,13 @@ class Bugs(object):
         cursor.close()
         return bug_id
 
-    def import_bug(self, user, timestamp, bug_id, title, status, category,
-                   configuration, reported_in, fixed_in, closed_in):
+    def import_bug(self, bug_id, user, timestamp, title, status, priority,
+                   category, configuration, reported_in, fixed_in, closed_in):
         cursor = self.connection.cursor()
         self._import_into_bugs_table(cursor, user, timestamp, bug_id, title)
         bug = self.get(bug_id)
         changes = {"status": status,
+                   "priority": priority,
                    "category": category,
                    "configuration": configuration,
                    "reported_in": reported_in,

@@ -23,13 +23,14 @@ class Importer:
         self.users.create_new_user(username, name, email, password)
         self.passwords[username] = password
 
-    def import_bug(self, username, timestamp, bug_id, title, status, category,
-                   configuration, reported_in, fixed_in, closed_in):
+    def import_bug(self, bug_id, username, timestamp, title, status, priority,
+                   category, configuration, reported_in, fixed_in, closed_in):
         user = self.get_user(username)
-        self.bugs.import_bug(user, timestamp, bug_id, title, status, category,
-                         configuration, reported_in, fixed_in, closed_in)
+        self.bugs.import_bug(bug_id, user, timestamp, title, status, priority,
+                             category, configuration, reported_in, fixed_in,
+                             closed_in)
 
-    def import_comment(self, username, timestamp, bug_id, text):
+    def import_comment(self, bug_id, username, timestamp, text):
         bug = self.bugs.get(bug_id)
         user = self.get_user(username)
         bug.change(user, comment=text, timestamp=timestamp)

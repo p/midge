@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# Script for resetting the database, extracting the bugs from
+# phpbugtracker on trevor, and importing them into migde.
+
+MIDGE_PATH=$(pwd)/../bin/
+
+sudo bash <<EOF
+  cd ${MIDGE_PATH}
+  source setup-paths.sh
+  midge-admin teardown
+  midge-admin setup
+EOF
+
+scp phpbt_extract.py trevor:/home/tcorbettclark/
+ssh trevor python phpbt_extract.py
+scp trevor:/home/tcorbettclark/{users.txt,bugs.txt,comments.txt} .
+
+python importer.py

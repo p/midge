@@ -55,12 +55,14 @@ class ImporterTests(BaseTest):
         user.login("username", "password")
         bug = self._add_bug(user)
         self.assertEqual(len(bug.comments), 1)
-        comments = [("username", "Sun Apr 12 09:31:06 BST 2004",
-                     str(bug.bug_id), "another comment"),
-                    ("username", "Mon Apr 13 12:23:00 GMT 2000",
-                     str(bug.bug_id), "a second comment")]
-        for username, timestamp, bug_id, text in comments:
-            self.importer.import_comment(username, timestamp, bug_id, text)
+        comments = [(str(bug.bug_id),
+                     "username", "Sun Apr 12 09:31:06 BST 2004",
+                     "another comment"),
+                    (str(bug.bug_id),
+                     "username", "Mon Apr 13 12:23:00 GMT 2000",
+                     "a second comment")]
+        for bug_id, username, timestamp, text in comments:
+            self.importer.import_comment(bug_id, username, timestamp, text)
         self.assertEqual(len(bug.comments), 3)
 
         comment1 = bug.comments[1]
@@ -74,11 +76,12 @@ class ImporterTests(BaseTest):
     def test_import_bugs(self):
         """Check import bugs"""
         self.importer.import_user("username", "name", "email", "password")
-        self.importer.import_bug("username",
+        self.importer.import_bug("23",
+                                 "username",
                                  "Mon Apr 13 12:23:00 GMT 2000",
-                                 "23",
                                  "a title",
                                  "reviewed",
+                                 "2",
                                  "a category",
                                  "a configuration",
                                  "a reported_in",
@@ -89,6 +92,7 @@ class ImporterTests(BaseTest):
         bug = bugs.get(23)
         self.assertEqual(bug.title, "a title")
         self.assertEqual(bug.status, "reviewed")
+        self.assertEqual(bug.priority, "2")
         self.assertEqual(bug.category, "a category")
         self.assertEqual(bug.configuration, "a configuration")
         self.assertEqual(bug.reported_in, "a reported_in")

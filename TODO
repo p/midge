@@ -1,9 +1,9 @@
 User visible TODOs:
 
+- add hyperlinks to other bugs listed in posted text
 - fix alignment of "order triangle" under IE5
 - fix email password
 - description alignment is wrong in add new bug form
-- don't use different font for Midge title
 - list bugs button in wrong place under IE (on list bugs screen)
 - make it possible to change the title of a bug (?)
 - make it possible to change ones username (?)
@@ -12,12 +12,10 @@ User visible TODOs:
 - find a way of auto expanding text boxes (e.g. comments)
 - limit length of field in new state values
 - description label in add bug is not valign="top" under IE5!
-- import BugTracker bugs
 - bug summary views
    - #bugs moved into certain states as histogram or by date
 - inform the user when their session has timed-out
 - fix: timed out session, then post. The post is not passed on after relogin
-- add link to http://midge.sourceforge.net, and adjust email address.
 - in add bug, font in fields is different from font in description
 
 Underlying changes:

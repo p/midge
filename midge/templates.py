@@ -8,10 +8,14 @@ import midge.lib as lib
 
 
 def get_version():
+    version = None
     name = "$Name$"
     if ":" in name:
-        return name.split(":")[1][:-1].strip()
-    return "&lt;unknown&gt;"
+        version = name.split(":")[1][:-1].strip()
+    if version:
+        return version
+    else:
+        return "&lt;unknown&gt;"
 
 
 def header(wfile, user=None):
@@ -564,7 +568,7 @@ def edit_bug_form(wfile, path, bug, statuses, priorities,
    </tr> 
    <tr bgcolor="#DDDDDD">
     <td colspan="3">
-     <textarea name="comment" cols="80" rows="8" wrap="hard"></textarea>
+     <textarea name="comment" cols="80" rows="8"></textarea>
     </td>
    </tr>
   
@@ -596,7 +600,7 @@ def edit_bug_form(wfile, path, bug, statuses, priorities,
    </td>
    </tr>
   </table>
-  <blockquote><pre>%(text)s</pre></blockquote>
+  <pre>%(text)s</pre>
   ''' % {"name": comment.users_name,
          "username": comment.username,
          "date":lib.format_date(comment.date),
@@ -710,7 +714,7 @@ def _table_headings(wfile, path, titles,
                                   "order": new_order})
         wfile.write('''
      <th bgcolor="#cecece">
-      <a href="%(url)s"><font size="-1" face="arial, sans-serif">
+      <a href="%(url)s"><font size="-2" face="arial, sans-serif">
        %(heading)s
       </font></a>''' % {"heading": heading, "url": url})
         if variable == sorted_by:
@@ -733,7 +737,7 @@ def _table_rows(wfile, rows):
             if variable == "bug_id":
                 wfile.write('''
      <td bgcolor="%(colour)s">
-      <font size="-1" face="arial, sans-serif">
+      <font size="-2" face="arial, sans-serif">
        <a href="/view?bug_id=%(bug_id)s">%(bug_id)s</a>
       </font>
      </td>
@@ -742,7 +746,7 @@ def _table_rows(wfile, rows):
             else:
                 wfile.write('''
      <td bgcolor="%(colour)s">
-      <font size="-1" face="arial, sans-serif">
+      <font size="-2" face="arial, sans-serif">
        %(value)s
       </font>
      </td>
