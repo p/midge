@@ -2,7 +2,8 @@ release_0-3 (22 Sept 2004)
 
   * Added /etc/init.d start/stop script.
 
-  * No longer tracebacks if enter very large integer into find bug field.
+  * No longer tracebacks if enter very large integer into find bug
+    field.
 
   * Display number of bugs in searches and lists.
 
@@ -10,15 +11,17 @@ release_0-3 (22 Sept 2004)
 
   * Don't provide list of valid locations when enter invalid URL.
 
-  * Order the comment mappings so that substitutions don't interfer with others.
+  * Order the comment mappings so that substitutions don't interfer
+    with each other.
 
-  * Failed fixes now instructed to be put back to new rather than scheduled.
+  * Failed fixes now instructed to be put back to new rather than
+    scheduled.
 
   * Comments entry box now effectively ignores escaped (\) characters.
 
-  * No longer tracebacks if entry \[\] in search.
+  * No longer tracebacks if enter \[\] in search.
 
-  * Fixed bug with recording times of new bugs.
+  * Fixed bug with recording times of new bugs and comments.
 
 
 release_0-2 (05 Sept 2004)
@@ -31,19 +34,22 @@ release_0-2 (05 Sept 2004)
 
   * Simplified readonly bug summary when viewing/editing a bug.
 
-  * (Crudely) detect and protect against malformed searches. 
+  * (Crudely) detect and protect against malformed searches.
 
   * Always maximise width of title and comment text boxes.
 
   * Log client address (when debugging switched on).
 
-  * Always default initial position of cursor to the most useful field.
+  * Always default initial position of cursor to the most useful
+    field.
 
   * Added style sheet and generalised images directory.
 
-  * Used thead and tbody to provide better printing of tables on multiple pages.
+  * Used thead and tbody to provide better printing of tables on
+    multiple pages.
 
-  * Simplified main display by reducing clutter, duplicate links, user login etc.
+  * Simplified main display by reducing clutter, duplicate links, user
+    login etc.
 
   * Added help link, which can be used to point to a Wiki FAQ.
 
