@@ -3,10 +3,15 @@
 
 """Functions for generating html."""
 
-__version__ = "$Name$"
-
 import midge.config as config
 import midge.lib as lib
+
+
+def get_version():
+    name = "$Name$"
+    if ":" in name:
+        return name.split(":")[1][:-1].strip()
+    return "&lt;unknown&gt;"
 
 
 def header(wfile, user=None):
@@ -130,7 +135,9 @@ def footer(wfile, user=None):
    <tr>
     <td valign="top">
       <font size="-2">
-      <a href="http://midge.sourceforge.net">http://midge.sourceforge.net</a>
+       <em>Version %(version)s.</em>
+       See <a href="http://midge.sourceforge.net">
+        http://midge.sourceforge.net</a> for updates.
       </font>
      </td>
      <td valign="top" align="right">
@@ -142,7 +149,7 @@ def footer(wfile, user=None):
    </table>
   </form>
  </body>
-</html>''' % {"status": status})
+</html>''' % {"status": status, "version": get_version()})
 
 
 def login_form(wfile, path, usernames):
