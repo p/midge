@@ -381,7 +381,7 @@ class Statuses(object):
             WHERE bug_id = %d;
             """ % (status, bug_id))
         except connection.IntegrityError:
-            raise InvalidValueException
+            raise InvalidValueException, (bug_id, status)
 
 
 class StateTable(object):
