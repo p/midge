@@ -7,6 +7,33 @@ import midge.config as config
 import midge.lib as lib
 
 
+def format_comment(text):
+    """Return text suitable for displaying as comment.
+
+    This means:
+      stripping leading newlines (but not spaces)
+      stripping tailing whitespace
+      escaping any html-like tags,
+      replacing newlines with <br/>, and
+      replacing leading spaces with hardspaces (&nbsp;).
+
+    """
+    text = text.lstrip("\n")
+    text = text.rstrip()
+    text = lib.html_entity_escape(text)
+    rows = []
+    for row in text.split("\n"):
+        n_leading_spaces = 0
+        for c in row:
+            if c == " ":
+                n_leading_spaces += 1
+            else:
+                break
+        rows.append(row.replace(" ", "&nbsp;", n_leading_spaces))
+    text = "<br/>".join(rows)
+    return text
+
+
 def get_version():
     version = None
     name = "$Name$"
@@ -355,7 +382,7 @@ def new_bug_form(wfile, path, versions, configurations, categories):
      <tr bgcolor="#DDDDDD">
       <td valign="baseline"><small><b>Description</b></small></td>
       <td colspan="3">
-       <textarea name="description" cols="70" rows="8" wrap="hard"></textarea>
+       <textarea name="description" cols="70" rows="8"></textarea>
       </td>
      </tr>
      <tr><td><table></table></td></tr>
@@ -590,12 +617,13 @@ def edit_bug_form(wfile, path, bug, statuses, priorities,
    </td>
    </tr>
   </table>
-  <pre>%(text)s</pre>
+  <tt>%(text)s</tt>
+  <br/><br/>
   ''' % {"name": comment.users_name,
          "username": comment.username,
          "date":lib.format_date(comment.date),
          "time":lib.format_time(comment.date),
-         "text":lib.html_entity_escape(comment.text)})
+         "text":format_comment(comment.text)})
   
 
 def list_form(wfile, path, status_counts):
@@ -725,7 +753,7 @@ def _table_rows(wfile, rows):
             if variable == "bug_id":
                 wfile.write('''
      <td bgcolor="%(colour)s">
-      <font size="-2">
+      <font size="-1">
        <a href="/view?bug_id=%(bug_id)s">%(bug_id)s</a>
       </font>
      </td>
@@ -734,7 +762,7 @@ def _table_rows(wfile, rows):
             else:
                 wfile.write('''
      <td bgcolor="%(colour)s">
-      <font size="-2">
+      <font size="-1">
        %(value)s
       </font>
      </td>

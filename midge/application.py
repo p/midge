@@ -253,8 +253,6 @@ class Comments(list):
 
     """A list of comments for a particular bug, cached from the database."""
 
-    WIDTH = 80
-
     def __init__(self, connection, bug_id):
         list.__init__(self)
         self.connection = connection
@@ -286,16 +284,8 @@ class Comments(list):
         else:
             raise UnableToReadCommentsException, self.bug_id
 
-    def format(self, text):
-        lines = []
-        for line in text.strip().split("\n"):
-            if not line.startswith(" "):
-                line = textwrap.fill(line, self.WIDTH)
-            lines.append(line)
-        return "\n".join(lines)
-    
     def add(self, cursor, user, text, timestamp="now"):
-        text = lib.quote(self.format(text))
+        text = lib.quote(text.strip())
         cursor.execute("""
                 INSERT INTO comments (bug_id, user_id, date, comment)
                        VALUES (%d, %d, '%s', '%s');

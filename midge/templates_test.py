@@ -53,6 +53,14 @@ class TemplatesTest(unittest.TestCase):
                 print "%4d %s" % (line_number, line)
             return False
 
+    def test_format_comment(self):
+        """Check format comment"""
+        self.assertEqual("foobar", templates.format_comment("\nfoobar"))
+        self.assertEqual("foobar", templates.format_comment("foobar"))
+        self.assertEqual("foo<br/>bar", templates.format_comment("foo\nbar"))
+        self.assertEqual("&nbsp;foobar", templates.format_comment(" foobar"))
+        self.assertEqual("&nbsp;&nbsp;foo", templates.format_comment("  foo"))
+
     def test_hrule(self):
         """Check hrule"""
         wfile = self.get_wfile()
