@@ -57,7 +57,7 @@ class AdministrationTests(unittest.TestCase):
         cursor.execute("SELECT * FROM fixed_ins;")
         self.assertEqual(len(cursor.fetchall()), 0)
        
-        cursor.execute("SELECT * FROM closed_ins;")
+        cursor.execute("SELECT * FROM tested_ok_ins;")
         self.assertEqual(len(cursor.fetchall()), 0)
        
         cursor.close()

@@ -25,11 +25,11 @@ class Importer:
 
     def import_bug(self, bug_id, username, timestamp, title, status, priority,
                    category, configuration, keyword,
-                   reported_in, fixed_in, closed_in):
+                   reported_in, fixed_in, tested_ok_in):
         user = self.get_user(username)
         self.bugs.import_bug(bug_id, user, timestamp, title, status, priority,
                              category, configuration, keyword,
-                             reported_in, fixed_in, closed_in)
+                             reported_in, fixed_in, tested_ok_in)
 
     def import_comment(self, bug_id, username, timestamp, text):
         bug = self.bugs.get(bug_id)

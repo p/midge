@@ -93,8 +93,11 @@ def header(wfile, title=None):
   </form>
 ''' % {"title": title, "project":config.Project.name})
 
+def vspace(wfile):
+    wfile.write("<br/>")
+
 def hrule(wfile):
-    wfile.write("<hr />")
+    wfile.write("<hr/>")
 
 def title(wfile, title, title2=None):
     if title2:
@@ -319,7 +322,7 @@ def new_bug_form(wfile, path, versions, configurations, categories):
      <tr bgcolor="#DDDDDD">
       <td valign="baseline"><small><b>Title</b></small></td>
       <td colspan="3">
-       <input type="text" size="65" maxlength="65" name="title"/>
+       <input type="text" size="80" maxlength="80" name="title"/>
       </td>
      </tr>
      <tr bgcolor="#DDDDDD">
@@ -386,7 +389,7 @@ def new_bug_form(wfile, path, versions, configurations, categories):
      <tr><td><table></table></td></tr>
      <tr>
       <td colspan="3" align="right">
-       <input type="submit" name="submit" value="Submit"/>
+       <input type="submit" value="Submit"/>
       </td>
      </tr>
     </table>
@@ -432,6 +435,49 @@ def show_comments(wfile, bug):
          "text":format_comment(comment.text)})
 
 
+def bug_status_summary(wfile, bug):
+    wfile.write('''
+  <center>
+  <table width="90%%" cellpadding="3" cellspacing="5" border="0">
+  
+   <tr>
+    <td colspan="3">Bug ID: <b>%(bug_id)s</b></td>
+   </tr>
+  
+   <tr>
+    <td colspan="3">Title: <em>%(title)s</em></td>
+   </tr>
+  
+   <tr>
+    <td>Status: <b>%(status)s</b></td>
+    <td colspan="2">Priority: <b>%(priority)s</b></td>
+   </tr>
+  
+   <tr>
+    <td>Category: <b>%(category)s</b></td>
+    <td>Configuration: <b>%(configuration)s</b></td>
+    <td>Keyword: <b>%(keyword)s</b></td>
+   </tr>
+  
+   <tr>
+    <td>Reported in: <b>%(reported_in)s</b></td>
+    <td>Fixed in: <b>%(fixed_in)s</b></td>
+    <td>Tested ok in: <b>%(tested_ok_in)s</b></td>
+   </tr>
+  
+  </table></center>''' %
+                {"bug_id": bug.bug_id,
+                 "title": bug.title,
+                 "status": bug.status,
+                 "priority": bug.priority,
+                 "category": bug.category,
+                 "configuration": bug.configuration,
+                 "keyword": bug.keyword,
+                 "reported_in": bug.reported_in,
+                 "fixed_in": bug.fixed_in,
+                 "tested_ok_in": bug.tested_ok_in})
+  
+    
 def edit_bug_form(wfile, path, bug, statuses, priorities,
                   configurations, categories, keywords, versions):
     wfile.write('''
@@ -593,10 +639,10 @@ def edit_bug_form(wfile, path, bug, statuses, priorities,
    <tr bgcolor="#DDDDDD">
     <td><small><b>&nbsp;&nbsp;Tested ok in</b></small></td>
     <td>
-     <select name="closed_in" size="1">
+     <select name="tested_ok_in" size="1">
      ''')
     for version in versions:
-        if version == bug.closed_in:
+        if version == bug.tested_ok_in:
             wfile.write('''
          <option value="%s" selected="selected">%s</option>''' % (version, version))
         else:
@@ -606,7 +652,7 @@ def edit_bug_form(wfile, path, bug, statuses, priorities,
      </select>
     </td>
     <td align="right"><small>(or use a new version</small>
-        <input type="text" name="new_closed_in"></input><small>)</small>
+        <input type="text" name="new_tested_ok_in"></input><small>)</small>
     </td>
    </tr>
   
@@ -626,17 +672,12 @@ def edit_bug_form(wfile, path, bug, statuses, priorities,
   
    <tr>
     <td colspan="3" align="right">
-     <!--<input type="reset" value="Reset">-->
-     <input type="submit" name="submit" value="Submit"/>
+     <input type="submit" value="Submit"/>
     </td>
    </tr>
   </table>
   </form>
-  </blockquote></center>
-  
-  <hr> </hr>
-''')
-
+  </blockquote></center>''')
   
 
 def list_form(wfile, path, status_counts):
@@ -992,7 +1033,7 @@ def search_form(wfile, path, statuses, priorities,
    <tr bgcolor="#DDDDDD">
     <td><small><b>&nbsp;&nbsp;Tested ok in</b></small></td>
     <td>
-     <select name="closed_in" size="1">
+     <select name="tested_ok_in" size="1">
      ''')
     for version in versions:
         wfile.write('''
@@ -1002,13 +1043,13 @@ def search_form(wfile, path, statuses, priorities,
     </td>
     <td>
      <small>&nbsp;(regex</small>
-     <input type="text" name="closed_in_regex"/>
+     <input type="text" name="tested_ok_in_regex"/>
      <small>)</small>
     </td>
     <td bgcolor="#FFFFFF">&nbsp;</td>
     <td>
      <small><label>
-      <input type="checkbox" name="closed_in_column" value="on">Show column
+      <input type="checkbox" name="tested_ok_in_column" value="on">Show column
       </input>
      </label></small>
     </td>
@@ -1019,7 +1060,7 @@ def search_form(wfile, path, statuses, priorities,
   
    <tr>
     <td colspan="5" align="right">
-     <input type="submit" name="submit" value="Submit"/>
+     <input type="submit" value="Submit"/>
     </td>
    </tr>
   </table>

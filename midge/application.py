@@ -570,9 +570,9 @@ class FixedIns(Versions):
     bug_table = "fixed_ins"
 
 
-class ClosedIns(Versions):
+class TestedOkIns(Versions):
 
-    bug_table = "closed_ins"
+    bug_table = "tested_ok_ins"
 
 
 class Summary(object):
@@ -626,7 +626,7 @@ class Bug(object):
         self.keyword = None
         self.reported_in = None
         self.fixed_in = None
-        self.closed_in = None
+        self.tested_ok_in = None
         self._read_bug_from_database()
         
     def _read_bug_from_database(self):
@@ -677,10 +677,10 @@ class Bug(object):
                          ) LEFT OUTER JOIN versions AS fixed_versions ON
                            (fixed_versions.id = fixed_ins.id)
 
-                         ) LEFT OUTER JOIN closed_ins ON
-                           (closed_ins.bug_id = %(bug_id)s)
+                         ) LEFT OUTER JOIN tested_ok_ins ON
+                           (tested_ok_ins.bug_id = %(bug_id)s)
                          ) LEFT OUTER JOIN versions AS closed_versions ON
-                           (closed_versions.id = closed_ins.id))
+                           (closed_versions.id = tested_ok_ins.id))
                 WHERE bugs.bug_id = %(bug_id)s;
                 """ % {"bug_id": self.bug_id})
         result = cursor.fetchone()
@@ -696,7 +696,7 @@ class Bug(object):
              keyword,
              reported_in,
              fixed_in,
-             closed_in) = result
+             tested_ok_in) = result
             # Convert None's into ""s
             self.priority = priority or ""
             self.configuration = configuration or ""
@@ -704,7 +704,7 @@ class Bug(object):
             self.keyword = keyword or ""
             self.reported_in = reported_in or ""
             self.fixed_in = fixed_in or ""
-            self.closed_in = closed_in or ""
+            self.tested_ok_in = tested_ok_in or ""
             self.title = title
         else:
             raise NoSuchBugException, self.bug_id
@@ -754,10 +754,10 @@ class Bug(object):
                     fixed_in = args.pop("fixed_in")
                     self.bugs.fixed_ins.set_for_bug(
                         cursor, self.bug_id, fixed_in)
-                if "closed_in" in args:
-                    closed_in = args.pop("closed_in")
-                    self.bugs.closed_ins.set_for_bug(
-                        cursor, self.bug_id, closed_in)
+                if "tested_ok_in" in args:
+                    tested_ok_in = args.pop("tested_ok_in")
+                    self.bugs.tested_ok_ins.set_for_bug(
+                        cursor, self.bug_id, tested_ok_in)
                 if "comment" in args:
                     comment = args.pop("comment")
                     if "timestamp" in args:
@@ -786,7 +786,7 @@ class Search:
             ("keyword", "Keyword"),
             ("reported_in", "Reported in"),
             ("fixed_in", "Fixed in"),
-            ("closed_in", "Closed in"),
+            ("tested_ok_in", "Tested ok in"),
             ("title", "Title"))
 
     _order_map = dict(
@@ -802,7 +802,7 @@ class Search:
         keyword = "keyword_values.name",
         reported_in = "reported_versions.name",
         fixed_in = "fixed_versions.name",
-        closed_in = "closed_versions.name",
+        tested_ok_in = "closed_versions.name",
         title = "title")
 
     _from_map = dict(
@@ -836,11 +836,15 @@ class Search:
                 (fixed_ins.bug_id = bugs.bug_id)
                ) LEFT OUTER JOIN versions AS fixed_versions ON
                 (fixed_versions.id = fixed_ins.id)""",
-        closed_in = """
-               ) LEFT OUTER JOIN closed_ins ON
-                (closed_ins.bug_id = bugs.bug_id)
+        tested_ok_in = """
+               ) LEFT OUTER JOIN tested_ok_ins ON
+                (tested_ok_ins.bug_id = bugs.bug_id)
                ) LEFT OUTER JOIN versions AS closed_versions ON
-                (closed_versions.id = closed_ins.id)""")
+                (closed_versions.id = tested_ok_ins.id)""",
+        comments = """
+               ) LEFT OUTER JOIN comments ON
+                (comments.bug_id = bugs.bug_id)
+               )""")
 
     _where_map = {
         "status": "statuses.name = '%s'",
@@ -857,9 +861,10 @@ class Search:
         "reported_in_regex": "reported_versions.name ~* '%s'",
         "fixed_in": "fixed_versions.name = '%s'",
         "fixed_in_regex": "fixed_versions.name ~* '%s'",
-        "closed_in": "closed_versions.name = '%s'",
-        "closed_in_regex": "closed_versions.name ~* '%s'",
+        "tested_ok_in": "closed_versions.name = '%s'",
+        "tested_ok_in_regex": "closed_versions.name ~* '%s'",
         "title": "title ~* '%s'",
+        "comments": "comments.comment ~* '%s'"
         }
 
     def __init__(self, variables, sort_by, order, **criteria):
@@ -906,7 +911,8 @@ class Search:
         return tuple(variables), tuple(titles)
 
     def _make_select_clause(self, variables):
-        return "SELECT " + ", ".join([self._select_map[v] for v in variables])
+        return "SELECT DISTINCT " + \
+               ", ".join([self._select_map[v] for v in variables])
 
     def _make_from_clause(self, variables, criteria):
         v_set = sets.Set(variables)
@@ -992,7 +998,7 @@ class Bugs(object):
         self.keywords = Keywords(connection)
         self.reported_ins = ReportedIns(connection)
         self.fixed_ins = FixedIns(connection)
-        self.closed_ins = ClosedIns(connection)
+        self.tested_ok_ins = TestedOkIns(connection)
         self.summary = Summary(connection)
 
     def purge(self):
@@ -1000,7 +1006,7 @@ class Bugs(object):
         self.categories.purge()
         self.reported_ins.purge()
         self.fixed_ins.purge()
-        self.closed_ins.purge()
+        self.tested_ok_ins.purge()
         
     def _add_to_bugs_table(self, cursor, user, title):
         title = quote(title)
@@ -1047,7 +1053,7 @@ class Bugs(object):
 
     def import_bug(self, bug_id, user, timestamp, title, status, priority,
                    category, configuration, keyword,
-                   reported_in, fixed_in, closed_in):
+                   reported_in, fixed_in, tested_ok_in):
         cursor = self.connection.cursor()
         self._import_into_bugs_table(cursor, user, timestamp, bug_id, title)
         bug = self.get(bug_id)
@@ -1058,7 +1064,7 @@ class Bugs(object):
                    "keyword": keyword,
                    "reported_in": reported_in,
                    "fixed_in": fixed_in,
-                   "closed_in": closed_in}
+                   "tested_ok_in": tested_ok_in}
         bug.change(user, cursor, **changes)
         self.connection.commit()
         cursor.close()

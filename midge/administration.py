@@ -46,7 +46,7 @@ def run_sql(database, sql_commands):
 
 
 def drop_tables(database):
-    drop_state(database, "closed_ins")
+    drop_state(database, "tested_ok_ins")
     drop_state(database, "fixed_ins")
     drop_state(database, "reported_ins")
     drop_state_value(database, "versions")
@@ -80,7 +80,7 @@ def create_tables(database):
     create_state_value(database, "versions")
     create_state(database, "reported_ins", "versions")
     create_state(database, "fixed_ins", "versions")
-    create_state(database, "closed_ins", "versions")
+    create_state(database, "tested_ok_ins", "versions")
 
 
 def have_tables(database):

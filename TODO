@@ -1,13 +1,11 @@
 User visible TODOs:
 
-- search by comments
-- change order of show bug - title, R/O status, comments, edit form
+- fix email password
+
+- detect and prevent simultaneous attempts to change same data
 - check everywhere redirecting when not logged in
-- provide human readable description of search criteria on results page
 - fix alignment of "order triangle"
    - use a table within a table
-- fix email password
-- description alignment is wrong in add new bug form
 - make forms default cursor to first field (see google)
 - find a way of auto expanding text boxes (e.g. comments)
 - limit length of field in new state values
@@ -19,19 +17,17 @@ User visible TODOs:
 
 Underlying changes:
 
-- check that have not exceeded 100 characters in URL...
-   - do redirect to minimise number when bookmarking
-- replace underlying closed_in with tested_ok_in
 - add some explicit means of migrating (import/export)
+   - use csv rather than python eval format
 - automatically clear unused user-set categories
-- add more unittests, particularly the server.
+
+- add more unittests, particularly the server
 - declare DTD
 - automatically validate the pages with http://validator.w3.org/
 - use style sheets (remove all <font> tags), in a separate file
 - group template.py functions into classes
 - consolidate status strings into Statuses object in application.py
 - grep *.py TODO
-- don't use global thread lock in server.py - should be session level ?
 - use docutils to format comments (including hyperlinks elsewhere)
 - log source address etc in server
 - logs should more clearly contain who is viewing what pages etc.

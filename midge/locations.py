@@ -522,11 +522,11 @@ class List(Location):
 
     def _show_closed(self, session_id, wfile, sort_by, order):
         if not sort_by:
-            sort_by = "closed_in"
+            sort_by = "tested_ok_in"
         if not order:
             order = "ascending"
         search = application.Search(
-            ("bug_id", "priority", "category", "closed_in", "title"),
+            ("bug_id", "priority", "category", "tested_ok_in", "title"),
             sort_by, order, status="closed")
         self.application.search(session_id, search)
         templates.title(wfile, "All closed bugs")
@@ -545,9 +545,6 @@ class View(Location):
 
     path = "/view"
 
-    def _add_title(self, wfile, bug):
-        templates.title(wfile, "Bug %s" % bug.bug_id, bug.title)
-
     def handle_get(self, session_id, values, wfile):
         user = self.application.get_user(session_id)
         if user:
@@ -556,16 +553,8 @@ class View(Location):
                 templates.header(wfile, "Bug %s" % bug_id)
                 try:
                     bug = self.application.get_bug(session_id, bug_id)
-                    self._add_title(wfile, bug)
-                    templates.edit_bug_form(
-                        wfile, self.path, bug,
-                        self.application.statuses,
-                        self.application.priorities,
-                        self.application.configurations,
-                        self.application.categories,
-                        self.application.keywords,
-                        self.application.versions)
-                    templates.show_comments(wfile, bug)
+                    templates.title(wfile, "View/edit bug")
+                    self._show_status_and_comments_and_form(wfile, bug)
                 except application.NoSuchBugException:
                     templates.title(wfile, "No such Bug!")
                     templates.paragraph(
@@ -589,6 +578,20 @@ class View(Location):
             values["next"] = self.path
             path = lib.join_url(Login.path, values)
             self.redirect(path)
+
+    def _show_status_and_comments_and_form(self, wfile, bug):
+        templates.bug_status_summary(wfile, bug)
+        templates.vspace(wfile)
+        templates.show_comments(wfile, bug)
+        templates.hrule(wfile)
+        templates.edit_bug_form(
+            wfile, self.path, bug,
+            self.application.statuses,
+            self.application.priorities,
+            self.application.configurations,
+            self.application.categories,
+            self.application.keywords,
+            self.application.versions)
 
     def _make_changes(self, session_id, user, post_data, wfile):
         bug_id = post_data.get("bug_id", None)
@@ -638,13 +641,13 @@ class View(Location):
         if fixed_in != old_bug.fixed_in:
             changes["fixed_in"] = fixed_in
 
-        closed_in = post_data.get("closed_in", None)
-        new_closed_in = post_data.get("new_closed_in", None)
+        tested_ok_in = post_data.get("tested_ok_in", None)
+        new_tested_ok_in = post_data.get("new_tested_ok_in", None)
         comment = post_data.get("comment", None)
-        if new_closed_in:
-            closed_in = new_closed_in
-        if closed_in != old_bug.closed_in:
-            changes["closed_in"] = closed_in
+        if new_tested_ok_in:
+            tested_ok_in = new_tested_ok_in
+        if tested_ok_in != old_bug.tested_ok_in:
+            changes["tested_ok_in"] = tested_ok_in
 
         if comment:
             changes["comment"] = comment
@@ -655,9 +658,8 @@ class View(Location):
         
     def _report_on_changes(self, session_id, old_bug, changes, wfile):
         new_bug = self.application.get_bug(session_id, old_bug.bug_id)
-        self._add_title(wfile, new_bug)
         if changes:
-            templates.paragraph(wfile, "Update successful:")
+            templates.title(wfile, "Bug update successful")
             bullet_items = []
             if changes.pop("comment", None):
                 bullet_items.append("Added new comment.")
@@ -675,18 +677,10 @@ class View(Location):
                                             (variable, new_value))
                         
             templates.bullets(wfile, *bullet_items)
+            templates.hrule(wfile)
         else:
-            templates.paragraph(wfile, "No changes were made.")
-        templates.hrule(wfile)
-        templates.edit_bug_form(
-            wfile, self.path, new_bug,
-            self.application.statuses,
-            self.application.priorities,
-            self.application.configurations,
-            self.application.categories,
-            self.application.keywords,
-            self.application.versions)
-        templates.show_comments(wfile, new_bug)
+            templates.title(wfile, "No update needed")
+        self._show_status_and_comments_and_form(wfile, new_bug)
 
     def handle_post(self, session_id, values, post_data, wfile):
         user = self.application.get_user(session_id)
@@ -745,7 +739,6 @@ class New(Location):
             self.redirect(Login.path, self.path)
 
     def _add_bug(self, session_id, wfile, post_data):
-        del post_data["submit"]
         new_version = post_data.pop("new_version", None)
         if new_version:
             post_data["version"] = new_version
@@ -789,6 +782,7 @@ class Search(Location):
         if user:
             templates.header(wfile)
             if values:
+                self._reload_if_url_can_be_simplified(values)
                 self._search(session_id, wfile, values)
             else:
                 templates.title(wfile, "Search for bugs")
@@ -808,13 +802,18 @@ class Search(Location):
             templates.footer(wfile)
         else:
             self.redirect(Login.path, lib.join_url(self.path, values))
+
+    def _reload_if_url_can_be_simplified(self, values):
+        new_values = {}
+        for k,v in values.iteritems():
+            if v:
+                new_values[k] = v
+        if new_values != values:
+            self.redirect(lib.join_url(self.path, new_values))
             
     def _search(self, session_id, wfile, values):
-        sort_by = values.get("sort_by", "bug_id")
-        order = values.get("order", "ascending")
-        for k in "submit", "sort_by", "order":
-            if k in values:
-                del values[k]
+        sort_by = values.pop("sort_by", "bug_id")
+        order = values.pop("order", "ascending")
 
         criteria = {}
         columns = ["bug_id", "title"]
@@ -829,14 +828,28 @@ class Search(Location):
         self.application.search(session_id, search)
 
         templates.title(wfile, "Search result")
+        self._pretty_print_search(wfile, criteria)
         if search.rows:
             url = lib.join_url(self.path, values)
             templates.table_of_bugs(wfile, url, search)
         else:
             templates.paragraph(
                 wfile,
-                "No bugs match those criteria.")
+                "No bugs match these criteria!")
 
+    def _pretty_print_search(self, wfile, criteria):
+
+        def clean_name(s):
+            s = s.replace("regex", "(regex)")
+            s = s.replace("_", " ")
+            return s.capitalize()
+        
+        bullets = []
+        for k,v in criteria.iteritems():
+            bullets.append("%s = %s" % (clean_name(k),v))
+        templates.bullets(wfile, *bullets)
+        
+        
 class Images(Location):
 
     path = "/images"    

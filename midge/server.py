@@ -42,7 +42,7 @@ class Sessions(object):
 
     def _refresh_session(self, session_id):
         self.session_ids[session_id] = time.time() + \
-                                       config.Server.session_timeout
+                                       60 * config.Server.session_timeout
     
     def get_valid_session_id(self, proposed_session_id):
         self._retire_expired_sessions()

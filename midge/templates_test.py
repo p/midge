@@ -174,7 +174,7 @@ class TemplatesTest(unittest.TestCase):
             keyword = "keyword1"
             reported_in = "version2"
             fixed_in = "version2"
-            closed_in = "version2"
+            tested_ok_in = "version2"
             comments = [MockComment(), MockComment()]
 
         wfile = self.get_wfile()
@@ -188,6 +188,33 @@ class TemplatesTest(unittest.TestCase):
                                 ["category1", "category2"],
                                 ["keyword1", "keyword2"],
                                 ["version1", "version2"])
+        wfile.write("</test>")
+        self.assert_(self.is_well_formed(wfile))
+
+    def test_bug_status_summary(self):
+        """Check bug status summary"""
+        class MockComment:
+            users_name = "my name"
+            username = "my username"
+            date = mx.DateTime.now()
+            text = "this is a comment"
+
+        class MockBug:
+            bug_id = 3
+            title = "whatever"
+            status = "new"
+            priority = "priority1"
+            category = "category1"
+            configuration = "configuration1"
+            keyword = "keyword1"
+            reported_in = "version2"
+            fixed_in = "version2"
+            tested_ok_in = "version2"
+            comments = [MockComment(), MockComment()]
+
+        wfile = self.get_wfile()
+        wfile.write("<test>\n")
+        templates.bug_status_summary(wfile, MockBug())
         wfile.write("</test>")
         self.assert_(self.is_well_formed(wfile))
 

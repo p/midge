@@ -87,7 +87,7 @@ class ImporterTests(BaseTest):
                                  "a keyword",
                                  "a reported_in",
                                  "",
-                                 "a closed_in")
+                                 "a tested_ok_in")
 
         bugs = application.Bugs(self.connection)
         bug = bugs.get(23)
@@ -99,7 +99,7 @@ class ImporterTests(BaseTest):
         self.assertEqual(bug.keyword, "a keyword")
         self.assertEqual(bug.reported_in, "a reported_in")
         self.assertEqual(bug.fixed_in, "")
-        self.assertEqual(bug.closed_in, "a closed_in")
+        self.assertEqual(bug.tested_ok_in, "a tested_ok_in")
         self.assertEqual(len(bug.comments), 0)
 
         user = application.User(self.connection)
