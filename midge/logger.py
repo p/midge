@@ -64,6 +64,7 @@ def error(message):
     if message.startswith("ERROR:"):
         message = message[len("ERROR:"):]
         message = message.strip()
+    print _format_log_message(message)
     if _logger:
         _logger.error(_format_log_message(message, "ERROR"))
 

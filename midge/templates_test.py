@@ -267,7 +267,7 @@ class TemplatesTest(unittest.TestCase):
     def test_table_of_bugs(self):
         """Check search for bugs"""
         wfile = self.get_wfile()
-        templates.search_form(wfile, "a path",
+        templates.search_form(wfile, "a path", {},
                               ["a status"],
                               ["a priority"],
                               ["a resolution"],

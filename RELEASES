@@ -1,4 +1,4 @@
-release_0-4 (???)
+release_0-4 (20 Oct 2004)
 
   * No longer use any absolute positioning in the style sheet (since
     this failed to resize properly when font size was changed).
@@ -8,11 +8,11 @@ release_0-4 (???)
 
   * Serve default.css with MIME type text/css rather than text/html.
 
-  * Bug id now remains in title after submiting a change to a bug.
+  * Bug id now remains in the title after submiting a change to a bug.
 
   * Log any uncaught exceptions on exit from server.
 
-  * TODO Added "refine search" link from search results, so that a
+  * Added "refine search" link from search results, so that a
     search can be refined without relying upon the browser's back
     button (which does not work if the search was reached using a
     bookmark).

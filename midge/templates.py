@@ -66,13 +66,9 @@ def header(wfile, title=None):
   <script>
   <!--
   function set_focus() {
-     for (i=0; i<document.forms.length; i++) {
-        form = document.forms[i]
-        if (form.name == "mainform") {
-             form.elements[0].focus();
-             break;
-        }
-    }
+     if (document.forms.mainform) {
+         document.forms.mainform.elements[0].focus()
+     }
   }
   // -->
   </script>
@@ -833,23 +829,29 @@ def search_form(wfile, path, values,
      <select name="resolution" size="1">''' % \
                 {"priority_regex": values.get("priority_regex", ""),
                  "checked": checked})
-
-
     for resolution in resolutions:
-        wfile.write('''
+        if values.get("resolution", None) == resolution:
+            wfile.write('''
+      <option value="%s" selected="selected">%s</option>''' % (resolution, resolution))
+        else:
+            wfile.write('''
       <option value="%s">%s</option>''' % (resolution, resolution))
+    if values.get("resolution_column", None):
+        checked = 'checked="yes"'
+    else:
+        checked = ""        
     wfile.write('''
      </select>
     </td>
     <td>
      <small>&nbsp;(regex</small>
-     <input type="text" name="resolution_regex"/>
+     <input type="text" value="%(resolution_regex)s" name="resolution_regex"/>
      <small>)</small>
     </td>
     <td class="white">&nbsp;</td>
     <td>
      <small><label>
-      <input type="checkbox" name="resolution_column" value="on">Show column
+      <input type="checkbox" %(checked)s name="resolution_column" value="on">Show column
       </input>
      </label></small>
     </td>
@@ -864,22 +866,32 @@ def search_form(wfile, path, values,
    <tr class="form">
     <td class="form-row-heading">Category</td>
     <td>
-     <select name="category" size="1">''')
+     <select name="category" size="1">''' % \
+                {"resolution_regex": values.get("resolution_regex", ""),
+                 "checked": checked})
     for category in categories:
-        wfile.write('''
+        if values.get("category", None) == category:
+            wfile.write('''
+      <option value="%s" selected="selected">%s</option>''' % (category, category))
+        else:
+            wfile.write('''
       <option value="%s">%s</option>''' % (category, category))
+    if values.get("category_column", None):
+        checked = 'checked="yes"'
+    else:
+        checked = ""        
     wfile.write('''
      </select>
     </td>
     <td>
      <small>&nbsp;(regex</small>
-     <input type="text" name="category_regex"/>
+     <input type="text" value="%(category_regex)s" name="category_regex"/>
      <small>)</small>
     </td>
     <td class="white">&nbsp;</td>
     <td>
      <small><label>
-      <input type="checkbox" name="category_column" value="on">Show column
+      <input type="checkbox" %(checked)s name="category_column" value="on">Show column
       </input>
      </label></small>
     </td>
@@ -888,23 +900,32 @@ def search_form(wfile, path, values,
    <tr class="form">
     <td class="form-row-heading">Keyword</td>
     <td>
-     <select name="keyword" size="1">''')
+     <select name="keyword" size="1">''' % \
+                {"category_regex": values.get("category_regex", ""),
+                 "checked": checked})
     for keyword in keywords:
-        wfile.write('''
-      <option value="%s">%s</option>''' % (keyword,
-                                           keyword))
+        if values.get("keyword", None) == keyword:
+            wfile.write('''
+      <option value="%s" selected="selected">%s</option>''' % (keyword, keyword))
+        else:
+            wfile.write('''
+      <option value="%s">%s</option>''' % (keyword, keyword))
+    if values.get("keyword_column", None):
+        checked = 'checked="yes"'
+    else:
+        checked = ""  
     wfile.write('''
      </select>
     </td>
     <td>
      <small>&nbsp;(regex</small>
-     <input type="text" name="keyword_regex"/>
+     <input type="text" value="%(keyword_regex)s" name="keyword_regex"/>
      <small>)</small>
     </td>
     <td class="white">&nbsp;</td>
     <td>
      <small><label>
-      <input type="checkbox" name="keyword_column" value="on">Show column
+      <input type="checkbox" %(checked)s name="keyword_column" value="on">Show column
       </input>
      </label></small>
     </td>
@@ -919,22 +940,32 @@ def search_form(wfile, path, values,
    <tr class="form">
     <td class="form-row-heading">Reported in</td>
     <td>
-     <select name="reported_in" size="1">''')
+     <select name="reported_in" size="1">''' % \
+                {"keyword_regex": values.get("keyword_regex", ""),
+                 "checked": checked})
     for version in versions:
-        wfile.write('''
+        if values.get("reported_in", None) == version:
+            wfile.write('''
+         <option value="%s" selected="selected">%s</option>''' % (version, version))
+        else:
+            wfile.write('''
          <option value="%s">%s</option>''' % (version, version))
+    if values.get("reported_in_column", None):
+        checked = 'checked="yes"'
+    else:
+        checked = ""
     wfile.write('''
      </select>
     </td>
     <td>
      <small>&nbsp;(regex</small>
-     <input type="text" name="reported_in_regex"/>
+     <input type="text" value="%(reported_in_regex)s" name="reported_in_regex"/>
      <small>)</small>
     </td>
     <td class="white">&nbsp;</td>
     <td>
      <small><label>
-      <input type="checkbox" name="reported_in_column" value="on">Show column
+      <input type="checkbox" %(checked)s name="reported_in_column" value="on">Show column
       </input>
      </label></small>
     </td>
@@ -942,22 +973,32 @@ def search_form(wfile, path, values,
    <tr class="form">
     <td class="form-row-heading">Fixed in</td>
     <td>
-     <select name="fixed_in" size="1">''')
+     <select name="fixed_in" size="1">''' % \
+                {"reported_in_regex": values.get("reported_in_regex", ""),
+                 "checked": checked})
     for version in versions:
-        wfile.write('''
+        if values.get("fixed_in", None) == version:
+            wfile.write('''
+         <option value="%s" selected="selected">%s</option>''' % (version, version))
+        else:
+            wfile.write('''
          <option value="%s">%s</option>''' % (version, version))
+    if values.get("fixed_in_column", None):
+        checked = 'checked="yes"'
+    else:
+        checked = ""
     wfile.write('''
      </select>
     </td>
     <td>
      <small>&nbsp;(regex</small>
-     <input type="text" name="fixed_in_regex"/>
+     <input type="text" value="%(fixed_in_regex)s" name="fixed_in_regex"/>
      <small>)</small>
     </td>
     <td class="white">&nbsp;</td>
     <td>
      <small><label>
-      <input type="checkbox" name="fixed_in_column" value="on">Show column
+      <input type="checkbox" %(checked)s name="fixed_in_column" value="on">Show column
       </input>
      </label></small>
     </td>
@@ -965,23 +1006,32 @@ def search_form(wfile, path, values,
    <tr class="form">
     <td class="form-row-heading">Tested ok in</td>
     <td>
-     <select name="tested_ok_in" size="1">
-     ''')
+     <select name="tested_ok_in" size="1">''' % \
+                {"fixed_in_regex": values.get("fixed_in_regex", ""),
+                 "checked": checked})
     for version in versions:
-        wfile.write('''
+        if values.get("tested_ok_in", None) == version:
+            wfile.write('''
+         <option value="%s" selected="selected">%s</option>''' % (version, version))
+        else:
+            wfile.write('''
          <option value="%s">%s</option>''' % (version, version))
+    if values.get("tested_ok_in_column", None):
+        checked = 'checked="yes"'
+    else:
+        checked = ""
     wfile.write('''
      </select>
     </td>
     <td>
      <small>&nbsp;(regex</small>
-     <input type="text" name="tested_ok_in_regex"/>
+     <input type="text" value="%(tested_ok_in_regex)s" name="tested_ok_in_regex"/>
      <small>)</small>
     </td>
     <td class="white">&nbsp;</td>
     <td>
      <small><label>
-      <input type="checkbox" name="tested_ok_in_column" value="on">Show column
+      <input type="checkbox" %(checked)s name="tested_ok_in_column" value="on">Show column
       </input>
      </label></small>
     </td>
@@ -996,4 +1046,5 @@ def search_form(wfile, path, values,
     </td>
    </tr>
   </table>
- </form>''')
+ </form>''' % {"tested_ok_in_regex": values.get("tested_ok_in_regex", ""),
+               "checked": checked})
