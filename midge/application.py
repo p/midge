@@ -922,9 +922,8 @@ class Search:
                                  "from": " ".join(clauses)}
 
     def _make_where_clause(self, criteria):
-        for key in criteria:
-            criteria[key] = quote(criteria[key])
-        clauses = [self._where_map[c] % v for c,v in criteria.iteritems()]
+        clauses = [self._where_map[c] % quote(v)
+                   for c,v in criteria.iteritems()]
         if clauses:
             return "WHERE " + " AND ".join(clauses)
         else:
@@ -935,12 +934,11 @@ class Search:
                                   self._order_map[order])
     
     def run(self, cursor):
-        # TODO try except to ensure cursor is closed after error.
         search_sql = """
-               %(select)s
-               %(from)s
-               %(where)s
-               %(sort)s;""" % {
+        %(select)s
+        %(from)s
+        %(where)s
+        %(sort)s;""" % {
             "select": self._make_select_clause(self.variables),
             "from": self._make_from_clause(self.variables, self.criteria),
             "where": self._make_where_clause(self.criteria),
@@ -950,7 +948,6 @@ class Search:
         result = cursor.fetchall()
         for row in result:
             self.add(*row)
-        cursor.close()
 
     def add(self, *args):
         assert len(args) == len(self.variables)
@@ -1074,7 +1071,11 @@ class Bugs(object):
         return Bug(self, bug_id)
 
     def search(self, search):
-        search.run(self.connection.cursor())
+        cursor = self.connection.cursor()
+        try:
+            search.run(cursor)
+        finally:
+            cursor.close()
 
            
 class Application(object):

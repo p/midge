@@ -74,6 +74,11 @@ class TemplatesTest(unittest.TestCase):
         wfile.write("</body></html>")
         self.assert_(self.is_well_formed(wfile))
 
+        wfile = self.get_wfile()
+        templates.header(wfile, "extra title")
+        wfile.write("</body></html>")
+        self.assert_(self.is_well_formed(wfile))
+
     def test_title(self):
         """Check title"""
         wfile = self.get_wfile()

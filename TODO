@@ -1,6 +1,5 @@
 User visible TODOs:
 
-- set title bar to Bug <num> (<project>) - Midge"
 - search by comments
 - check that have not exceeded 100 characters in URL...
    - do redirect to minimise number when bookmarking

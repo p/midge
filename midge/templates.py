@@ -45,10 +45,14 @@ def get_version():
         return "&lt;unknown&gt;"
 
 
-def header(wfile):
+def header(wfile, title=None):
+    if title:
+        title = "%s - Midge (%s)" % (title, config.Project.name)
+    else:
+        title = "Midge (%s)" % config.Project.name
     wfile.write('''
 <html>
- <head><title>Midge for project: %(project)s</title></head>
+ <head><title>%(title)s</title></head>
  <body bgcolor="#ffffff">
   <form action="view">
    <table cellspacing="0" cellpadding="3" border="0" width="100%%">
@@ -79,7 +83,7 @@ def header(wfile):
     </tr>
    </table>
   </form>
-''' % {"project": config.Project.name})
+''' % {"title": title, "project":config.Project.name})
 
 def hrule(wfile):
     wfile.write("<hr />")

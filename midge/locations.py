@@ -551,9 +551,9 @@ class View(Location):
     def handle_get(self, session_id, values, wfile):
         user = self.application.get_user(session_id)
         if user:
-            templates.header(wfile)
             bug_id = values.get('bug_id')
             if bug_id:
+                templates.header(wfile, "Bug %s" % bug_id)
                 try:
                     bug = self.application.get_bug(session_id, bug_id)
                     self._add_title(wfile, bug)
@@ -573,6 +573,7 @@ class View(Location):
                         'No bug with number = "%s" exists. ' % bug_id +
                         'Please try again.')
             else:
+                templates.header(wfile)
                 templates.title(wfile, "View particular bug")
                 templates.paragraph(
                     wfile,
