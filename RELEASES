@@ -8,6 +8,10 @@ release_0-2 (...)
 
   * Simplified readonly bug summary when viewing/editing a bug.
 
+  * (Crudely) detect and protect against malformed searches. 
+
+  * Always maximise width of title and comment text boxes.
+
 release_0-1 (15 Aug 2004)
 
   * First release!

@@ -790,8 +790,9 @@ class Search(Location):
                     wfile,
                     'All criteria are combined with "And".',
                     'Blank fields are ignored.',
+                    'Searches are case insensitive.',
                     'The "regex" fields are for advanced searches '
-                    'and may be ignored.')
+                    '(and may be ignored).')
                 templates.search_form(wfile, self.path,
                             [""] + list(self.application.statuses),
                             self.application.priorities,
@@ -825,17 +826,27 @@ class Search(Location):
                     criteria[key] = value
         
         search = application.Search(columns, sort_by, order, **criteria)
-        self.application.search(session_id, search)
-
-        templates.title(wfile, "Search result")
-        self._pretty_print_search(wfile, criteria)
-        if search.rows:
-            url = lib.join_url(self.path, values)
-            templates.table_of_bugs(wfile, url, search)
-        else:
+        try:
+            self.application.search(session_id, search)
+            templates.title(wfile, "Search result")
+            self._pretty_print_search(wfile, criteria)
+            if search.rows:
+                url = lib.join_url(self.path, values)
+                templates.table_of_bugs(wfile, url, search)
+            else:
+                templates.paragraph(
+                    wfile,
+                    "No bugs match these criteria!")
+        except application.InvalidSearchException, e:
+            templates.title(wfile, "Invalid search criteria!")
             templates.paragraph(
                 wfile,
-                "No bugs match these criteria!")
+                "Please use the back-button of your browser "
+                "to correct your search.")
+            templates.paragraph(
+                wfile,
+                "Malformed regex expressions are a probable cause. "
+                "For example, mismatched parentheses.")
 
     def _pretty_print_search(self, wfile, criteria):
 

@@ -332,7 +332,7 @@ def new_bug_form(wfile, path, versions, configurations, categories):
      <tr bgcolor="#DDDDDD">
       <td valign="baseline"><small><b>Title</b></small></td>
       <td colspan="3">
-       <input type="text" size="80" maxlength="80" name="title"/>
+       <input class="expand" type="text" maxlength="60" name="title"/>
       </td>
      </tr>
      <tr bgcolor="#DDDDDD">
@@ -393,7 +393,7 @@ def new_bug_form(wfile, path, versions, configurations, categories):
      <tr bgcolor="#DDDDDD">
       <td valign="baseline"><small><b>Description</b></small></td>
       <td colspan="3">
-       <textarea name="description" cols="70" rows="8"></textarea>
+       <textarea class="expand" name="description" rows="8"></textarea>
       </td>
      </tr>
      <tr><td><table></table></td></tr>
@@ -650,7 +650,7 @@ def edit_bug_form(wfile, path, bug, statuses, priorities,
    </tr> 
    <tr bgcolor="#DDDDDD">
     <td colspan="3">
-     <textarea name="comment" cols="80" rows="8"></textarea>
+     <textarea class="expand" name="comment" rows="8"></textarea>
     </td>
    </tr>
   

@@ -14,12 +14,14 @@ import midge.logger as logger
 
 def quote(x):
     # TODO make more efficient - use translate?, or re.escape ?
+    # and make sure coverage complete.
     x = x.replace("\b", r"\b")
     x = x.replace("\f", r"\f")
     x = x.replace("\r", r"\r")
     x = x.replace("\n", r"\n")
     x = x.replace("\t", r"\t")
     x = x.replace("'", r"\047")
+    x = x.replace(r"\\", r"\\\\")
     return x
 
 
@@ -46,6 +48,8 @@ class ValueInUseException(MidgeException):
 class InvalidValueException(MidgeException):
     pass
 
+class InvalidSearchException(MidgeException):
+    pass
 
 
 class User(object):
@@ -936,8 +940,15 @@ class Search:
                                  "from": " ".join(clauses)}
 
     def _make_where_clause(self, criteria):
-        clauses = [self._where_map[c] % quote(v)
-                   for c,v in criteria.iteritems()]
+        clauses = []
+        # TODO fix this hack to detect malformed regex expressions
+        for c,v in criteria.iteritems():
+            if "~" in self._where_map[c]:
+                try:
+                    re.compile(v)
+                except re.error, e:
+                    raise InvalidSearchException
+            clauses.append(self._where_map[c] % quote(v))
         if clauses:
             return "WHERE " + " AND ".join(clauses)
         else:

@@ -552,3 +552,21 @@ class BugTests(BaseTest):
         search.criteria = {"comments": "'"}
         self.app.search(self.session_id, search)
         self.assertEqual(len(search.rows), 0)
+
+        search.criteria = {"comments": "\\"}
+        self.failUnlessRaises(
+            application.InvalidSearchException,
+            self.app.search,
+            self.session_id, search)
+
+        search.criteria = {"comments": "("}
+        self.failUnlessRaises(
+            application.InvalidSearchException,
+            self.app.search,
+            self.session_id, search)
+
+        search.criteria = {"comments": "["}
+        self.failUnlessRaises(
+            application.InvalidSearchException,
+            self.app.search,
+            self.session_id, search)

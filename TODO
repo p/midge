@@ -1,12 +1,8 @@
 User visible TODOs:
 
-- traceback if search for comments \#[0-9   (no closing ]) - write test!
 - detect and prevent simultaneous attempts to change same data
 - check everywhere redirecting when not logged in
-- fix alignment of "order triangle"
-   - use a table within a table
 - make forms default cursor to first field (see google)
-- find a way of auto expanding text boxes (e.g. comments)
 - limit length of field in new state values
 - description label in add bug is not valign="top" under IE5!
 - inform the user when their session has timed-out
