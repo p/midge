@@ -45,22 +45,43 @@ Install
 
       sudo python set.py install
 
- 4) Cleanup:
+ 4) Edit configuration file:
 
-     python setup.up clean
+     vi /etc/midge.conf
 
- 5) Test:
+ 5) Setup the databases (one for real, one for testing)
+
+     sudo midge-admin setup
+
+ 6) Test:
 
      midge-test
 
- 6) Start:
+ 7) Start:
 
      midged &
 
     (as an ordinary user)
 
- 7) Point your browser to http://localhost:8000
+ 8) Point your browser to http://localhost:8000
     (or as per config file).
+
+
+Importing/exporting bugs
+========================
+
+There are two commands:
+
+   midge-import <users_filename> <bugs_filename> <comments_filename>
+
+and
+
+   midge-export <users_filename> <bugs_filename> <comments_filename>
+
+This uses 3 csv files to store the complete state of the bug database.
+
+The easiest way of finding out the format is to start midge, enter a
+few bugs, and run midge-export...
 
 
 States

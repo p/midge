@@ -93,6 +93,6 @@ class TestConnection(object):
 #Error = psycopg.Error
 #DataError = psycopg.DataError
 #DatabaseError = psycopg.DatabaseError
-#ProgrammingError = psycopg.ProgrammingError
+ProgrammingError = psycopg.ProgrammingError
 IntegrityError = psycopg.IntegrityError
 

@@ -446,10 +446,6 @@ class StateTable(object):
             raise ValueInUseException
         cursor.close()
 
-    def purge(self, names):
-        """Remove all values not used by any name in a bug"""
-        # TODO
-
     def get_for_bug(self, cursor, bug_id):
         """Return one of the values for a given bug (may be "").
 
@@ -1018,11 +1014,8 @@ class Bugs(object):
         self.summary = Summary(connection)
 
     def purge(self):
-        self.configurations.purge()
-        self.categories.purge()
-        self.reported_ins.purge()
-        self.fixed_ins.purge()
-        self.tested_ok_ins.purge()
+        """Remove unused keywords, versions, etc"""
+        # TODO
         
     def _add_to_bugs_table(self, cursor, user, title):
         title = quote(title)
@@ -1169,7 +1162,7 @@ class Bugs(object):
         try:
             search.run(cursor)
         finally:
-            cursor.close()
+           cursor.close()
 
            
 class Application(object):
@@ -1264,6 +1257,6 @@ class Application(object):
 
     keywords = property(_get_keywords)
 
-    def purge(self):
+    def do_maintenance(self):
         self.bugs.purge()
 

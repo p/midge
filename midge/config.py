@@ -31,8 +31,9 @@ class Server:
     interface = None
     port = None
     session_timeout = None
+    maintenance_period = None
     debugging = None
-
+    
 
 class Email:
 
@@ -96,6 +97,7 @@ def read():
     Server.interface = get("Server", "interface")
     Server.port = get_int("Server", "port")
     Server.session_timeout = get_int("Server", "session_timeout")
+    Server.maintenance_period = get_int("Server", "maintenance_period")
     Server.debugging = get_boolean("Server", "debugging")
     Email.from_address = get("Email", "from_address")
     Email.smtp_host = get("Email", "smtp_host")

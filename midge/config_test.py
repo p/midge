@@ -22,6 +22,7 @@ class ConfigTests(unittest.TestCase):
         self.assertNotEqual(midge.config.Server.interface, None)
         self.assertNotEqual(midge.config.Server.port, None)
         self.assertNotEqual(midge.config.Server.session_timeout, None)
+        self.assertNotEqual(midge.config.Server.maintenance_period, None)
         self.assertNotEqual(midge.config.Server.debugging, None)
         self.assertNotEqual(midge.config.Email.smtp_host, None)
         self.assertNotEqual(midge.config.Email.from_address, None)
@@ -39,5 +40,5 @@ class ConfigTests(unittest.TestCase):
                 
         sys.stdout = MyStdout() 
         midge.config.print_env_variables()
-        self.assertEqual(len(sys.stdout.lines), 12)
+        self.assertEqual(len(sys.stdout.lines), 13)
         sys.stdout = sys.__stdout__

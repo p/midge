@@ -6,6 +6,7 @@
 import BaseHTTPServer
 import cStringIO
 import random
+import select
 import sys
 import threading
 import time
@@ -22,23 +23,36 @@ class Sessions(object):
     def __init__(self, application):
         self.application = application
         self.session_ids = {}
+        self._lock = threading.Lock()
+
+    def acquire_lock(self):
+        self._lock.acquire()
+
+    def release_lock(self):
+        self._lock.release()
 
     def _generate_session_id(self):
         session_id = str(random.randint(0, sys.maxint))
         while session_id in self.session_ids:
             session_id = str(random.randint(0, sys.maxint))
-        logger.info("Generating new session: %s" % session_id)
+        logger.debug("Generating new session: %s" % session_id)
         self._refresh_session(session_id)
         self.application.new_session(session_id)
         return session_id
+
+    def _retire_session(self, session_id):
+        try:
+            del self.session_ids[session_id]
+            logger.debug("Retiring session: %s" % session_id)
+            self.application.expired_session(session_id)
+        except KeyError:
+            pass
 
     def _retire_expired_sessions(self):
         t0 = time.time()
         for session_id, expire_time in self.session_ids.items():
             if t0 > expire_time:
-                del self.session_ids[session_id]
-                logger.info("Retiring expired session: %s" % session_id)
-                self.application.expired_session(session_id)
+                self._retire_session(session_id)
 
     def _refresh_session(self, session_id):
         self.session_ids[session_id] = time.time() + \
@@ -54,6 +68,14 @@ class Sessions(object):
         else:
             valid_session_id = self._generate_session_id()
         return valid_session_id
+
+    def do_maintenance(self):
+        self.acquire_lock()
+        try:
+            logger.info("Scheduled maintenance")
+            self.application.do_maintenance()
+        finally:
+            self.release_lock()
 
 
 class RedirectException(Exception):
@@ -81,8 +103,6 @@ class RequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     # Note that the RequestHandler is reinstantiated every GET/POST etc.
     _locations = None
     _sessions = None
-
-    _lock = threading.Lock()
 
     def _send_standard_header(self, session_id):
         self.send_response(HttpCodes.OK)
@@ -149,7 +169,7 @@ class RequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         return post_data
 
     def do_GET(self):
-        self._lock.acquire()
+        self._sessions.acquire_lock()
         try:
             proposed_session_id = self._extract_session_id()
             session_id = self._sessions.get_valid_session_id(
@@ -170,10 +190,10 @@ class RequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
             else:
                 self._send_no_such_location(self.path)
         finally:
-            self._lock.release()
+            self._sessions.release_lock()
         
     def do_POST(self):
-        self._lock.acquire()
+        self._sessions.acquire_lock()
         try:
             proposed_session_id = self._extract_session_id()
             session_id = self._sessions.get_valid_session_id(
@@ -203,7 +223,7 @@ class RequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
                 # TODO send an HTTP error code.
                 pass
         finally:
-            self._lock.release()
+            self._sessions.release_lock()
 
     def log_message(self, *args):
         pass
@@ -212,9 +232,10 @@ class RequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 class Server(object):
 
     def __init__(self, application, locations):
+        self.sessions = Sessions(application)
         RequestHandler._locations = self._get_locations(locations,
                                                         application)
-        RequestHandler._sessions = Sessions(application)
+        RequestHandler._sessions = self.sessions
         interface = config.Server.interface
         port = config.Server.port
         if interface:
@@ -239,4 +260,12 @@ class Server(object):
 
     def start(self):
         logger.info("Starting server")
-        self.httpd.serve_forever()
+        next_maintenance = time.time()
+        while True:
+            rs, ws, es = select.select([self.httpd], [self.httpd], [], 1)
+            if rs or ws:
+                self.httpd.handle_request()
+            if time.time() > next_maintenance:
+                self.sessions.do_maintenance()
+                next_maintenance = time.time() + 60 * config.Server.maintenance_period
+               

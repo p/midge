@@ -1,5 +1,6 @@
 User visible TODOs:
 
+- traceback if search for comments \#[0-9   (no closing ]) - write test!
 - detect and prevent simultaneous attempts to change same data
 - check everywhere redirecting when not logged in
 - fix alignment of "order triangle"
@@ -16,7 +17,8 @@ User visible TODOs:
 Underlying changes:
 
 - automatically clear unused user-set categories
-
+- write io tests
+- rename to midge/src and htdocs
 - add more unittests, particularly the server
 - declare DTD
 - automatically validate the pages with http://validator.w3.org/
