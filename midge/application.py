@@ -914,6 +914,8 @@ class Search:
                                  "from": " ".join(clauses)}
 
     def _make_where_clause(self, criteria):
+        if "title" in criteria:
+            criteria["title"] = lib.quote(criteria["title"])
         clauses = [self._where_map[c] % v for c,v in criteria.iteritems()]
         if clauses:
             return "WHERE " + " AND ".join(clauses)
@@ -926,15 +928,17 @@ class Search:
     
     def run(self, cursor):
         # TODO try except to ensure cursor is closed after error.
-        cursor.execute("""
+        search_sql = """
                %(select)s
                %(from)s
                %(where)s
-               %(sort)s;""" %
-            {"select": self._make_select_clause(self.variables),
-             "from": self._make_from_clause(self.variables, self.criteria),
-             "where": self._make_where_clause(self.criteria),
-             "sort": self._make_sort_clause(self.sort_by, self.order)})
+               %(sort)s;""" % {
+            "select": self._make_select_clause(self.variables),
+            "from": self._make_from_clause(self.variables, self.criteria),
+            "where": self._make_where_clause(self.criteria),
+            "sort": self._make_sort_clause(self.sort_by, self.order)}
+        print search_sql
+        cursor.execute(search_sql)
         self.rows = []
         result = cursor.fetchall()
         for row in result:

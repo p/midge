@@ -1,11 +1,14 @@
 User visible TODOs:
 
+- set title bar to Bug <num> (<project>) - Midge"
+- cannot include quotes in search fields
+- check that have not exceeded 100 characters in URL...
 - change "closed in" to "tested ok in"
 - change order of show bug - title, R/O status, comments, edit form
 - check everywhere redirecting when not logged in
+- still cannot search title with spaces
 - search by comments
 - provide human readable description of search criteria on results page
-- map "Select one" from versions to "" (or possibly just remove it)
 - spawn bug (split a bug into two identical bugs, for separate tracking)
 - add hyperlinks to other bugs listed in posted text
    - map bug #123 etc all to standard format (bug:123)

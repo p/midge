@@ -21,7 +21,7 @@ class LibTests(unittest.TestCase):
         """Check join and split url"""
 
         url_splits = [("a/b", {"x":"foo"}, "a/b?x=foo"),
-                      ("a/b", {"x":"foo bar"}, "a/b?x=foo%20bar"),
+                      ("a/b", {"x":"foo bar"}, "a/b?x=foo+bar"),
                       ("a/b", {"x":"foo", "y":"bar"}, "a/b?y=bar&x=foo")]
         
         for base, params, url in url_splits:

@@ -13,9 +13,13 @@ import midge.config as config
 import midge.logger as logger
 
 
-quote = urllib.quote
-unquote = urllib.unquote
+def quote(x):
+    xs = x.split(" ")
+    return "+".join([urllib.quote(x) for x in xs])
 
+def unquote(x):
+    return urllib.unquote(x.replace("+", " "))
+    
 
 def make_url(path, dictionary=None):
     return html_entity_escape(join_url(path, dictionary))

@@ -427,8 +427,8 @@ class List(Location):
                 templates.bullets(
                     wfile,
                     'Each bug list is designed for a particular objective.',
-                    'The number indicates the total number of bugs that '
-                    'are in each state.')
+                    'Use the <a href="/search">Search bugs</a> page '
+                    'for hand-crafted listings.')
                 status_counts = self.application.get_status_counts(session_id)
                 templates.list_form(wfile, self.path, status_counts)
                 templates.footer(wfile, user)

@@ -210,6 +210,13 @@ def map_category_values(cursor):
             WHERE category_name='Old Roundup Bug'
     """)
 
+def map_version_values(cursor):
+    cursor.execute("""
+    UPDATE version_t
+            SET version_name=''
+            WHERE version_name='Select one'
+    """)
+
 def get_users(cursor):
     cursor.execute("""
     SELECT
@@ -317,6 +324,7 @@ create_database_t_from_phpbt_database_server(cursor)
 remove_roundup_bugs(cursor)
 map_status_values(cursor)
 map_category_values(cursor)
+map_version_values(cursor)
 
 users = get_users(cursor)
 bugs = get_bugs(cursor)
