@@ -1,7 +1,11 @@
 release_0-2 (...)
 
-	* Fixed header of email used to send password.
+  * Fixed header of email used to send password.
+
+  * Adjusted table lists so that they always takes full width, the
+    last column expands, and no other columns can contain text that
+    wraps.
 
 release_0-1 (15 Aug 2004)
 
-	* First release!
+  * First release!

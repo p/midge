@@ -60,7 +60,17 @@ def header(wfile, title=None):
         title = "Midge (%s)" % config.Project.name
     wfile.write('''
 <html>
- <head><title>%(title)s</title></head>
+ <head>
+  <title>%(title)s</title>
+  <style>
+  .nowrap {
+    white-space:nowrap;
+  }
+  .expand {
+    width: 100%%;
+  }
+  </style>
+ </head>
  <body bgcolor="#ffffff">
   <form action="view">
    <table cellspacing="0" cellpadding="3" border="0" width="100%%">
@@ -761,11 +771,17 @@ def _table_headings(wfile, path, titles,
         url = lib.html_entity_escape(
             lib.join_url(path, {"sort_by": variable,
                                 "order": new_order}))
+        if variable == variables[-1]:
+            css_class = "expand"
+        else:
+            css_class = "nowrap"
         wfile.write('''
-     <th bgcolor="#cecece">
+     <th class="%(css_class)s" bgcolor="#cecece">
       <a href="%(url)s"><font size="-2">
        %(heading)s
-      </font></a>''' % {"heading": heading, "url": url})
+      </font></a>''' % {"heading": heading,
+                        "url": url,
+                        "css_class": css_class})
         if variable == sorted_by:
             direction = {"ascending": "up",
                          "descending": "down"}[ordered]
