@@ -6,6 +6,8 @@ release_0-2 (...)
     last column expands, and no other columns can contain text that
     wraps.
 
+  * Simplified readonly bug summary when viewing/editing a bug.
+
 release_0-1 (15 Aug 2004)
 
   * First release!

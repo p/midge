@@ -82,11 +82,15 @@ class TemplatesTest(unittest.TestCase):
     def test_title(self):
         """Check title"""
         wfile = self.get_wfile()
+        wfile.write("<body>")
         templates.title(wfile, "a title")
+        wfile.write("</body>")
         self.assert_(self.is_well_formed(wfile))
 
         wfile = self.get_wfile()
+        wfile.write("<body>")
         templates.title(wfile, "a title", "a second title")
+        wfile.write("</body>")
         self.assert_(self.is_well_formed(wfile))
 
     def test_table(self):

@@ -111,7 +111,7 @@ def hrule(wfile):
 
 def title(wfile, title, title2=None):
     if title2:
-        wfile.write('<font size="+2"><b>%s</b>: %s</font>' % (title, title2))
+        wfile.write('<font size="+1"><b>%s</b></font> - %s' % (title, title2))
     else:
         wfile.write('<h2>%s</h2>' % title)
         
@@ -446,52 +446,26 @@ def show_comments(wfile, bug):
 
 
 def bug_status_summary(wfile, bug):
-    wfile.write('''
-  <center>
-  <table width="90%%" cellpadding="3" cellspacing="5" border="0">
-  
-   <tr>
-    <td colspan="3">Bug ID: <b>%(bug_id)s</b></td>
-   </tr>
-  
-   <tr>
-    <td colspan="3">Title: <em>%(title)s</em></td>
-   </tr>
-  
-   <tr>
-    <td>Status: <b>%(status)s</b></td>
-    <td colspan="2">Priority: <b>%(priority)s</b></td>
-   </tr>
-  
-   <tr>
-    <td>Category: <b>%(category)s</b></td>
-    <td>Configuration: <b>%(configuration)s</b></td>
-    <td>Keyword: <b>%(keyword)s</b></td>
-   </tr>
-  
-   <tr>
-    <td>Reported in: <b>%(reported_in)s</b></td>
-    <td>Fixed in: <b>%(fixed_in)s</b></td>
-    <td>Tested ok in: <b>%(tested_ok_in)s</b></td>
-   </tr>
-  
-  </table></center>''' %
-                {"bug_id": bug.bug_id,
-                 "title": bug.title,
-                 "status": bug.status,
-                 "priority": bug.priority,
-                 "category": bug.category,
-                 "configuration": bug.configuration,
-                 "keyword": bug.keyword,
-                 "reported_in": bug.reported_in,
-                 "fixed_in": bug.fixed_in,
-                 "tested_ok_in": bug.tested_ok_in})
+    if bug.priority:
+        wfile.write('''
+  <p>
+   &nbsp;&nbsp;<strong>%(status)s</strong>,
+   priority %(priority)s (<a href="#editbugform">more</a>)
+  </p>''' % {"status": bug.status.capitalize(),
+              "priority": bug.priority})
+    else:
+        wfile.write('''
+  <p>
+   &nbsp;&nbsp;<strong>%(status)s</strong>
+   (<a href="#editbugform">more</a>)
+  </p>''' % {"status": bug.status.capitalize()})
   
     
 def edit_bug_form(wfile, path, bug, statuses, priorities,
                   configurations, categories, keywords, versions):
     wfile.write('''
   <center><blockquote>
+  <a name="editbugform" id="editbugform"></a>
   <form action="%(path)s" method="POST">
   <input type="hidden" name="bug_id" value="%(bug_id)s"/>
   <table cellpadding="3" cellspacing="0" border="0">
