@@ -409,8 +409,8 @@ def new_bug_form(wfile, path, versions, configurations, categories):
 
 class StatusHints(object):
 
-    new = ("(set to <b>scheduled</b> to fix now, <b>reviewed</b> to "
-           "fix later, or <b>close</b> if not a bug)")
+    new = ("(set to <b>scheduled</b> to fix now, or "
+           "<b>reviewed</b> to fix later)")
 
     reviewed = "(set to <b>scheduled</b> to have this bug fixed now)"
 
