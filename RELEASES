@@ -10,9 +10,9 @@ release_0-3 (???)
 
   * Don't provide list of valid locations when enter invalid URL.
 
-  * Order the matches so that http substitutions don't interfer with others.
+  * Order the comment mappings so that substitutions don't interfer with others.
 
-  * Failed fixes now instructed to be put back to new rather than scheuled.
+  * Failed fixes now instructed to be put back to new rather than scheduled.
 
   * Comments entry box now effectively ignores escaped (\) characters.
 
