@@ -36,7 +36,7 @@ def format_comment(text):
         rows.append(row.replace(" ", "&nbsp;", n_leading_spaces))
     text = "\n<br/>\n".join(rows)
 
-    for pattern, substitute in config.CommentMappings.mappings:
+    for name, pattern, substitute in config.CommentMappings.mappings:
         text = re.sub(pattern, substitute, text)
 
     return text

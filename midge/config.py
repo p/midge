@@ -114,13 +114,14 @@ def read():
     Presentation.directory = get("Presentation", "directory")
 
     def read_comment_mappings():
-        separator = get("Comment Mappings", "SEPARATOR").strip()
+        SEPARATOR_KEY = "SEPARATOR"
+        separator = get("Comment Mappings", SEPARATOR_KEY).strip()
         mappings = []
         for k,v in items("Comment Mappings"):
-            if k != "separator":
+            if k != SEPARATOR_KEY:
                 pattern, substitute = v.split(separator, 1)
                 mappings.append(
-                    (re.compile( pattern.strip()), substitute.strip()) )
+                    (k, re.compile( pattern.strip()), substitute.strip()) )
         mappings.sort()
         CommentMappings.mappings = mappings
 
