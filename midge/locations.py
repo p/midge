@@ -105,7 +105,7 @@ class Home(Location):
                 wfile,
                 "If you have any ideas, requests, or problems regarding "
                 " Midge, please "
-                '<a href="mailto:timothy@corbettclark.com">send</a> '
+                '<a href="mailto:tcorbettclark@users.sf.net">send</a> '
                 "feedback.")
             templates.hrule(wfile)
             templates.paragraph(

@@ -3,6 +3,8 @@
 
 """Functions for generating html."""
 
+__version__ = "$Name$"
+
 import midge.config as config
 import midge.lib as lib
 
@@ -20,9 +22,7 @@ def header(wfile, user=None):
    <table cellspacing="0" cellpadding="3" border="0" width="100%%">
     <tr>
      <td>
-      <font face="arial, sans-serif">
-       <b>Midge</b> for project <b>%(project)s</b>
-      </font>
+      <b>Midge</b> for project <b>%(project)s</b>
      </td>
      <td align="right">
       <font size="-1">
@@ -130,8 +130,7 @@ def footer(wfile, user=None):
    <tr>
     <td valign="top">
       <font size="-2">
-       Ideas, requests, problems regarding Midge?
-       Please <a href="mailto:timothy@corbettclark.com">send</a> feedback.
+      <a href="http://midge.sourceforge.net">http://midge.sourceforge.net</a>
       </font>
      </td>
      <td valign="top" align="right">
