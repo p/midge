@@ -1,0 +1,683 @@
+TODO: header
+
+
+Requirements
+============
+ 
+Midge has been developed and tested with the following software
+(earlier versions may work):
+
+   postgres-7.4.2
+   psycopg-1.1.11
+   python-2.3.3
+   egenix-mx-base-2.0.4
+
+
+To run Midge without installing
+===============================
+
+ 1) Setup environment variables:
+
+    export PYTHONPATH=${PYTHONPATH}:$(pwd)
+    export PATH=${PATH}:$(pwd)/bin
+
+ 2) Make any required changes to the config file "midge.conf".
+
+ 3) Initialise the database and tables. You will need to be root, so
+    either:
+
+  a) use sudo (preferable):
+
+      sudo midge-admin setup		# TODO sort out env variables.
+
+  b) OR use root:
+
+      su
+      midge-admin setup
+
+ 4) Confirm that all the tests pass:
+
+      midge-test
+
+ 5) Start the server:
+
+      midged
+
+ 6) Point your browser to
+
+      http://localhost:8000
+
+   (or as per config file).
+
+
+Install
+=======
+
+ 1) Adjust setup.py as required.
+
+ 2) Build the packge:
+
+      python setup.py build
+
+ 3) Install Midge:
+
+      sudo python set.py install
+
+ 4) Cleanup:
+
+     python setup.up clean
+
+ 5) Start the server:
+
+     midged
+
+
+States
+======
+
+Approach:
+
+  - Keep the number of states to a minimum so that the user can easily
+    make queries, without accidentally missing bugs.
+
+  - Don't have state values which are rarely used (e.g. use "new"
+    again, rather than "reopened")
+
+  - Keep states as orthogonal as possible. So for example, don't have
+    a resolved category which is only relevent when the status is
+    closed or fixed. Also don't allow multiple "fixed in versions" as
+    this clashes with the status (use separate bugs linked through
+    keywords).
+
+  - Allow some states to have values dynamically decided by the user
+    (and automatically cleaned up when unused).
+
+  - All underlying tables (and separate user-enterable fields) are
+    justified by the need for searching; do not store purely
+    informative data in separate tables, and avoid the user needing to
+    enter them using separate fields. For example, although it is
+    useful to know which machine a bug occured on, it is most unlikely
+    that one would need to search on this.
+
+status
+  new		a new unread (or reopened) bug
+  reviewed	acknowledged useful entry, but don't fix yet
+  scheduled     ready to be fixed now
+  fixed  	believed fixed (or not a bug), but to be confirmed by testing
+  closed	confirmed fixed (or not a bug)
+  cancelled	either a mistake, not a bug, or not going to fix
+
+  Note that all new bugs start as new. Typically, Managers take new to
+  reviewed or cancelled, and to scheduled if ready to fix; Developers
+  take scheduled to fixed, tackling them in order of priority);
+  Testers take fixed to closed, cancelled, or new.
+
+*category
+  Dynamically chosen by user (e.g. eDC, eDM, config, etc)
+
+*reported in version
+  Dynamically chosen by user (e.g. release_3-1, 2.8.3pre3)
+
+*configuration
+  Dynamically chosen by user (e.g. trial ID, demo)
+
+priority
+  A number from 1 to 5, where 5 is the most important. Note priority
+  does not mean severity (and severity is indicated in the users text).
+
+fixed in version
+  Dynamically chosen by user (e.g. release_3-1, 2.8.2pre3).
+
+closed in version
+  Dynamically chosen by user (e.g. release_3-1, 2.8.2pre3)
+
+keywords
+
+  Dynamically chosen by the user, and allows bugs to be grouped
+  (e.g. comms, release management). Note that this includes grouping
+  duplicates (which should be closed off together). A bug can belong
+  to more than one group. Note that "category" is simply a keyword in
+  a separate namespace.
+
+
+* items are asked on adding new bug.
+
+Listings
+========
+
+all new bugs
+  sort by priority
+  -> bug id, priority category, title
+
+all reviewed bugs
+  sort by priority
+  -> bug id, priority, category, title
+
+all scheduled bugs
+  sort by priority
+  -> bug id, priority, category, reported in, title
+
+all fixed bugs
+  sort by fixed in
+  -> bug id, priority, category, fixed in, title
+
+all closed bugs
+  sort by closed in
+  -> bug id, priority, closed in, title
+
+all cancelled bugs
+  -> bug id, title
+
+keywords view (quite different)
+
+
+---
+
+Migrating from Cmed PhpBugTracker
+=================================
+
+Justification for changes can be found below. In summary:
+
+   * Preserve all bug ids, even if this means some bug ids will not exist.
+   * Preserve all bug titles, comments, users, and times.
+   * Map states as follows:
+
+Status
+  Drop Roundup status (purely historical - none of them have any
+  content), map the Reopened to New, map the Verified as Closed, map
+  Resolved to Fixed, and drop Assigned as unused (or map to Reviewed).
+
+Component
+  Map to Category, except change "Old Roundup Bug" to "Aaah - Not
+  Sure"
+
+Version
+  Map to reported in
+
+Closed in version
+  Map to closed in
+  and Map to fixed in
+
+To be closed in version
+  If equal to Later, set status to reviewed (?)
+  Or simply ignore...?
+
+Database server
+  Map to Configuration
+
+Priority
+  Map to Priority
+
+Resolution, Severity, OS, Project, Site
+  Ignore
+
+---
+
+=== Status
+
+mysql> SELECT status_id, status_name, status_desc FROM phpbt_status;
++-----------+-------------+------------------------------------------------+
+| status_id | status_name | status_desc                                    |
++-----------+-------------+------------------------------------------------+
+|         2 | Roundup     | Old Roundup bugs only                          |
+|         3 | Assigned    | Assigned to a developer                        |
+|         4 | Reopened    | Closed but opened again for further inspection |
+|         5 | Resolved    | Set by engineer with a resolution              |
+|         6 | Verified    | The resolution is confirmed by the reporter    |
+|         7 | Closed      | The issue is officially closed                 |
+|         8 | New         | New problems - to be reviewed and assigned     |
+|         9 | Reviewed    | Reviewed by Stream Leader but not yet Assigned |
++-----------+-------------+------------------------------------------------+
+
+mysql> SELECT status_name AS status, count(*) AS count FROM phpbt_bug AS b NATURAL LEFT JOIN phpbt_status GROUP BY b.status_id;
++----------+-------+
+| status   | count |
++----------+-------+
+| Roundup  |   409 |
+| Reopened |     2 |
+| Resolved |    64 |
+| Verified |     2 |
+| Closed   |   236 |
+| New      |     8 |
+| Reviewed |   154 |
++----------+-------+
+
+=== Resolution
+
+mysql> select resolution_id AS ID, resolution_name as Name, resolution_desc from phpbt_resolution;
++----+--------------------+--------------------------------------------------------------------------------------------+
+| ID | Name               | resolution_desc                                                                            |
++----+--------------------+--------------------------------------------------------------------------------------------+
+|  1 | Fixed              | Bug was eliminated                                                                         |
+|  2 | Not a bug          | It's not a bug -- it's a feature!                                                          |
+|  7 | Obsolete           | The issue has gone away as this area of functionality has changed or been removed          |
+|  5 | Works for me       | Can't replicate the bug                                                                    |
+|  6 | Duplicate          | Put bug number(s) in Dependencies                                                          |
+|  8 | No Change          | put reason in comments                                                                     |
+|  9 | Temp Fix           | The problem has been temporarily given a quick fix but it has not been adequately resolved |
+| 10 | Modified Test Case | Changed the Test case to match the agreed behaviour of the software                        |
++----+--------------------+--------------------------------------------------------------------------------------------+
+
+mysql> SELECT resolution_name AS resolution, count(*) AS count FROM phpbt_bug AS b NATURAL LEFT JOIN phpbt_resolution GROUP BY b.resolution_id;
++--------------------+-------+
+| resolution         | count |
++--------------------+-------+
+| NULL               |   604 |
+| Fixed              |   205 |
+| Not a bug          |    26 |
+| Works for me       |    20 |
+| Duplicate          |    11 |
+| Obsolete           |     4 |
+| No Change          |     1 |
+| Temp Fix           |     2 |
+| Modified Test Case |     2 |
++--------------------+-------+
+
+This category is most useful for indicating duplicates. One of the
+downsides of declaring a bug as a duplicate is that it is no longer
+possible to see all the texts filed against what is essentially one bug.
+
+Duplicates should be handled by keywords - used to indicate related bugs.
+
+Fixed, Won't fix, Not a bug are all covered by the Cancelled state of status.
+
+=== Severity
+
+mysql> SELECT severity_id, severity_name, severity_desc FROM phpbt_severity;
++-------------+------------------------+---------------------------------------------------------------------------+
+| severity_id | severity_name          | severity_desc                                                             |
++-------------+------------------------+---------------------------------------------------------------------------+
+|           1 | Unassigned             | Default bug creation                                                      |
+|           2 | Functional Requirement | (link to) a User Requirement &/or a Story Card                            |
+|           3 | Feature Request        | Request for a specific feature OR an idea for improving a current feature |
+|           4 | Bug                    | A problem with the intended function or performance of the product        |
+|           5 | Cosmetic (GUI)         | Cosmetic problem not affecting function or performance                    |
+|           6 | Text (GUI)             | Problems with textual content (but NOT on-line Doc or Help)               |
+|           7 | Online Doc or Help     | Problem with On-line Documentation or Pop-up Help                         |
++-------------+------------------------+---------------------------------------------------------------------------+
+
+mysql> SELECT severity_name AS severity, count(*) AS count FROM phpbt_bug AS b NATURAL JOIN phpbt_severity GROUP BY b.severity_id;
++------------------------+-------+
+| severity               | count |
++------------------------+-------+
+| Functional Requirement |   459 |
+| Feature Request        |    31 |
+| Bug                    |   360 |
+| Cosmetic (GUI)         |    20 |
+| Text (GUI)             |     4 |
+| Online Doc or Help     |     1 |
++------------------------+-------+
+
+This is rather a mixed bag, and has nothing really to do with
+severity. First note that all 409 of the status=Roundup bugs have a
+severity=Functional Requirement. How is Functional Requirement a
+severity?. Has anyone searched on Cosmetic (GUI)?
+
+=== Component
+
+mysql> select component_id, project_id, component_name, component_desc from phpbt_component;
++--------------+------------+-----------------+------------------------------------------------------------+
+| component_id | project_id | component_name  | component_desc                                             |
++--------------+------------+-----------------+------------------------------------------------------------+
+|            1 |          1 | Old Roundup Bug | Awaiting transfer from text file                           |
+|            2 |          1 | TestConfig      | The Test Database Configuration use to test the Codebase,
+                                                as need to run the Test Suites and the Validation Trial    |
+|            3 |          1 | User Manual     | Issues with the printed ThirdPhase User Manual             |
+|            4 |          1 | eDM             | electronic Data Management                                 |
+|            5 |          1 | eDC             | electronic Data Capture                                    |
+|            6 |          1 | Core            | Core Conductor components                                  |
+|            7 |          1 | Configuration   | Support for the Trial Configuration layer                  |
+|            8 |          1 | Aaah - Not Sure | Nore sure which one                                        |
++--------------+------------+-----------------+------------------------------------------------------------+
+
+mysql> SELECT component_name, count(*) AS count FROM phpbt_bug AS b LEFT JOIN phpbt_component AS c ON b.component_id=c.component_id GROUP BY b.component_id;
++-----------------+-------+
+| component_name  | count |
++-----------------+-------+
+| Old Roundup Bug |   416 |
+| TestConfig      |     4 |
+| eDM             |   221 |
+| eDC             |    77 |
+| Core            |    74 |
+| Configuration   |    70 |
+| Aaah - Not Sure |    13 |
++-----------------+-------+
+
+Basically map to (user chosen) category. The question is over the "Old
+Roundup Bug" COMPONENT. If we ignore the 409 empty status=Roundup bugs,
+then:
+
+mysql> SELECT bug_id, title FROM phpbt_bug AS b LEFT JOIN phpbt_component AS c ON b.component_id=c.component_id WHERE b.status_id<>2 AND component_name = 'Old Roundup Bug';
++--------+------------------------------------------------------------------------+
+| bug_id | title                                                                  |
++--------+------------------------------------------------------------------------+
+|      2 | Time display on query action point broken                              |
+|      3 | Entry role cannot "bring forward" a blank eCRF page in the audit trail |
+|      6 | Loading central lab data                                               |
+|      8 | Enrolment can't view centre details                                    |
+|     18 | Renaming centres from Enrolment role                                   |
+|    332 | unable to smb export when spaces in directory name                     |
+|    373 | Roundup placeholder 373                                                |
++--------+------------------------------------------------------------------------+
+
+All of these are either closed, or not a bug, except for 332, which
+has been fixed but not confirmed by testing.
+
+=== OS
+
+mysql> select * from phpbt_os;
++-------+---------+------------+-----------------------------+
+| os_id | os_name | sort_order | regex                       |
++-------+---------+------------+-----------------------------+
+|    16 | Trustix |          1 | /Mozilla.*(.*;.*; Linux.*)/ |
+|    32 | Debian  |          2 | Mozilla.*(.*;.*; Linux.*)/  |
++-------+---------+------------+-----------------------------+
+
+mysql> SELECT os_name AS os, count(*) AS count FROM phpbt_bug AS b NATURAL LEFT JOIN phpbt_os GROUP BY b.os_id;
++---------+-------+
+| os      | count |
++---------+-------+
+| Trustix |   478 |
+| Debian  |   397 |
++---------+-------+
+
+Again note that all 409 empty Roundup bugs are categorised as
+Trustix. But more importantly, note that the operating system is
+completely determined by the version number. Hence this field is
+redundant.
+
+=== PROJECT
+
+mysql> select count(*) from phpbt_project;
++----------+
+| count(*) |
++----------+
+|        1 |
++----------+
+
+We only have one project.
+
+=== the version table (used by VERSION, TO_BE_CLOSED_IN_VERSION, and CLOSED_IN_VERSION)
+
+mysql> SELECT version_id, version_name FROM phpbt_version;
++------------+--------------+
+| version_id | version_name |
++------------+--------------+
+|          1 | 2.2          |
+|          2 | 2.2.3        |
+|          3 | 2.6          |
+|          4 | 2.7          |
+|         18 | 2.8.3        |
+|          6 | 2.8 i2       |
+|          7 | 2.8 i3       |
+|          8 | 2.8.0        |
+|          9 | 1.x          |
+|         10 | Soon         |
+|         11 | Distant      |
+|         12 | 2.x          |
+|         13 | 2.8 i4       |
+|         14 | 2.8.1        |
+|         15 | 2.8.2        |
+|         16 | 2.9 i2       |
+|         17 | 2.8pre       |
+|         19 | 2.8.8        |
+|         20 | 2.9 i5       |
+|         21 | 2.9.0        |
+|         22 | 2.9pre       |
+|         31 | 3.1pre       |
+|         24 | 3.0 i5       |
+|         30 | 2.8.9        |
+|         26 | 3.0pre       |
+|         27 | 3.0 Final    |
+|         28 | 2.9.1        |
+|         29 | 2.9.2        |
+|         32 | 3.1 Final    |
+|         33 | 3.2 Final    |
+|         34 | 2.9.3        |
+|         35 | 2.8.7        |
++------------+--------------+
+
+Note that Soon and Distant only make sense for predictions, not for
+which version a bug was reported or fixed in.
+
+=== Combined use of version_id, to_be_closed_in_version_id, closed_in_version_id
+
+SELECT v1.version_name AS 'filed in', v2.version_name AS 'to be closed in', v3.version_name AS 'closed in', count(*) AS count FROM phpbt_bug AS b, phpbt_version AS v1, phpbt_version AS v2, phpbt_version AS v3 WHERE b.version_id = v1.version_id AND b.to_be_closed_in_version_id = v2.version_id AND b.closed_in_version_id = v3.version_id GROUP BY v1.version_name, v2.version_name, v3.version_name;
++-----------+-----------------+-----------+-------+
+| filed in  | to be closed in | closed in | count |
++-----------+-----------------+-----------+-------+
+| 1.x       | 2.8.0           | 2.8 i4    |     1 |
+| 2.2       | 2.8 i3          | 2.8 i3    |     1 |
+| 2.2       | 2.8.0           | 2.6       |     1 |
+| 2.2       | 2.8.0           | 2.8 i4    |     3 |
+| 2.2       | 2.8.1           | 2.8.1     |     1 |
+| 2.2       | 2.9.0           | 2.9 i5    |     1 |
+| 2.6       | 2.8.0           | 2.8 i4    |     2 |
+| 2.7       | 2.8.0           | 2.8pre    |     2 |
+| 2.8 i2    | 2.8.0           | 2.8 i4    |     1 |
+| 2.8 i3    | 2.8.0           | 2.8.0     |     2 |
+| 2.8 i4    | 2.8 i4          | 2.8.0     |     1 |
+| 2.8 i4    | 2.8.0           | 2.8.0     |     1 |
+| 2.8 i4    | 2.8.0           | 2.8pre    |     2 |
+| 2.8 i4    | 2.8.1           | 2.8.1     |     1 |
+| 2.8 i4    | 3.0 Final       | 3.0 i5    |     1 |
+| 2.8.0     | 2.8.1           | 2.8.1     |     2 |
+| 2.8.0     | 2.9 i2          | 2.9 i2    |     1 |
+| 2.8.0     | 2.9.0           | 2.9 i5    |     1 |
+| 2.8.0     | 2.9.0           | 2.9.0     |     1 |
+| 2.8.0     | 2.9pre          | 2.9pre    |     1 |
+| 2.8.0     | 3.0 Final       | 3.0pre    |     1 |
+| 2.8.1     | 2.8.1           | 2.8.1     |     1 |
+| 2.8.1     | 2.8.2           | 2.8.1     |     1 |
+| 2.8.1     | 2.8.2           | 2.8.2     |     2 |
+| 2.8.1     | Soon            | 2.9 i5    |     1 |
+| 2.8.2     | 2.8.2           | 2.8.2     |     1 |
+| 2.8.2     | 2.8.3           | 2.8.3     |     1 |
+| 2.8.2     | 2.9 i2          | 2.9 i2    |     1 |
+| 2.8.2     | 2.9.0           | 2.9pre    |     1 |
+| 2.8.3     | 2.8.8           | 2.8.8     |     1 |
+| 2.8.8     | 2.8.9           | 2.8.9     |     2 |
+| 2.8pre    | 2.8.0           | 2.8.0     |     3 |
+| 2.8pre    | 2.8.1           | 2.8.1     |     1 |
+| 2.8pre    | 3.1 Final       | 3.1pre    |     2 |
+| 2.9 i2    | 2.9.0           | 2.9pre    |     1 |
+| 2.9 i5    | 2.9.0           | 2.9pre    |     2 |
+| 2.9.0     | 3.0 Final       | 3.0pre    |     1 |
+| 2.9.1     | 2.9.2           | 2.9.2     |     5 |
+| 2.9.1     | 3.1 Final       | 3.1pre    |     2 |
+| 2.9.2     | 2.9.3           | 2.9.3     |     1 |
+| 2.9.2     | 3.0 Final       | 3.0pre    |     1 |
+| 2.9.2     | 3.1 Final       | 2.9.3     |     1 |
+| 2.9.2     | 3.1 Final       | 3.1pre    |     3 |
+| 2.9.3     | 2.9.3           | 2.9.3     |     2 |
+| 2.9.3     | 3.1 Final       | 2.9.3     |     1 |
+| 2.9.3     | 3.1 Final       | 3.1pre    |     3 |
+| 2.9pre    | 2.9.0           | 2.9pre    |     5 |
+| 2.9pre    | 2.9pre          | 2.9pre    |     2 |
+| 2.9pre    | 3.0 Final       | 3.0pre    |     1 |
+| 2.9pre    | 3.1 Final       | 2.9pre    |     1 |
+| 2.9pre    | 3.1 Final       | 3.1pre    |     1 |
+| 2.x       | 2.8.0           | 2.8 i4    |     1 |
+| 3.0 Final | 3.1 Final       | 3.1pre    |     4 |
+| 3.0 i5    | 3.1 Final       | 3.1pre    |     3 |
+| 3.0pre    | 3.0 Final       | 3.0pre    |    34 |
+| 3.0pre    | 3.0pre          | 3.0pre    |     3 |
+| 3.0pre    | 3.1 Final       | 3.1pre    |    16 |
+| 3.1 Final | 3.0 Final       | 3.0pre    |     1 |
+| 3.1 Final | 3.1 Final       | 3.1pre    |     3 |
+| 3.1 Final | 3.1pre          | 3.1pre    |     1 |
+| 3.1pre    | 3.0 Final       | 3.0pre    |     2 |
+| 3.1pre    | 3.1 Final       | 3.1 Final |     1 |
+| 3.1pre    | 3.1 Final       | 3.1pre    |    11 |
+| 3.1pre    | 3.1pre          | 3.1pre    |     1 |
++-----------+-----------------+-----------+-------+
+
+
+=== Closed in version
+
+mysql> SELECT v.version_name, count(*) FROM phpbt_bug AS b LEFT JOIN phpbt_version AS v ON b.closed_in_version_id = v.version_id GROUP BY v.version_name;
++--------------+----------+
+| version_name | count(*) |
++--------------+----------+
+| NULL         |      661 |
+| 1.x          |        2 |
+| 2.6          |        1 |
+| 2.8 i3       |        1 |
+| 2.8 i4       |       12 |
+| 2.8.0        |       11 |
+| 2.8.1        |        7 |
+| 2.8.2        |        6 |
+| 2.8.3        |        1 |
+| 2.8.8        |        1 |
+| 2.8.9        |        2 |
+| 2.8pre       |        4 |
+| 2.9 i2       |        2 |
+| 2.9 i5       |        3 |
+| 2.9.0        |        4 |
+| 2.9.1        |        2 |
+| 2.9.2        |        5 |
+| 2.9.3        |        5 |
+| 2.9pre       |       43 |
+| 3.0 i5       |        1 |
+| 3.0pre       |       48 |
+| 3.1 Final    |        1 |
+| 3.1pre       |       52 |
++--------------+----------+
+
+=== Version
+
+mysql> SELECT v.version_name, count(*) FROM phpbt_bug AS b LEFT JOIN phpbt_version AS v ON b.version_id = v.version_id GROUP BY v.version_name;
++--------------+----------+
+| version_name | count(*) |
++--------------+----------+
+| 1.x          |       14 |
+| 2.2          |       16 |
+| 2.2.3        |        3 |
+| 2.6          |        3 |
+| 2.7          |        2 |
+| 2.8 i2       |        1 |
+| 2.8 i3       |        7 |
+| 2.8 i4       |       14 |
+| 2.8.0        |      430 |
+| 2.8.1        |       10 |
+| 2.8.2        |        6 |
+| 2.8.3        |        1 |
+| 2.8.7        |        1 |
+| 2.8.8        |        3 |
+| 2.8pre       |       14 |
+| 2.9 i2       |        6 |
+| 2.9 i5       |       12 |
+| 2.9.0        |        5 |
+| 2.9.1        |        9 |
+| 2.9.2        |        9 |
+| 2.9.3        |       12 |
+| 2.9pre       |       36 |
+| 2.x          |        6 |
+| 3.0 Final    |       13 |
+| 3.0 i5       |       10 |
+| 3.0pre       |      134 |
+| 3.1 Final    |       19 |
+| 3.1pre       |       79 |
++--------------+----------+
+
+
+=== To be closed in
+
+mysql> SELECT v.version_name, count(*) FROM phpbt_bug AS b LEFT JOIN phpbt_version AS v ON b.to_be_closed_in_version_id = v.version_id GROUP BY v.version_name;
++--------------+----------+
+| version_name | count(*) |
++--------------+----------+
+| NULL         |      526 |
+| 1.x          |        1 |
+| 2.8 i3       |        1 |
+| 2.8 i4       |        1 |
+| 2.8.0        |       28 |
+| 2.8.1        |        6 |
+| 2.8.2        |        4 |
+| 2.8.3        |        1 |
+| 2.8.8        |        1 |
+| 2.8.9        |        2 |
+| 2.9 i2       |        2 |
+| 2.9.0        |       13 |
+| 2.9.2        |        5 |
+| 2.9.3        |        3 |
+| 2.9pre       |        3 |
+| 3.0 Final    |       46 |
+| 3.0pre       |        3 |
+| 3.1 Final    |      175 |
+| 3.1pre       |        4 |
+| 3.2 Final    |       15 |
+| Distant      |        2 |
+| Soon         |       33 |
++--------------+----------+
+
+
+=== Site
+
+mysql> select * from phpbt_site;
++---------+-----------------+------------+
+| site_id | site_name       | sort_order |
++---------+-----------------+------------+
+|       0 | All             |          1 |
+|       1 | Cmed Technology |          2 |
+|       2 | Cmed CRS        |          3 |
+|       3 | Cmed Inc        |          4 |
+|       5 | Demo            |          5 |
++---------+-----------------+------------+
+
+mysql> SELECT site_name AS site, count(*) AS count FROM phpbt_bug AS b NATURAL LEFT JOIN phpbt_site GROUP BY b.site_id;
++-----------------+-------+
+| site            | count |
++-----------------+-------+
+| All             |   538 |
+| Cmed Technology |   287 |
+| Cmed CRS        |    46 |
+| Cmed Inc        |     1 |
+| Demo            |     3 |
++-----------------+-------+
+
+To my knowledge, no one has ever used this information. Of far greater
+interest is on which machine as bug occured (which is now captured on
+a new field).
+
+=== Database Server
+
+mysql> select * from phpbt_database_server;
++-------------+-----------------+------------+
+| database_id | database_name   | sort_order |
++-------------+-----------------+------------+
+|           1 | Test Trial      |          1 |
+|           5 | PKC412-20       |         12 |
+|           4 | CAMPTO3501      |         11 |
+|           6 | PKC412-100      |         13 |
+|           7 | RAD2101/2 pt1   |         14 |
+|           8 | RAD2101amd3     |         16 |
+|           9 | ALERT3010       |         17 |
+|          10 | STI2101         |         10 |
+|          11 | RAD2101pt2      |         15 |
+|          12 | ADX10061        |         18 |
+|          13 | ICL670          |         19 |
+|          14 | eDC Test Trial  |          2 |
+|          15 | Usability Trial |          3 |
++-------------+-----------------+------------+
+
+mysql> SELECT database_name AS name, count(*) AS count FROM phpbt_bug AS b NATURAL LEFT JOIN phpbt_database_server GROUP BY b.database_id;
++-----------------+-------+
+| name            | count |
++-----------------+-------+
+| NULL            |   522 |
+| Test Trial      |   187 |
+| CAMPTO3501      |     4 |
+| PKC412-20       |     2 |
+| PKC412-100      |     1 |
+| RAD2101/2 pt1   |     1 |
+| RAD2101amd3     |     3 |
+| ALERT3010       |     9 |
+| STI2101         |     4 |
+| RAD2101pt2      |     2 |
+| ADX10061        |    11 |
+| ICL670          |     7 |
+| eDC Test Trial  |    73 |
+| Usability Trial |    49 |
++-----------------+-------+
+

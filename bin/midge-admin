@@ -1,0 +1,74 @@
+#!/bin/bash
+# $Id$
+# (C) Timothy Corbett-Clark, 2004
+
+function help {
+    echo "Usage:"
+    echo "   $progname setup    # create the Midge user and database."
+    echo "   $progname teardown # destroy the Midge user and database."
+}
+
+function exit_if_not_root {
+    if [ $(id -un) != "root" ]; then
+	echo "${progname} must be run as root!"
+	help
+	exit 1
+    fi
+}
+
+function set_env_variables {
+    eval $(midge-config)
+}
+
+function create_user {
+    su ${POSTGRES_ADMIN_USER} -c "${POSTGRES_PATH}/createuser \
+	${DATABASE_USER} --no-adduser --no-createdb"
+}
+
+function set_password {
+    database=$1
+    su ${POSTGRES_ADMIN_USER} -c "${POSTGRES_PATH}/psql ${database} -c \
+        \"ALTER USER ${DATABASE_USER} WITH PASSWORD '${DATABASE_PASSWORD}';\""
+}
+
+function drop_user {
+    su ${POSTGRES_ADMIN_USER} -c "${POSTGRES_PATH}/dropuser ${DATABASE_USER}"
+}
+
+function create_database {
+    database=$1
+    su ${POSTGRES_ADMIN_USER} -c "${POSTGRES_PATH}/createdb \
+	-O ${DATABASE_USER} -T template1 ${database}"
+    sleep 0.5
+}
+
+function drop_database {
+    database=$1
+    su ${POSTGRES_ADMIN_USER} -c ${POSTGRES_PATH}/dropdb ${database}
+}
+
+cd $(dirname $0)
+
+progname=$(basename $0)
+command=$1
+
+exit_if_not_root
+
+case ${command} in
+    setup)
+	set_env_variables
+	create_user ${DATABASE_USER}
+	create_database ${DATABASE_NAME}
+	create_database ${DATABASE_TEST_NAME}
+	set_password ${DATABASE_NAME}
+	;;
+    teardown)
+	set_env_variables
+	drop_database ${DATABASE_TEST_NAME}
+	drop_database ${DATABASE_NAME}
+	drop_user ${DATABASE_USER}
+	;;
+    *)
+	help
+	;;
+esac
