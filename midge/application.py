@@ -890,7 +890,6 @@ class Bugs(object):
             "bug_id": "bugs.bug_id",
             "priority": "priority_values.name",
             "category": "category_values.name",
-            # TODO add keyword and configuration?
             "reported_in": "reported_versions.name",
             "fixed_in": "fixed_versions.name",
             "closed_in": "closed_versions.name",

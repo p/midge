@@ -806,3 +806,199 @@ def table_of_bugs(wfile, path, rows):
     wfile.write('''
    </table>
   </center>''')
+
+
+def search_form(wfile, path, statuses, priorities,
+                configurations, categories, keywords, versions):
+    wfile.write('''
+  <blockquote>
+  <form action="%(path)s" method="POST">
+  <table cellpadding="3" cellspacing="0" border="0">
+   <tr>
+    <td bgcolor="#EEEEEE"><small><em>States</em></small></td>
+   </tr> 
+   <tr bgcolor="#DDDDDD">
+    <td><small><b>&nbsp;&nbsp;Status</b></small></td>
+    <td>
+     <select name="status" size="1">''' % {"path": path})
+    for status in statuses:
+        wfile.write('''
+      <option value="%s">%s</option>''' % (status, status))
+    wfile.write('''
+     </select>
+    </td>
+    <td>
+     <small><label>
+      <input type="checkbox" name="status_column" value="on">Show column
+     </label></small>
+    </td>
+   </tr>
+   <tr bgcolor="#DDDDDD">
+    <td><small><b>&nbsp;&nbsp;Priority</b></small></td>
+    <td>
+     <select name="priority" size="1">''')
+    for priority in priorities:
+        wfile.write('''
+      <option value="%s">%s</option>''' % (priority, priority))
+    wfile.write('''
+     </select>
+    </td>
+    <td>
+     <small><label>
+      <input type="checkbox" name="priority_column" value="on">Show column
+     </label></small>
+    </td>
+   </tr>
+  
+   <tr><td><table></table></td></tr>
+   <tr><td><table></table></td></tr>
+  
+   <tr>
+    <td bgcolor="#EEEEEE"><small><em>Groupings</em></small></td>
+   </tr> 
+   <tr bgcolor="#DDDDDD">
+    <td><small><b>&nbsp;&nbsp;Category</b></small></td>
+    <td>
+     <select name="category" size="1">''')
+    for category in categories:
+        wfile.write('''
+      <option value="%s">%s</option>''' % (category, category))
+    wfile.write('''
+     </select>
+    </td>
+    <td>
+     <small><label>
+      <input type="checkbox" name="category_column" value="on">Show column
+     </label></small>
+    </td>
+
+   </tr>
+   <tr bgcolor="#DDDDDD">
+    <td><small><b>&nbsp;&nbsp;Configuration</b></small></td>
+    <td>
+     <select name="configuration" size="1">''')
+    for configuration in configurations:
+        wfile.write('''
+      <option value="%s">%s</option>''' % (configuration,
+                                           configuration))
+    wfile.write('''
+     </select>
+    </td>
+    <td>
+     <small><label>
+      <input type="checkbox" name="configuration_column" value="on">Show column
+     </label></small>
+    </td>
+
+   </tr>
+   <tr bgcolor="#DDDDDD">
+    <td><small><b>&nbsp;&nbsp;Keyword</b></small></td>
+    <td>
+     <select name="keyword" size="1">''')
+    for keyword in keywords:
+        wfile.write('''
+      <option value="%s">%s</option>''' % (keyword,
+                                           keyword))
+    wfile.write('''
+     </select>
+    </td>
+    <td>
+     <small><label>
+      <input type="checkbox" name="keyword_column" value="on">Show column
+     </label></small>
+    </td>
+
+   </tr>
+ 
+   <tr><td><table></table></td></tr>
+   <tr><td><table></table></td></tr>
+  
+   <tr>
+    <td bgcolor="#EEEEEE"><small><em>Versions</em></small></td>
+   </tr> 
+   <tr bgcolor="#DDDDDD">
+    <td><small><b>&nbsp;&nbsp;Reported in</b></small></td>
+    <td>
+     <select name="reported_in" size="1">''')
+    for version in versions:
+        wfile.write('''
+         <option value="%s">%s</option>''' % (version, version))
+    wfile.write('''
+     </select>
+    </td>
+    <td>
+     <small><label>
+      <input type="checkbox" name="reported_in_column" value="on">Show column
+     </label></small>
+    </td>
+   </tr>
+   <tr bgcolor="#DDDDDD">
+    <td><small><b>&nbsp;&nbsp;Fixed in</b></small></td>
+    <td>
+     <select name="fixed_in" size="1">''')
+    for version in versions:
+        wfile.write('''
+         <option value="%s">%s</option>''' % (version, version))
+    wfile.write('''
+     </select>
+    </td>
+    <td>
+     <small><label>
+      <input type="checkbox" name="fixed_in_column" value="on">Show column
+     </label></small>
+    </td>
+   </tr>
+   <tr bgcolor="#DDDDDD">
+    <td><small><b>&nbsp;&nbsp;Closed in</b></small></td>
+    <td>
+     <select name="closed_in" size="1">
+     ''')
+    for version in versions:
+        wfile.write('''
+         <option value="%s">%s</option>''' % (version, version))
+    wfile.write('''
+     </select>
+    </td>
+    <td>
+     <small><label>
+      <input type="checkbox" name="closed_in_column" value="on">Show column
+     </label></small>
+    </td>
+
+   </tr>
+  
+   <tr><td><table></table></td></tr>
+   <tr><td><table></table></td></tr>
+
+   <tr>
+    <td bgcolor="#EEEEEE"><small><em>Text</em></small></td>
+   </tr> 
+   <tr bgcolor="#DDDDDD">
+    <td><small><b>&nbsp;&nbsp;Title</b></small></td>
+    <td>
+     <input name="title" type="text"/>
+    </td>
+    <td/>
+   </tr>
+   <tr bgcolor="#DDDDDD">
+    <td><small><b>&nbsp;&nbsp;Comments</b></small></td>
+    <td>
+     <input name="comments" type="text"/>
+    </td>
+    <td>
+   </tr>
+
+   <tr><td><table></table></td></tr>
+   <tr><td><table></table></td></tr>
+  
+   <tr>
+    <td colspan="3" align="right">
+     <input type="submit" name="submit" value="Submit"/>
+    </td>
+   </tr>
+  </table>
+  </form>
+  </blockquote>
+  
+  <hr> </hr>
+''')

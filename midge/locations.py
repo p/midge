@@ -34,7 +34,7 @@ class Location:
     def redirect(self, location, next_location=None):
         """Effect an http redirect to a new location."""
         if next_location:
-            url = lib.make_url(location, {"next": next_location})
+            url = lib.join_url(location, {"next": next_location})
         else:
             url = location
         raise server.RedirectException, url
@@ -172,7 +172,7 @@ class Login(Location):
                 'first login using an existing user account. '
                 ' Please select a username, '
                 'enter the password, and click the "Login" button.')
-            path = lib.make_url(self.path, values)
+            path = lib.join_url(self.path, values)
             templates.login_form(wfile, path, self.application.usernames)
             templates.hrule(wfile)
             templates.paragraph(
@@ -189,7 +189,7 @@ class Login(Location):
         password = post_data.get("password", None)
         if username and password and \
                self.application.login(session_id, username, password):
-            path = lib.make_url(next_location, values)
+            path = lib.join_url(next_location, values)
             self.redirect(path)
         else:
             user = self.application.get_user(session_id)
@@ -431,7 +431,7 @@ class List(Location):
                 templates.footer(wfile, user)
         else:
             values["next"] = self.path
-            path = lib.make_url(Login.path, values)
+            path = lib.join_url(Login.path, values)
             self.redirect(path)
 
     def _show_new(self, session_id, wfile, sort_by, order):
@@ -558,7 +558,7 @@ class View(Location):
             templates.footer(wfile, user)
         else:
             values["next"] = self.path
-            path = lib.make_url(Login.path, values)
+            path = lib.join_url(Login.path, values)
             self.redirect(path)
 
     def _make_changes(self, session_id, user, post_data, wfile):
@@ -761,11 +761,28 @@ class Search(Location):
         if user:
             templates.header(wfile, user)
             templates.title(wfile, "Search for bugs")
-            templates.paragraph(wfile, "TODO")
+            templates.search_form(wfile, self.path,
+                        [""] + list(self.application.statuses),
+                        self.application.priorities,
+                        self.application.configurations,
+                        self.application.categories,
+                        self.application.keywords,
+                        self.application.versions)
             templates.footer(wfile, user)
         else:
             self.redirect(Login.path, self.path)
             
+    def handle_post(self, session_id, values, post_data, wfile):
+        user = self.application.get_user(session_id)
+        if user:
+            templates.header(wfile, user)
+            self._search(session_id, wfile, post_data)
+            templates.footer(wfile, user)
+        else:
+            self.redirect(Login.path, self.path)
+
+    def _search(self, session_id, wfile, post_data):
+        wfile.write(str(post_data))
 
 class Images(Location):
 
