@@ -1,7 +1,6 @@
 User visible TODOs:
 
 - set title bar to Bug <num> (<project>) - Midge"
-- remove logged in username from screen
 - cannot include quotes in search fields
 - cannot search title with spaces (quoting problem?)
 - search by comments

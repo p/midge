@@ -10,7 +10,7 @@ distutils.core.setup(
     version="0.1",
     description="A small but powerful bug tracking system",
     author="Timothy Corbett-Clark",
-    author_email="tcorbettclark@sourceforge.net",
+    author_email="tcorbettclark@users.sourceforge.net",
     url="http://midge.sourceforge.net",
     packages=["midge"],
     data_files=[("/etc", ["etc/midge.conf"]),

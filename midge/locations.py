@@ -47,7 +47,7 @@ class Home(Location):
     def handle_get(self, session_id, values, wfile):
         user = self.application.get_user(session_id)
         if user:
-            templates.header(wfile, user)
+            templates.header(wfile)
             templates.title(wfile, "Welcome to Midge")
             templates.paragraph(
                 wfile,
@@ -85,7 +85,7 @@ class Home(Location):
             templates.possible_actions(wfile,
                                        ("logout", "Logout"),
                                        ("modifyuser", "Modify user account"))
-            templates.footer(wfile, user)
+            templates.footer(wfile)
         else:
             templates.header(wfile)
             templates.title(wfile, "Welcome to Midge")
@@ -152,7 +152,7 @@ class Login(Location):
         if "next" not in values:
             values["next"] = Home.path
         user = self.application.get_user(session_id)
-        templates.header(wfile, user)
+        templates.header(wfile)
         templates.title(wfile, "User login page")
         if user:
             templates.paragraph(
@@ -179,7 +179,7 @@ class Login(Location):
                 'do so now.')
             templates.possible_actions(wfile,
                                        ("adduser", "Create new account"))
-        templates.footer(wfile, user)
+        templates.footer(wfile)
 
     def handle_post(self, session_id, values, post_data, wfile):
         next_location = values.pop("next", None) or Home.path
@@ -191,7 +191,7 @@ class Login(Location):
             self.redirect(path)
         else:
             user = self.application.get_user(session_id)
-            templates.header(wfile, user)
+            templates.header(wfile)
             templates.title(wfile, "Login failed!")
             if username:
                 templates.paragraph(
@@ -212,7 +212,7 @@ class Login(Location):
                     wfile,
                     "You did not provide a username. "
                     "Please use the back-button of your browser to try again.")
-            templates.footer(wfile, user)
+            templates.footer(wfile)
 
 
 class EmailPassword(Location):
@@ -222,7 +222,7 @@ class EmailPassword(Location):
     def handle_get(self, session_id, values, wfile):
         user = self.application.get_user(session_id)
         username = values.get("username", None)
-        templates.header(wfile, user)
+        templates.header(wfile)
         templates.title(wfile, "Email password")
         if username and self.application.email_password(username):
             templates.paragraph(
@@ -236,7 +236,7 @@ class EmailPassword(Location):
                 "Sorry, your password has not been succesfuly "
                 "emailed to you. Either midge is not configured correctly "
                 "or your account does not contain a valid email address.")
-        templates.footer(wfile, user)
+        templates.footer(wfile)
         
 
 class AddUser(Location):
@@ -245,7 +245,7 @@ class AddUser(Location):
 
     def handle_get(self, session_id, values, wfile):
         user = self.application.get_user(session_id)
-        templates.header(wfile, user)
+        templates.header(wfile)
         templates.title(wfile, "Create a new user account")
         if user:
             templates.paragraph(
@@ -272,7 +272,7 @@ class AddUser(Location):
                 'will not be allowed to create a new account with an existing '
                 'Username.')
         templates.add_user_form(wfile, self.path)
-        templates.footer(wfile, user)
+        templates.footer(wfile)
         
     def handle_post(self, session_id, values, post_data, wfile):
         user = self.application.get_user(session_id)
@@ -283,7 +283,7 @@ class AddUser(Location):
         password = post_data.get("password", None)
         password_again = post_data.get("password_again", None)
 
-        templates.header(wfile, user)
+        templates.header(wfile)
 
         if username and name and email and password and password_again:
             if password == password_again:
@@ -330,7 +330,7 @@ class AddUser(Location):
             templates.paragraph(
                 wfile,
                 "Please use the back-button of your browser to try again.")
-        templates.footer(wfile, user)
+        templates.footer(wfile)
 
 
 class ModifyUser(Location):
@@ -340,7 +340,7 @@ class ModifyUser(Location):
     def handle_get(self, session_id, values, wfile):
         user = self.application.get_user(session_id)
         if user:
-            templates.header(wfile, user)
+            templates.header(wfile)
             templates.title(wfile, "Modify existing user account")
             templates.paragraph(
                 wfile,
@@ -354,7 +354,7 @@ class ModifyUser(Location):
                 'Note that you do not have to supply the new passwords if you '
                 'are happy with your existing password.')
             templates.modify_user_form(wfile, self.path, user.name, user.email)
-            templates.footer(wfile, user)
+            templates.footer(wfile)
         else:
             self.redirect(Login.path, self.path)
        
@@ -372,7 +372,7 @@ class ModifyUser(Location):
                     user.name = name
                 if email:
                     user.email = email
-                templates.header(wfile, user)
+                templates.header(wfile)
                 templates.title(wfile, "User account details changed ok")
                 if new_password == new_password_again:
                     if new_password:
@@ -393,14 +393,14 @@ class ModifyUser(Location):
                     wfile, "Please continue to the home page:")
                 templates.possible_actions(wfile, ("/home", "Home"))
             else:
-                templates.header(wfile, user)
+                templates.header(wfile)
                 templates.title(wfile, "Failed to change account details!")
                 templates.paragraph(
                     wfile,
                     "You failed to authenticate yourself by typing an "
                     "incorrect password. Please use the "
                     "back-button of your browser to try again.")
-            templates.footer(wfile, user)
+            templates.footer(wfile)
         else:
             self.redirect(Login.path, self.path)
 
@@ -418,11 +418,11 @@ class List(Location):
             show_method_name = "_show_%s" % status
             if hasattr(self, show_method_name):
                 show_method = getattr(self, show_method_name)
-                templates.header(wfile, user)
+                templates.header(wfile)
                 show_method(session_id, wfile, sort_by, order)
-                templates.footer(wfile, user)
+                templates.footer(wfile)
             else:
-                templates.header(wfile, user)
+                templates.header(wfile)
                 templates.title(wfile, "List bugs")
                 templates.bullets(
                     wfile,
@@ -431,7 +431,7 @@ class List(Location):
                     'for hand-crafted listings.')
                 status_counts = self.application.get_status_counts(session_id)
                 templates.list_form(wfile, self.path, status_counts)
-                templates.footer(wfile, user)
+                templates.footer(wfile)
         else:
             values["next"] = self.path
             path = lib.join_url(Login.path, values)
@@ -551,7 +551,7 @@ class View(Location):
     def handle_get(self, session_id, values, wfile):
         user = self.application.get_user(session_id)
         if user:
-            templates.header(wfile, user)
+            templates.header(wfile)
             bug_id = values.get('bug_id')
             if bug_id:
                 try:
@@ -583,7 +583,7 @@ class View(Location):
                     wfile,
                     '(The "Find bug" box may be found in the header and '
                     'the footer of every page.)')
-            templates.footer(wfile, user)
+            templates.footer(wfile)
         else:
             values["next"] = self.path
             path = lib.join_url(Login.path, values)
@@ -690,7 +690,7 @@ class View(Location):
     def handle_post(self, session_id, values, post_data, wfile):
         user = self.application.get_user(session_id)
         if user:
-            templates.header(wfile, user)
+            templates.header(wfile)
             try:
                 self._make_changes(session_id, user, post_data, wfile)
             except application.InvalidValueException:
@@ -699,7 +699,7 @@ class View(Location):
                     wfile,
                     'One of the new values you have entered is invalid. '
                     'Please use the back-button of your browser to correct.')
-            templates.footer(wfile, user)
+            templates.footer(wfile)
         else:
             self.redirect(Login.path, lib.join_url(self.path, values))
 
@@ -711,7 +711,7 @@ class New(Location):
     def handle_get(self, session_id, values, wfile):
         user = self.application.get_user(session_id)
         if user:
-            templates.header(wfile, user)
+            templates.header(wfile)
             templates.title(wfile, "Add new bug")
             templates.bullets(
                 wfile,
@@ -723,14 +723,14 @@ class New(Location):
                                    self.application.versions,
                                    self.application.configurations,
                                    self.application.categories)
-            templates.footer(wfile, user)
+            templates.footer(wfile)
         else:
             self.redirect(Login.path, self.path)
 
     def handle_post(self, session_id, values, post_data, wfile):
         user = self.application.get_user(session_id)
         if user:
-            templates.header(wfile, user)
+            templates.header(wfile)
             if self._form_complete(post_data):
                 self._add_bug(session_id, wfile, post_data)
             else:
@@ -739,7 +739,7 @@ class New(Location):
                     wfile,
                     "You have not filled in enough fields. Please "
                     "use the back-button of your browser to correct this.")
-            templates.footer(wfile, user)
+            templates.footer(wfile)
         else:
             self.redirect(Login.path, self.path)
 
@@ -786,7 +786,7 @@ class Search(Location):
     def handle_get(self, session_id, values, wfile):
         user = self.application.get_user(session_id)
         if user:
-            templates.header(wfile, user)
+            templates.header(wfile)
             if values:
                 self._search(session_id, wfile, values)
             else:
@@ -804,7 +804,7 @@ class Search(Location):
                             self.application.categories,
                             self.application.keywords,
                             self.application.versions)
-            templates.footer(wfile, user)
+            templates.footer(wfile)
         else:
             self.redirect(Login.path, lib.join_url(self.path, values))
             

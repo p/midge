@@ -45,11 +45,7 @@ def get_version():
         return "&lt;unknown&gt;"
 
 
-def header(wfile, user=None):
-    if user:
-        status = user.name
-    else:
-        status = "Not logged in"
+def header(wfile):
     wfile.write('''
 <html>
  <head><title>Midge for project: %(project)s</title></head>
@@ -80,13 +76,10 @@ def header(wfile, user=None):
         Find bug <input size="5" name="bug_id" type="text"/>
       <input type="submit" value="Go"/>
      </td>
-     <td align="right">
-      <em>%(status)s</em>
-     </td>
     </tr>
    </table>
   </form>
-''' % {"status": status, "project": config.Project.name})
+''' % {"project": config.Project.name})
 
 def hrule(wfile):
     wfile.write("<hr />")
@@ -140,11 +133,7 @@ def possible_actions(wfile, *possible_actions):
         wfile.write('<li><a href="%s">%s</a></li>' % (href, label))
     wfile.write('</ul>')
 
-def footer(wfile, user=None):
-    if user:
-        status = user.name
-    else:
-        status = "Not logged in"
+def footer(wfile):
     wfile.write('''
   <p></p>
   <form action="view" name="main">
@@ -157,9 +146,6 @@ def footer(wfile, user=None):
      <a href="search">Search bugs</a> | 
         Find bug <input size="5" name="bug_id" type="text"/>
       <input type="submit" value="Go"/>
-    </td>
-    <td align="right">
-     <em>%(status)s</em>
     </td>
    </tr>
   </table>
@@ -181,7 +167,7 @@ def footer(wfile, user=None):
    </table>
   </form>
  </body>
-</html>''' % {"status": status, "version": get_version()})
+</html>''' % {"version": get_version()})
 
 
 def login_form(wfile, path, usernames):
