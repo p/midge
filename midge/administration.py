@@ -7,7 +7,7 @@ All these functions access the database without using the abstracted
 connections found in connection.py.
 
 Each bug has current state made up of many state variables e.g.
-priority, configuration, reported in version, etc.
+priority, reported in version, etc.
       
 Unlike comments, states *are* changed. If a bug does not have a
 corresponding state then the state table simply lacks a corresponding
@@ -54,8 +54,6 @@ def drop_tables(database):
     drop_state_value(database, "keyword_values")
     drop_state(database, "categories")
     drop_state_value(database, "category_values")
-    drop_state(database, "configurations")
-    drop_state_value(database, "configuration_values")
     drop_state(database, "priorities")
     drop_state_value(database, "priority_values")
     drop_comments(database)
@@ -71,8 +69,6 @@ def create_tables(database):
     create_comments(database)
     create_state_value(database, "priority_values")
     create_state(database, "priorities", "priority_values")
-    create_state_value(database, "configuration_values")
-    create_state(database, "configurations", "configuration_values")
     create_state_value(database, "category_values")
     create_state(database, "categories", "category_values")
     create_state_value(database, "keyword_values")

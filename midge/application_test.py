@@ -115,32 +115,32 @@ class StatusTests(BaseTest):
         self.assertEqual(statuses.initial_value, "new")
         
 
-class ConfigurationTests(BaseTest):
+class CategoryTests(BaseTest):
 
-    def test_configuration_starts_empty(self):
-        """Check configuration starts blank"""
-        self.assertEqual(len(self.app.configurations), 1)
-        self.assertEqual(self.app.configurations[0], "")
+    def test_category_starts_empty(self):
+        """Check category starts blank"""
+        self.assertEqual(len(self.app.categories), 1)
+        self.assertEqual(self.app.categories[0], "")
 
-    def _add_configuration(self, value):
-        return self.app.bugs.configurations.create_new_value(value)
+    def _add_category(self, value):
+        return self.app.bugs.categories.create_new_value(value)
 
-    def test_can_add_configuration(self):
-        """Check create new configurations"""
-        self._add_configuration("foobar")
-        self.assertEqual(len(self.app.configurations), 2)
-        self.assertEqual(self.app.configurations[0], "")
-        self.assertEqual(self.app.configurations[1], "foobar")
+    def test_can_add_categories(self):
+        """Check create new categories"""
+        self._add_category("foobar")
+        self.assertEqual(len(self.app.categories), 2)
+        self.assertEqual(self.app.categories[0], "")
+        self.assertEqual(self.app.categories[1], "foobar")
         self.failUnlessRaises(
             application.ValueInUseException,
-            self._add_configuration, "foobar")
+            self._add_category, "foobar")
         for invalid_value in ("fo'obar",
                               'fo"obar',
                               "fo\nobar",
                               "#"):
             self.failUnlessRaises(
                 application.InvalidValueException,
-                self._add_configuration, invalid_value)
+                self._add_category, invalid_value)
 
 
 class VersionTests(BaseTest):
@@ -163,7 +163,6 @@ class BugTests(BaseTest):
 
     TITLE = "a title '"
     VERSION = "a version"
-    CONFIGURATION = "a configuration"
     CATEGORY = "a category"
     DESCRIPTION = """some comments
                            on several lines"""
@@ -173,7 +172,6 @@ class BugTests(BaseTest):
             self.session_id,
             title=self.TITLE,
             version=self.VERSION,
-            configuration=self.CONFIGURATION,
             category=self.CATEGORY,
             description=self.DESCRIPTION)
         bug = self.app.get_bug(self.session_id, bug_id)
@@ -220,7 +218,6 @@ class BugTests(BaseTest):
         self.assertEqual(isinstance(bug.date,
                                     type(mx.DateTime.DateTime(0))),
                          True)
-        self.assertEqual(bug.configuration, self.CONFIGURATION)
         self.assertNotEqual(bug.comments, None)
         self.assertEqual(len(bug.comments), 1)
         comment = bug.comments[0]
@@ -251,23 +248,23 @@ class BugTests(BaseTest):
             application.InvalidValueException,
             bug.change, user, status="this is not a valid status")
 
-    def test_change_configuration(self):
-        """Check change bug configuration"""
+    def test_change_category(self):
+        """Check change bug category"""
         user = self._login()
         bug = self._add_bug()
-        self.assertEqual(bug.configuration, self.CONFIGURATION)
-        bug.change(user, configuration="")
+        self.assertEqual(bug.category, self.CATEGORY)
+        bug.change(user, category="")
         bug = self.app.get_bug(self.session_id, bug.bug_id)
-        self.assertEqual(bug.configuration, "")
-        bug.change(user, configuration="")
-        bug.change(user, configuration=self.CONFIGURATION)
+        self.assertEqual(bug.category, "")
+        bug.change(user, category="")
+        bug.change(user, category=self.CATEGORY)
         bug = self.app.get_bug(self.session_id, bug.bug_id)
-        self.assertEqual(bug.configuration, self.CONFIGURATION)
-        bug.change(user, configuration=self.CONFIGURATION)
-        bug.change(user, configuration="a new configuration")
+        self.assertEqual(bug.category, self.CATEGORY)
+        bug.change(user, category=self.CATEGORY)
+        bug.change(user, category="a new category")
         bug = self.app.get_bug(self.session_id, bug.bug_id)
-        self.assertEqual(bug.configuration, "a new configuration")
-        bug.change(user, configuration="a new configuration")
+        self.assertEqual(bug.category, "a new category")
+        bug.change(user, category="a new category")
         
     def test_list_new_bugs(self):
         """Check list of new bugs"""
@@ -480,7 +477,6 @@ class BugTests(BaseTest):
             self.session_id,
             title="first title",
             version="a version",
-            configuration="a configuration",
             category="a category",
             description="a description")
         bugs.append(self.app.get_bug(self.session_id, bug_id))
@@ -488,7 +484,6 @@ class BugTests(BaseTest):
             self.session_id,
             title="foobar",
             version="a version",
-            configuration="a configuration",
             category="a category",
             description="second description")
         bugs.append(self.app.get_bug(self.session_id, bug_id))
@@ -496,7 +491,6 @@ class BugTests(BaseTest):
             self.session_id,
             title="second title",
             version="another version",
-            configuration="a configuration",
             category="a category",
             description="something else")
         bugs.append(self.app.get_bug(self.session_id, bug_id))

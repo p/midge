@@ -140,7 +140,6 @@ class TemplatesTest(unittest.TestCase):
         templates.new_bug_form(wfile,
                                "a path",
                                ["version1", "version2"],
-                               ["configuration1", "configuration2"],
                                ["category1", "category2"])
         self.assert_(self.is_well_formed(wfile))
 
@@ -157,7 +156,6 @@ class TemplatesTest(unittest.TestCase):
             status = "new"
             priority = "priority1"
             category = "category1"
-            configuration = "configuration1"
             keyword = "keyword1"
             reported_in = "version2"
             fixed_in = "version2"
@@ -171,7 +169,6 @@ class TemplatesTest(unittest.TestCase):
                                 MockBug(),
                                 ["status1", "status2"],
                                 ["priority1", "priority2"],
-                                ["configuration1", "configuration2"],
                                 ["category1", "category2"],
                                 ["keyword1", "keyword2"],
                                 ["version1", "version2"])
@@ -192,7 +189,6 @@ class TemplatesTest(unittest.TestCase):
             status = "new"
             priority = "priority1"
             category = "category1"
-            configuration = "configuration1"
             keyword = "keyword1"
             reported_in = "version2"
             fixed_in = "version2"
@@ -271,7 +267,6 @@ class TemplatesTest(unittest.TestCase):
         templates.search_form(wfile, "a path",
                               ["a status"],
                               ["a priority"],
-                              ["a configuration"],
                               ["a category"],
                               ["a keyword"],
                               ["a version"])

@@ -26,11 +26,11 @@ class Importer:
         self.passwords[username] = password
 
     def _import_bug(self, bug_id, username, timestamp, title, status, priority,
-                   category, configuration, keyword,
+                   category, keyword,
                    reported_in, fixed_in, tested_ok_in):
         user = self._get_user(username)
         self.bugs.import_bug(bug_id, user, timestamp, title, status, priority,
-                             category, configuration, keyword,
+                             category, keyword,
                              reported_in, fixed_in, tested_ok_in)
 
     def _import_comment(self, bug_id, username, timestamp, text):
@@ -53,7 +53,7 @@ class Importer:
         iterator = iter(reader)
         titles = iterator.next()
         assert titles == ["Bug", "Username", "Date", "Title", "Status", "Priority",
-                          "Category", "Configuration", "Keyword",
+                          "Category", "Keyword",
                           "Reported in", "Fixed in", "Tested ok in"]
         for row in iterator:
             self._import_bug(*row)

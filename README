@@ -139,9 +139,6 @@ status
 *reported in version
   Dynamically chosen by user (e.g. release_3-1, 2.8.3pre3)
 
-*configuration
-  Dynamically chosen by user (e.g. trial ID, demo)
-
 priority
   A number from 1 to 5, where 5 is the most important. Note priority
   does not mean severity (and severity is indicated in the users text).

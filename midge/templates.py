@@ -270,7 +270,7 @@ def modify_user_form(wfile, path, name, email):
    </form>''' % {"path": path, "name": name, "email": email})
 
 
-def new_bug_form(wfile, path, versions, configurations, categories):
+def new_bug_form(wfile, path, versions, categories):
     wfile.write('''
    <form name="mainform" action="%(path)s" method="POST">
     <table class="centered" cellpadding="5" cellspacing="0" border="0">
@@ -314,24 +314,6 @@ def new_bug_form(wfile, path, versions, configurations, categories):
       </td>
       <td align="right"><small>(or use a new category</small>
        <input type="text" name="new_category"/><small>)</small>
-      </td>
-     </tr>
-     <tr class="form">
-      <td class="form-row-heading" valign="baseline">Configuration</td>
-      <td>
-       <select name="configuration" size="1">''')
-    for configuration in configurations:
-        if configuration == "":
-            wfile.write('''
-        <option value="" selected="selected"></option>''')
-        else:
-            wfile.write('''
-        <option value="%s">%s</option>''' % (configuration, configuration))
-    wfile.write('''
-       </select>
-      </td>
-      <td align="right"><small>(or use a new configuration</small>
-       <input type="text" name="new_configuration"/><small>)</small>
       </td>
      </tr>
 
@@ -406,7 +388,7 @@ def bug_status_summary(wfile, bug):
   
     
 def edit_bug_form(wfile, path, bug, statuses, priorities,
-                  configurations, categories, keywords, versions):
+                  categories, keywords, versions):
     wfile.write('''
   <br/>
   <a name="editbugform" id="editbugform"></a>
@@ -479,26 +461,6 @@ def edit_bug_form(wfile, path, bug, statuses, priorities,
     </td>
     <td align="right"><small>(or use a new category</small>
         <input type="text" name="new_category"></input><small>)</small>
-    </td>
-   </tr>
-   <tr class="form">
-    <td class="form-row-heading">Configuration</td>
-    <td>
-     <select name="configuration" size="1">''')
-    for configuration in configurations:
-        if configuration == bug.configuration:
-            wfile.write('''
-      <option value="%s" selected="selected">%s</option>''' % (
-                configuration, configuration))
-        else:
-            wfile.write('''
-      <option value="%s">%s</option>''' % (
-                configuration, configuration))
-    wfile.write('''
-     </select>
-    </td>
-    <td align="right"><small>(or use a new configuration</small>
-        <input type="text" name="new_configuration"></input><small>)</small>
     </td>
    </tr>
    <tr class="form">
@@ -749,7 +711,7 @@ def table_of_bugs(wfile, path, search):
 
 
 def search_form(wfile, path, statuses, priorities,
-                configurations, categories, keywords, versions):
+                categories, keywords, versions):
     wfile.write('''
   <form name="mainform" action="%(path)s">
   <table class="centered" cellpadding="3" cellspacing="0" border="0">
@@ -850,33 +812,8 @@ def search_form(wfile, path, statuses, priorities,
       </input>
      </label></small>
     </td>
-
    </tr>
-   <tr class="form">
-    <td class="form-row-heading">Configuration</td>
-    <td>
-     <select name="configuration" size="1">''')
-    for configuration in configurations:
-        wfile.write('''
-      <option value="%s">%s</option>''' % (configuration,
-                                           configuration))
-    wfile.write('''
-     </select>
-    </td>
-    <td>
-     <small>&nbsp;(regex</small>
-     <input type="text" name="configuration_regex"/>
-     <small>)</small>
-    </td>
-    <td class="white">&nbsp;</td>
-    <td>
-     <small><label>
-      <input type="checkbox" name="configuration_column" value="on">Show column
-      </input>
-     </label></small>
-    </td>
 
-   </tr>
    <tr class="form">
     <td class="form-row-heading">Keyword</td>
     <td>
@@ -900,7 +837,6 @@ def search_form(wfile, path, statuses, priorities,
       </input>
      </label></small>
     </td>
-
    </tr>
  
    <tr><td><table></table></td></tr>

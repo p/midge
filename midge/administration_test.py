@@ -38,14 +38,14 @@ class AdministrationTests(unittest.TestCase):
                                                    "fixed",
                                                    "closed")])
 
-    def test_configurations_table(self):
+    def test_create_destroy_table(self):
         """Check create and destroy tables"""
         cursor = self.connection.cursor()
 
         cursor.execute("SELECT * FROM keyword_values;")
         self.assertEqual(len(cursor.fetchall()), 0)
 
-        cursor.execute("SELECT * FROM configuration_values;")
+        cursor.execute("SELECT * FROM category_values;")
         self.assertEqual(len(cursor.fetchall()), 0)
 
         cursor.execute("SELECT * FROM versions;")

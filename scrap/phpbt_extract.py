@@ -16,7 +16,7 @@ import time
 
 
 def cleanup(cursor):
-    for table in "version_t", "database_t", "users_t":
+    for table in "version_t", "users_t":
         try:
             cursor.execute("DROP TABLE %s" % table)
         except:
@@ -33,7 +33,6 @@ def create_bug_t_from_phpbt_bug(cursor):
                     reported_in_id int,
                     fixed_in_id int,
                     closed_in_id int,
-                    configuration_id int,
                     priority int,
                     description text,
                     created_by int,
@@ -49,7 +48,6 @@ def create_bug_t_from_phpbt_bug(cursor):
                     reported_in_id,
                     fixed_in_id,
                     closed_in_id,
-                    configuration_id,
                     priority,
                     description,
                     created_by,
@@ -63,7 +61,6 @@ def create_bug_t_from_phpbt_bug(cursor):
                     version_id,
                     closed_in_version_id,
                     closed_in_version_id,
-                    database_id,
                     priority,
                     description,
                     created_by,
@@ -134,20 +131,6 @@ def create_version_t_from_phpbt_version(cursor):
     """)
     cursor.execute("""
     INSERT INTO version_t (version_id, version_name)
-    VALUES (0, "")
-    """)
-
-def create_database_t_from_phpbt_database_server(cursor):
-    cursor.execute("""
-    CREATE TABLE database_t (database_id INT, database_name TEXT)
-    """)
-    cursor.execute("""
-    INSERT INTO database_t (database_id, database_name)
-                SELECT database_id, database_name
-                FROM phpbt_database_server
-    """)
-    cursor.execute("""
-    INSERT INTO database_t (database_id, database_name)
     VALUES (0, "")
     """)
 
@@ -242,7 +225,6 @@ def get_bugs(cursor):
             status_name AS status,
             priority,
             category_name AS category,
-            database_name AS configuration,
             '',
             v1.version_name AS reported_in,
             v2.version_name AS fixed_in,
@@ -254,14 +236,12 @@ def get_bugs(cursor):
             version_t v1,
             version_t v2,
             version_t v3,
-            database_t,
             users_t
     WHERE bug_t.status_id = status_t.status_id
       AND bug_t.category_id = category_t.category_id
       AND bug_t.reported_in_id = v1.version_id
       AND bug_t.fixed_in_id = v2.version_id
       AND bug_t.closed_in_id = v3.version_id
-      AND bug_t.configuration_id = database_t.database_id
       AND users_t.user_id = bug_t.created_by
     """)
     bugs = []
@@ -320,7 +300,6 @@ create_users_t_from_phpbt_auth_user(cursor)
 create_status_t_from_phpbt_status(cursor)
 create_category_t_from_phpbt_component(cursor)
 create_version_t_from_phpbt_version(cursor)
-create_database_t_from_phpbt_database_server(cursor)
 remove_roundup_bugs(cursor)
 map_status_values(cursor)
 map_category_values(cursor)

@@ -20,7 +20,7 @@ if __name__ == "__main__":
     f = file("bugs.csv", "w")
     writer = csv.writer(f)
     writer.writerow( ("Bug", "Username", "Date", "Title", "Status", "Priority",
-                      "Category", "Configuration", "Keyword",
+                      "Category", "Keyword",
                       "Reported in", "Fixed in", "Tested ok in") )
     for row in bugs:
         writer.writerow(row)

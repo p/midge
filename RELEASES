@@ -24,6 +24,8 @@ release_0-2 (...)
 
   * Added help link, which can be used to point to a Wiki FAQ.
 
+  * Removed configuation grouping.
+
 release_0-1 (15 Aug 2004)
 
   * First release!

@@ -526,7 +526,6 @@ class View(Location):
             wfile, self.path, bug,
             self.application.statuses,
             self.application.priorities,
-            self.application.configurations,
             self.application.categories,
             self.application.keywords,
             self.application.versions)
@@ -543,13 +542,6 @@ class View(Location):
         priority = post_data.get("priority", None)
         if priority != old_bug.priority:
             changes["priority"] = priority
-
-        configuration = post_data.get("configuration", None)
-        new_configuration = post_data.get("new_configuration", None)
-        if new_configuration:
-            configuration = new_configuration
-        if configuration != old_bug.configuration:
-            changes["configuration"] = configuration            
 
         category = post_data.get("category", None)
         new_category = post_data.get("new_category", None)
@@ -654,7 +646,6 @@ class New(Location):
                 'Use new values (e.g. for version) if the available ones are unsuitable.')
             templates.new_bug_form(wfile, self.path,
                                    self.application.versions,
-                                   self.application.configurations,
                                    self.application.categories)
             templates.footer(wfile)
         else:
@@ -680,9 +671,6 @@ class New(Location):
         new_version = post_data.pop("new_version", None)
         if new_version:
             post_data["version"] = new_version
-        new_configuration = post_data.pop("new_configuration", None)
-        if new_configuration:
-            post_data["configuration"] = new_configuration
         new_category = post_data.pop("new_category", None)
         if new_category:
             post_data["category"] = new_category
@@ -734,7 +722,6 @@ class Search(Location):
                 templates.search_form(wfile, self.path,
                             [""] + list(self.application.statuses),
                             self.application.priorities,
-                            self.application.configurations,
                             self.application.categories,
                             self.application.keywords,
                             self.application.versions)
@@ -832,7 +819,7 @@ class Help(Location):
             templates.bullets(
                 wfile,
                 'Site-specific help is available '
-                '<a href="%s">here.</a>' % config.Project.help)
+                '<a href="%s">here</a>.' % config.Project.help)
         else:
             templates.bullets(
                 wfile,
