@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
-# Script for resetting the database, extracting the bugs from
-# phpbugtracker on trevor, and importing them into midge.
 
-MIDGE_PATH=$(pwd)/../bin/
+# Example script for resetting the database, extracting the bugs from
+# phpbugtracker running on a machine called trevor.devel.cmedltd.com,
+# and importing them into midge.
 
 sudo bash <<EOF
   midge-admin teardown
   midge-admin setup
 EOF
 
-# scp phpbt_extract.py trevor.devel.cmedltd.com:
-# ssh trevor.devel.cmedltd.com python phpbt_extract.py
-# scp trevor.devel.cmedltd.com:{users.txt,bugs.txt,comments.txt} .
+scp phpbt_extract.py trevor.devel.cmedltd.com:
+ssh trevor.devel.cmedltd.com python phpbt_extract.py
+scp trevor.devel.cmedltd.com:{users.txt,bugs.txt,comments.txt} .
 
 python converter.py
 
