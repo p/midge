@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Script for resetting the database, extracting the bugs from
-# phpbugtracker on trevor, and importing them into migde.
+# phpbugtracker on trevor, and importing them into midge.
 
 MIDGE_PATH=$(pwd)/../bin/
 

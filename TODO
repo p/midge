@@ -21,7 +21,6 @@ Underlying changes:
 
 - add some explicit means of migrating (import/export)
 - automatically clear unused user-set categories
-
 - add more unittests, particularly the server.
 - declare DTD
 - automatically validate the pages with http://validator.w3.org/

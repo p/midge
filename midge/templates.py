@@ -161,34 +161,32 @@ def login_form(wfile, path, usernames):
     wfile.write('''
   <center><blockquote>
    <form action="%s" method="POST">
-    <font face="arial, sans-serif">
-     <table cellpadding="5" cellspacing="0" border="0">
-      <tr bgcolor="#DDDDDD">
-       <td valign="baseline"><small><b>Username</b></small></td>
-       <td>
-        <select name="username">
-         <option value=""></option>''' % path)
+    <table cellpadding="5" cellspacing="0" border="0">
+     <tr bgcolor="#DDDDDD">
+      <td valign="baseline"><small><b>Username</b></small></td>
+      <td>
+       <select name="username">
+        <option value=""></option>''' % path)
     for username in usernames:
         wfile.write('''
-         <option value="%(username)s">%(username)s</option>'''
+        <option value="%(username)s">%(username)s</option>'''
                     % {"username": username})
     wfile.write('''
-         </select>
-       </td>
-      </tr>
-      <tr bgcolor="#DDDDDD">
-       <td valign="baseline"><small><b>Password</b></small></td>
-       <td>
-        <input type="password" name="password"/>
-       </td>
-      </tr>
-      <tr>
-       <td colspan="3" align="right">
-        <input type="submit" value="Login"/>
-       </td>
-      </tr>
-     </table>
-    </font>
+       </select>
+      </td>
+     </tr>
+     <tr bgcolor="#DDDDDD">
+      <td valign="baseline"><small><b>Password</b></small></td>
+      <td>
+       <input type="password" name="password"/>
+      </td>
+     </tr>
+     <tr>
+      <td colspan="3" align="right">
+       <input type="submit" value="Login"/>
+      </td>
+     </tr>
+    </table>
    </form>
   </blockquote></center>''')
 
@@ -197,46 +195,44 @@ def add_user_form(wfile, path):
     wfile.write('''
   <center><blockquote>
    <form action="%(path)s" method="POST">
-    <font face="arial, sans-serif">
-     <table cellpadding="5" cellspacing="0" border="0">
-      <tr bgcolor="#DDDDDD">
-       <td valign="baseline"><small><b>Username</b></small></td>
-       <td>
-        <input type="text" size="40" name="username"/>
-       </td>
-      </tr>
-      <tr bgcolor="#DDDDDD">
-       <td valign="baseline"><small><b>Name</b></small></td>
-       <td>
-        <input type="text" size="40" name="name"/>
-       </td>
-      </tr>
-      <tr bgcolor="#DDDDDD">
-       <td valign="baseline"><small><b>Email</b></small></td>
-       <td>
-        <input type="text" size="40" name="email"/>
-       </td>
-      </tr>
-      <tr bgcolor="#DDDDDD">
-       <td valign="baseline"><small><b>Password</b></small></td>
-       <td>
-        <input type="password" size="40" name="password"/>
-       </td>
-      </tr>
-      <tr bgcolor="#DDDDDD">
-       <td valign="baseline"><small><b>Password (again)</b></small></td>
-       <td>
-        <input type="password" size="40" name="password_again"/>
-       </td>
-      </tr>
-      <tr><td><table></table></td></tr>
-      <tr>
-       <td colspan="3" align="right">
-        <input type="submit" value="Create account"/>
-       </td>
-      </tr>
-     </table>
-    </font>
+    <table cellpadding="5" cellspacing="0" border="0">
+     <tr bgcolor="#DDDDDD">
+      <td valign="baseline"><small><b>Username</b></small></td>
+      <td>
+       <input type="text" size="40" name="username"/>
+      </td>
+     </tr>
+     <tr bgcolor="#DDDDDD">
+      <td valign="baseline"><small><b>Name</b></small></td>
+      <td>
+       <input type="text" size="40" name="name"/>
+      </td>
+     </tr>
+     <tr bgcolor="#DDDDDD">
+      <td valign="baseline"><small><b>Email</b></small></td>
+      <td>
+       <input type="text" size="40" name="email"/>
+      </td>
+     </tr>
+     <tr bgcolor="#DDDDDD">
+      <td valign="baseline"><small><b>Password</b></small></td>
+      <td>
+       <input type="password" size="40" name="password"/>
+      </td>
+     </tr>
+     <tr bgcolor="#DDDDDD">
+      <td valign="baseline"><small><b>Password (again)</b></small></td>
+      <td>
+       <input type="password" size="40" name="password_again"/>
+      </td>
+     </tr>
+     <tr><td><table></table></td></tr>
+     <tr>
+      <td colspan="3" align="right">
+       <input type="submit" value="Create account"/>
+      </td>
+     </tr>
+    </table>
    </form>
   </blockquote></center>''' % {"path": path})
 
@@ -245,49 +241,47 @@ def modify_user_form(wfile, path, name, email):
     wfile.write('''
   <center><blockquote>
    <form action="%(path)s" method="POST">
-    <font face="arial, sans-serif">
-     <table cellpadding="5" cellspacing="0" border="0">
-      <tr bgcolor="#DDDDDD">
-       <td valign="baseline"><small><b>Name</b></small></td>
-       <td>
-        <input type="text" size="40" name="name" value="%(name)s"/>
-       </td>
-      </tr>
-      <tr bgcolor="#DDDDDD">
-       <td valign="baseline"><small><b>Email</b></small></td>
-       <td>
-        <input type="text" size="40" name="email" value="%(email)s"/>
-       </td>
-      </tr>
-      <tr bgcolor="#DDDDDD">
-       <td valign="baseline"><small><b>Existing Password</b></small></td>
-       <td>
-        <input type="password" size="40" name="password"/>
-       </td>
-      </tr>
+    <table cellpadding="5" cellspacing="0" border="0">
+     <tr bgcolor="#DDDDDD">
+      <td valign="baseline"><small><b>Name</b></small></td>
+      <td>
+       <input type="text" size="40" name="name" value="%(name)s"/>
+      </td>
+     </tr>
+     <tr bgcolor="#DDDDDD">
+      <td valign="baseline"><small><b>Email</b></small></td>
+      <td>
+       <input type="text" size="40" name="email" value="%(email)s"/>
+      </td>
+     </tr>
+     <tr bgcolor="#DDDDDD">
+      <td valign="baseline"><small><b>Existing Password</b></small></td>
+      <td>
+       <input type="password" size="40" name="password"/>
+      </td>
+     </tr>
 
-      <tr><td><table></table></td></tr>
+     <tr><td><table></table></td></tr>
       
-      <tr bgcolor="#DDDDDD">
-       <td valign="baseline"><small><b>New password</b></small></td>
-       <td>
-        <input type="password" size="40" name="new_password"/>
-       </td>
-      </tr>
-      <tr bgcolor="#DDDDDD">
-       <td valign="baseline"><small><b>New password (again)</b></small></td>
-       <td>
-        <input type="password" size="40" name="new_password_again"/>
-       </td>
-      </tr>
-      <tr><td><table></table></td></tr>
-      <tr>
-       <td colspan="3" align="right">
-        <input type="submit" value="Change details"/>
-       </td>
-      </tr>
-     </table>
-    </font>
+     <tr bgcolor="#DDDDDD">
+      <td valign="baseline"><small><b>New password</b></small></td>
+      <td>
+       <input type="password" size="40" name="new_password"/>
+      </td>
+     </tr>
+     <tr bgcolor="#DDDDDD">
+      <td valign="baseline"><small><b>New password (again)</b></small></td>
+      <td>
+       <input type="password" size="40" name="new_password_again"/>
+      </td>
+     </tr>
+     <tr><td><table></table></td></tr>
+     <tr>
+      <td colspan="3" align="right">
+       <input type="submit" value="Change details"/>
+      </td>
+     </tr>
+    </table>
    </form>
   </blockquote></center>''' % {"path": path, "name": name, "email": email})
 
@@ -296,32 +290,31 @@ def new_bug_form(wfile, path, versions, configurations, categories):
     wfile.write('''
   <center><blockquote>
    <form action="%(path)s" method="POST">
-    <font face="arial, sans-serif">
-     <table cellpadding="5" cellspacing="0" border="0">
-      <tr bgcolor="#DDDDDD">
-       <td valign="baseline"><small><b>Title</b></small></td>
-       <td colspan="3">
-        <input type="text" size="65" maxlength="65" name="title"/>
-       </td>
-      </tr>
-      <tr bgcolor="#DDDDDD">
-       <td valign="baseline"><small><b>Version</b></small></td>
-       <td>
-        <select name="version" size="1">''' % {"path": path})
+    <table cellpadding="5" cellspacing="0" border="0">
+     <tr bgcolor="#DDDDDD">
+      <td valign="baseline"><small><b>Title</b></small></td>
+      <td colspan="3">
+       <input type="text" size="65" maxlength="65" name="title"/>
+      </td>
+     </tr>
+     <tr bgcolor="#DDDDDD">
+      <td valign="baseline"><small><b>Version</b></small></td>
+      <td>
+       <select name="version" size="1">''' % {"path": path})
     for version in versions:
         if version == "":
             wfile.write('''
-         <option value="" selected="selected"></option>''')
+        <option value="" selected="selected"></option>''')
         else:
             wfile.write('''
-         <option value="%s">%s</option>''' % (version, version))
+        <option value="%s">%s</option>''' % (version, version))
     wfile.write('''
-        </select>
-       </td>
-       <td align="right"><font size="-2">(or use a new version</font>
-        <input type="text" name="new_version"/><small>)</small>
-       </td>
-      </tr>
+       </select>
+      </td>
+      <td align="right"><font size="-2">(or use a new version</font>
+       <input type="text" name="new_version"/><small>)</small>
+      </td>
+     </tr>
      <tr bgcolor="#DDDDDD">
       <td valign="baseline"><small><b>Category</b></small></td>
       <td>
@@ -372,7 +365,6 @@ def new_bug_form(wfile, path, versions, configurations, categories):
       </td>
      </tr>
     </table>
-    </font>
    </form>
   </blockquote></center>''')
 
@@ -400,7 +392,6 @@ def edit_bug_form(wfile, path, bug, statuses, priorities,
   <center><blockquote>
   <form action="%(path)s" method="POST">
   <input type="hidden" name="bug_id" value="%(bug_id)s"/>
-  <font face="arial, sans-serif">
   <table cellpadding="3" cellspacing="0" border="0">
    <tr>
     <td bgcolor="#EEEEEE"><small><em>States</em></small></td>
@@ -581,7 +572,6 @@ def edit_bug_form(wfile, path, bug, statuses, priorities,
     </td>
    </tr>
   </table>
-  </font>
   </form>
   </blockquote></center>
   
@@ -592,7 +582,7 @@ def edit_bug_form(wfile, path, bug, statuses, priorities,
   <table width="100%%">
    <tr bgcolor="#CCCCCC">
     <td>
-     <font size="-1" face="arial, sans-serif">
+     <font size="-1">
       Posted by <b>%(name)s</b> (%(username)s) on
                 <b>%(date)s</b> at
                 <b>%(time)s</b>
@@ -624,63 +614,61 @@ def list_form(wfile, path, status_counts):
   </p>
   <center><blockquote>  
    <form action="%(path)s">
-    <font face="arial, sans-serif">
-     <table bgcolor="#DDDDDD" cellpadding="8" cellspacing="0" border="0">
-      <tr>
-       <td>Show me:</td>
-       <td>
-        <input type="radio" name="status" value="new" checked="checked"/>
-        %(n_new)s
-       </td>
-       <td><b>new</b> bug%(new_plural)s in need of review</td>
-      </tr>
-      <tr>
-       <td></td>
-       <td>
-        <input type="radio" name="status" value="reviewed"/>
-        %(n_reviewed)s
-       </td>
-       <td><b>reviewed</b> bug%(reviewed_plural)s ready to be scheduled</td>
-      </tr>
-      <tr>
-       <td></td>
-       <td>
-        <input type="radio" name="status" value="scheduled"/>
-        %(n_scheduled)s
-       </td>
-       <td><b>scheduled</b> bug%(scheduled_plural)s waiting to be fixed</td>
-      </tr>
-      <tr>
-       <td></td>
-       <td>
-        <input type="radio" name="status" value="fixed"/>
-        %(n_fixed)s
-       </td>
-       <td><b>fixed</b> bug%(fixed_plural)s waiting to be tested</td>
-      </tr>
-      <tr>
-       <td></td>
-       <td>
-        <input type="radio" name="status" value="closed"/>
-        %(n_closed)s
-       </td>
-       <td><b>closed</b> bug%(closed_plural)s</td>
-      </tr>
-      <tr>
-       <td></td>
-       <td>
-        <input type="radio" name="status" value="cancelled"/>
-        %(n_cancelled)s
-       </td>
-       <td><b>cancelled</b> bug%(cancelled_plural)s</td>
-      </tr>
-      <tr align="right" valign="bottom" bgcolor="#FFFFFF">
-       <td colspan="3" align="right">
-        <input type="submit" value="List bugs"/>
-       </td>
-      </tr>
-      </table>
-    </font>
+    <table bgcolor="#DDDDDD" cellpadding="8" cellspacing="0" border="0">
+     <tr>
+      <td>Show me:</td>
+      <td>
+       <input type="radio" name="status" value="new" checked="checked"/>
+       %(n_new)s
+      </td>
+      <td><b>new</b> bug%(new_plural)s in need of review</td>
+     </tr>
+     <tr>
+      <td></td>
+      <td>
+       <input type="radio" name="status" value="reviewed"/>
+       %(n_reviewed)s
+      </td>
+      <td><b>reviewed</b> bug%(reviewed_plural)s ready to be scheduled</td>
+     </tr>
+     <tr>
+      <td></td>
+      <td>
+       <input type="radio" name="status" value="scheduled"/>
+       %(n_scheduled)s
+      </td>
+      <td><b>scheduled</b> bug%(scheduled_plural)s waiting to be fixed</td>
+     </tr>
+     <tr>
+      <td></td>
+      <td>
+       <input type="radio" name="status" value="fixed"/>
+       %(n_fixed)s
+      </td>
+      <td><b>fixed</b> bug%(fixed_plural)s waiting to be tested</td>
+     </tr>
+     <tr>
+      <td></td>
+      <td>
+       <input type="radio" name="status" value="closed"/>
+       %(n_closed)s
+      </td>
+      <td><b>closed</b> bug%(closed_plural)s</td>
+     </tr>
+     <tr>
+      <td></td>
+      <td>
+       <input type="radio" name="status" value="cancelled"/>
+       %(n_cancelled)s
+      </td>
+      <td><b>cancelled</b> bug%(cancelled_plural)s</td>
+     </tr>
+     <tr align="right" valign="bottom" bgcolor="#FFFFFF">
+      <td colspan="3" align="right">
+       <input type="submit" value="List bugs"/>
+      </td>
+     </tr>
+    </table>
    </form>
   </blockquote></center>''' %
                 {"path": path,
@@ -714,7 +702,7 @@ def _table_headings(wfile, path, titles,
                                   "order": new_order})
         wfile.write('''
      <th bgcolor="#cecece">
-      <a href="%(url)s"><font size="-2" face="arial, sans-serif">
+      <a href="%(url)s"><font size="-2">
        %(heading)s
       </font></a>''' % {"heading": heading, "url": url})
         if variable == sorted_by:
@@ -737,7 +725,7 @@ def _table_rows(wfile, rows):
             if variable == "bug_id":
                 wfile.write('''
      <td bgcolor="%(colour)s">
-      <font size="-2" face="arial, sans-serif">
+      <font size="-2">
        <a href="/view?bug_id=%(bug_id)s">%(bug_id)s</a>
       </font>
      </td>
@@ -746,7 +734,7 @@ def _table_rows(wfile, rows):
             else:
                 wfile.write('''
      <td bgcolor="%(colour)s">
-      <font size="-2" face="arial, sans-serif">
+      <font size="-2">
        %(value)s
       </font>
      </td>
