@@ -1,6 +1,11 @@
 User visible TODOs:
 
+- change instructions for putting failed fixes back to scheduled to
+  new instead
+
 - fix bug - if type \[\] in search...
+- fix bug - type in large int to jump to bug
+
 - allow the user to change their username
 
 - indicate number of rows in table
@@ -15,6 +20,7 @@ User visible TODOs:
 - inform the user when their session has timed-out
 - fix: timed out session, then post. The post is not passed on after relogin
 - slight alignment problem in numbers and text of list bugs location
+- don't provide list of valid locations when enter invalid URL
 
 Underlying changes:
 
