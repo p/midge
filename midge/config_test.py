@@ -19,6 +19,7 @@ class ConfigTests(unittest.TestCase):
         self.assertNotEqual(midge.config.Database.name, None)
         self.assertNotEqual(midge.config.Database.test_name, None)
         self.assertNotEqual(midge.config.Project.name, None)
+        self.assertNotEqual(midge.config.Project.help, None)
         self.assertNotEqual(midge.config.Server.interface, None)
         self.assertNotEqual(midge.config.Server.port, None)
         self.assertNotEqual(midge.config.Server.session_timeout, None)
@@ -41,5 +42,5 @@ class ConfigTests(unittest.TestCase):
                 
         sys.stdout = MyStdout() 
         midge.config.print_env_variables()
-        self.assertEqual(len(sys.stdout.lines), 13)
+        self.assertEqual(len(sys.stdout.lines), 14)
         sys.stdout = sys.__stdout__

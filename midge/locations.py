@@ -124,13 +124,13 @@ class Login(Location):
             templates.login_form(wfile, self.path, self.application.usernames)
         else:
             path = lib.join_url(self.path, values)
-            templates.login_form(wfile, path, self.application.usernames)
             templates.paragraph(
                 wfile,
                 'If you have not yet created a user account, '
                 'do so now.')
             templates.possible_actions(wfile,
                                        ("adduser", "Create new account"))
+            templates.login_form(wfile, path, self.application.usernames)
         templates.footer(wfile)
 
     def handle_post(self, session_id, values, post_data, wfile):
@@ -820,3 +820,45 @@ class DefaultCSS(Location):
         f = file(filename)
         wfile.write(f.read())
         f.close()
+
+class Help(Location):
+
+    path = "/help"
+
+    def handle_get(self, session_id, values, wfile):
+        templates.header(wfile)
+        templates.title(wfile, "Help")
+        if config.Project.help:
+            templates.bullets(
+                wfile,
+                'Site-specific help is available '
+                '<a href="%s">here.</a>' % config.Project.help)
+        else:
+            templates.bullets(
+                wfile,
+                '<em>No site-specific help has been configured.</em>')
+        templates.title(wfile, "About")
+        templates.paragraph(
+            wfile,
+            "Midge is a system for tracking bugs found during the "
+            "commercial development of a software product. It is "
+            "particularly suited to a process for which the filing, "
+            "managing, fixing, and testing are all undertaken by "
+            "different roles in a trusted environment.")
+        templates.paragraph(
+            wfile,
+            "Midge aims to be consistent, self-explanatory, powerful "
+            "enough to efficiently manage thousands of bugs, require no "
+            "administration, and be bug-free!")
+        templates.paragraph(
+            wfile,
+            'Midge is released under the terms of the '
+            '<a href="http://www.gnu.org/licenses/gpl.txt">'
+            'GNU General Public License.</a>')
+        templates.paragraph(
+            wfile,
+            "See <a href=\"http://midge.sourceforge.net\">"
+            "http://midge.sourceforge.net</a> for more "
+            "information, releases, <em>etc</em>.")
+        templates.footer(wfile)
+        

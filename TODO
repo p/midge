@@ -6,7 +6,7 @@ User visible TODOs:
 - add resolution (code changed, can't reproduce, won't fix, not
   a bug, duplicate). Add resolution to closed and fixed lists.
      and map from bugtracker
-- add site-specific help urls (one per page)
+  in bug summary at head of bug, indicate why closed/fixed
 
 - indicate number of rows in table
 - add ability to search by users

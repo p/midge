@@ -58,8 +58,8 @@ hr {
 	position: absolute;
 	top: 54px;
 	left: 0px;
-	padding: 0px 10px 10px 11px;
-	font-size: 14px;
+	width: 100%;
+	padding: 0px 10px 10px 10px;
 }
 
 .banner a {
@@ -86,14 +86,7 @@ hr {
 }
 
 #projectName {
-	position: absolute;
-
-	top: 0px;
-	height: 48px;
-	right: 10px;
-
-	padding: 16px 10px 10px 10px;
-	font-size: 14px;
+	padding: 10px 10px 10px 10px;
 	color: black;
 	text-align: right;
 }
@@ -104,6 +97,7 @@ hr {
 	width: 100%;
 	padding: 0px 10px 10px 10px;
 	margin: 0px;
+	border-top: 1px solid #666666;
 }
 
 .comments-heading {

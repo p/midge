@@ -24,6 +24,7 @@ class Database:
 class Project:
 
     name = None
+    help = None
 
 
 class Server:
@@ -94,6 +95,7 @@ def read():
     Database.name = get("Database", "name")
     Database.test_name = get("Database", "test_name")
     Project.name = get("Project", "name")
+    Project.help = get("Project", "help")
     Server.interface = get("Server", "interface")
     Server.port = get_int("Server", "port")
     Server.session_timeout = get_int("Server", "session_timeout")

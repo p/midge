@@ -41,6 +41,7 @@ class TemplatesTest(unittest.TestCase):
         s = wfile.getvalue()
         s = s.replace("&copy;", "(c)")
         s = s.replace("&nbsp;", " ")
+        s = s.replace("&middot;", "|")
         wfile = self.get_wfile(s)
         wfile.reset()
         try:
@@ -71,12 +72,12 @@ class TemplatesTest(unittest.TestCase):
         """Check header"""
         wfile = self.get_wfile()
         templates.header(wfile)
-        wfile.write("</body></html>")
+        wfile.write("</div></body></html>")
         self.assert_(self.is_well_formed(wfile))
 
         wfile = self.get_wfile()
         templates.header(wfile, "extra title")
-        wfile.write("</body></html>")
+        wfile.write("</div></body></html>")
         self.assert_(self.is_well_formed(wfile))
 
     def test_title(self):
@@ -104,6 +105,7 @@ class TemplatesTest(unittest.TestCase):
         wfile = self.get_wfile()
         wfile.write("<html>\n")
         wfile.write(" <body>\n")
+        wfile.write("  <div>\n")
         templates.footer(wfile)
         self.assert_(self.is_well_formed(wfile))
         

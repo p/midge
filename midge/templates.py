@@ -71,22 +71,31 @@ def header(wfile, title=None):
  </head>
  <body onLoad="set_focus()">
   <form action="view">
-   <div id="header">
-    <div id="headerTitle">
+   <table id="header">
+    <tr>
+     <td id="headerTitle">
      Midge
-    </div>
-    <div id="projectName">
-     Project: <b>%(project)s</b>
-    </div>
-   </div>
-   <div id="banner">
-    <a href="home">Home</a> &middot;
-    <a href="new">Add new bug</a> &middot;
-    <a href="list">List bugs</a> &middot; 
-    <a href="search">Search bugs</a> &middot; 
-      Find bug <input size="5" name="bug_id" type="text"/>
-    <input type="submit" value="Go"/>
-   </div>
+     </td>
+     <td id="projectName">
+      Project: <b>%(project)s</b>
+     </td>
+    </tr>
+   </table>
+   <table id="banner">
+    <tr>
+     <td align="left">
+      <a href="home">Home</a> &middot;
+      <a href="new">Add new bug</a> &middot;
+      <a href="list">List bugs</a> &middot; 
+      <a href="search">Search bugs</a> &middot; 
+        Find bug <input size="5" name="bug_id" type="text"/>
+      <input type="submit" value="Go"/>
+     </td>
+     <td align="right">
+      <a href="help">Help</a>
+     </td>
+    </tr>
+   </table>
   </form>
   <div id="body">
 ''' % {"title": title, "project":config.Project.name})
@@ -121,16 +130,15 @@ def footer(wfile):
     wfile.write('''
   </div>
   <p></p>
-  <hr/>
   <table id="footer">
    <tr>
-    <td valign="top">
+    <td align="left">
      <em>Version %(version)s.</em>
-      See <a href="http://midge.sourceforge.net">
-      http://midge.sourceforge.net</a> for updates.
+     See <a href="http://midge.sourceforge.net">
+     http://midge.sourceforge.net</a> for updates.
     </td>
-    <td valign="top" align="right">
-     Copyright &copy; 2004, Timothy Corbett-Clark.<br/>
+    <td align="right">
+     Copyright &copy; 2004, Timothy Corbett-Clark.
     </td>
    </tr>
   </table>
