@@ -570,51 +570,49 @@ def edit_bug_form(wfile, path, bug, statuses, priorities,
   
 
 def list_form(wfile, path, status_counts):
-    def plural(n):
-        if n == 1:
-            return ""
-        else:
-            return "s"
-        
     wfile.write('''
    <form name="mainform" action="%(path)s">
-    <table class="centered" cellpadding="8" cellspacing="0" border="0">
+    <table class="centered" cellpadding="3" cellspacing="0" border="0">
      <tr class="form">
       <td>
        <input type="radio" name="status" value="new" checked="checked"/>
        %(n_new)s
       </td>
-      <td><b>new</b> bug%(new_plural)s in need of review</td>
+      <td>new</td>
      </tr>
      <tr class="form">
       <td>
        <input type="radio" name="status" value="reviewed"/>
        %(n_reviewed)s
       </td>
-      <td><b>reviewed</b> bug%(reviewed_plural)s ready to be scheduled</td>
+      <td>reviewed</td>
      </tr>
      <tr class="form">
       <td>
        <input type="radio" name="status" value="scheduled"/>
        %(n_scheduled)s
       </td>
-      <td><b>scheduled</b> bug%(scheduled_plural)s waiting to be fixed</td>
+      <td>scheduled</td>
      </tr>
      <tr class="form">
       <td>
        <input type="radio" name="status" value="fixed"/>
        %(n_fixed)s
       </td>
-      <td><b>fixed</b> bug%(fixed_plural)s waiting to be tested</td>
+      <td>fixed</td>
      </tr>
      <tr class="form">
       <td>
        <input type="radio" name="status" value="closed"/>
        %(n_closed)s
       </td>
-      <td><b>closed</b> bug%(closed_plural)s</td>
+      <td>closed</td>
      </tr>
-     <tr align="right" valign="bottom" class="white">
+
+     <tr><td><table></table></td></tr>
+     <tr><td><table></table></td></tr>
+     
+     <tr align="right" class="white">
       <td colspan="2" align="right">
        <input type="submit" value="List bugs"/>
       </td>
@@ -626,13 +624,7 @@ def list_form(wfile, path, status_counts):
                  "n_reviewed": status_counts.reviewed,
                  "n_scheduled": status_counts.scheduled,
                  "n_fixed": status_counts.fixed,
-                 "n_closed": status_counts.closed,
-                 "new_plural": plural(status_counts.new),
-                 "reviewed_plural": plural(status_counts.reviewed),
-                 "scheduled_plural": plural(status_counts.scheduled),
-                 "fixed_plural": plural(status_counts.fixed),
-                 "closed_plural": plural(status_counts.closed),
-                 })
+                 "n_closed": status_counts.closed})
 
 
 def _table_headings(wfile, path, titles,

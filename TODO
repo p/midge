@@ -2,7 +2,6 @@ User visible TODOs:
 
 - fix bug - if type \[\] in search...
 - allow the user to change their username
-- remove configuration category
 - add resolution (code changed, can't reproduce, won't fix, not
   a bug, duplicate). Add resolution to closed and fixed lists.
      and map from bugtracker

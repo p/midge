@@ -643,7 +643,8 @@ class New(Location):
                 'Fill in as many fields as possible and '
                 'press the "Submit" button.',
                 'You must provide at least a title and a description.',
-                'Use new values (e.g. for version) if the available ones are unsuitable.')
+                'Use new values (e.g. for version) if <em>and only if</em> '
+                'the available ones are unsuitable.')
             templates.new_bug_form(wfile, self.path,
                                    self.application.versions,
                                    self.application.categories)
