@@ -581,7 +581,6 @@ class Summary(object):
             scheduled = 0
             fixed = 0
             closed = 0
-            cancelled = 0
 
         cursor.execute("""
                 SELECT statuses.name,

@@ -139,7 +139,6 @@ def create_statuses(database):
         INSERT INTO statuses (name) VALUES ('scheduled');
         INSERT INTO statuses (name) VALUES ('fixed');
         INSERT INTO statuses (name) VALUES ('closed');
-        INSERT INTO statuses (name) VALUES ('cancelled');
         """)
 
 def drop_statuses(database):

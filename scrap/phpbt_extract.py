@@ -194,7 +194,7 @@ def map_status_values(cursor):
     """)
     cursor.execute("""
     UPDATE status_t
-            SET status_name='cancelled'
+            SET status_name='closed'
             WHERE status_name='Transfered to Story'
     """)
 

@@ -399,7 +399,7 @@ def new_bug_form(wfile, path, versions, configurations, categories):
 class StatusHints(object):
 
     new = ("(set to <b>scheduled</b> to fix now, <b>reviewed</b> to "
-           "fix later, or <b>cancelled</b> if not a bug)")
+           "fix later, or <b>close</b> if not a bug)")
 
     reviewed = "(set to <b>scheduled</b> to have this bug fixed now)"
 
@@ -409,8 +409,6 @@ class StatusHints(object):
              "<b>scheduled</b> if still broken)")
 
     closed = ""
-
-    cancelled = ""
 
 
 def show_comments(wfile, bug):
@@ -689,13 +687,6 @@ def list_form(wfile, path, status_counts):
       </td>
       <td><b>closed</b> bug%(closed_plural)s</td>
      </tr>
-     <tr>
-      <td>
-       <input type="radio" name="status" value="cancelled"/>
-       %(n_cancelled)s
-      </td>
-      <td><b>cancelled</b> bug%(cancelled_plural)s</td>
-     </tr>
      <tr align="right" valign="bottom" bgcolor="#FFFFFF">
       <td colspan="2" align="right">
        <input type="submit" value="List bugs"/>
@@ -710,13 +701,11 @@ def list_form(wfile, path, status_counts):
                  "n_scheduled": status_counts.scheduled,
                  "n_fixed": status_counts.fixed,
                  "n_closed": status_counts.closed,
-                 "n_cancelled": status_counts.cancelled,
                  "new_plural": plural(status_counts.new),
                  "reviewed_plural": plural(status_counts.reviewed),
                  "scheduled_plural": plural(status_counts.scheduled),
                  "fixed_plural": plural(status_counts.fixed),
                  "closed_plural": plural(status_counts.closed),
-                 "cancelled_plural": plural(status_counts.cancelled)
                  })
 
 

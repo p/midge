@@ -36,8 +36,7 @@ class AdministrationTests(unittest.TestCase):
                                                    "reviewed",
                                                    "scheduled",
                                                    "fixed",
-                                                   "closed",
-                                                   "cancelled")])
+                                                   "closed")])
 
     def test_configurations_table(self):
         """Check create and destroy tables"""

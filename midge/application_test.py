@@ -107,8 +107,7 @@ class StatusTests(BaseTest):
                           "reviewed",
                           "scheduled",
                           "fixed",
-                          "closed",
-                          "cancelled"))
+                          "closed"))
 
     def test_initial_status(self):
         """Check statuses table has an initial value"""
@@ -449,31 +448,6 @@ class BugTests(BaseTest):
             self.assertEqual(row.title, self.TITLE)
             index += 1
 
-    def test_list_cancelled_bugs(self):
-        """Check list of cancelled bugs"""
-        user = self._login()
-
-        for p in (1,2,3,4,5):
-            bug = self._add_bug()
-            bug.change(user, status="cancelled")
-
-        bug = self._add_bug()
-        search = application.Search(("bug_id", "title"),
-                        "bug_id", "ascending", status="cancelled")
-        self.app.search(self.session_id, search)
-        self.assertEqual(search.variables, ("bug_id", "title"))
-        self.assertEqual(search.titles, ("Bug", "Title"))
-        self.assertEqual(len(search.rows), 5)
-
-        index = 0
-        for p in (1,2,3,4,5):
-            row = search.rows[index]
-            assert len(row) == 2
-            assert len(row.get()) == 2
-            self.assertEqual(row.bug_id, p)
-            self.assertEqual(row.title, self.TITLE)
-            index += 1
-
     def test_status_count(self):
         """Check count of bugs in each status"""
         user = self._login()
@@ -482,8 +456,7 @@ class BugTests(BaseTest):
                             "reviewed": 2,
                             "scheduled": 3,
                             "fixed": 0,
-                            "closed": 2,
-                            "cancelled": 1}
+                            "closed": 2}
 
         counts = self.app.get_status_counts(self.session_id)
         for status, count in n_bugs_in_status.iteritems():

@@ -540,25 +540,6 @@ class List(Location):
             templates.paragraph(wfile,
                                 "There are no closed bugs.")
 
-    def _show_cancelled(self, session_id, wfile, sort_by, order):
-        if not sort_by:
-            sort_by = "bug_id"
-        if not order:
-            order = "ascending"
-        search = application.Search(
-            ("bug_id", "title"), sort_by, order, status="cancelled")
-        self.application.search(session_id, search)
-        templates.title(wfile, "All cancelled bugs")
-        if search.rows:
-            templates.paragraph(
-                wfile,
-                "These bugs have been cancelled (e.g. mistakenly filed).")
-            url = lib.join_url(self.path, {"status": "cancelled"})
-            templates.table_of_bugs(wfile, url, search)
-        else:
-            templates.paragraph(wfile,
-                                "There are no cancelled bugs.")
-
         
 class View(Location):
 

@@ -1,5 +1,8 @@
 User visible TODOs:
 
+- change "closed in" to "tested ok in"
+- change order of show bug - title, R/O status, comments, edit form
+- implement search of comments
 - check everywhere redirecting when not logged in
 - search by comments
 - provide human readable description of search criteria on results page

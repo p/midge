@@ -194,7 +194,6 @@ class TemplatesTest(unittest.TestCase):
             scheduled = 12
             fixed = 0
             closed = 4534
-            cancelled = 12
         
         wfile = self.get_wfile()
         wfile.write("<test>\n")
