@@ -50,8 +50,8 @@ def header(wfile, user=None):
       <a href="new">Add new bug</a> | 
       <a href="list">List bugs</a> | 
       <a href="search">Search bugs</a> | 
-        Find bug <input size="5" name="bug_id" type="text">
-      <input type="submit" value="Go">
+        Find bug <input size="5" name="bug_id" type="text"/>
+      <input type="submit" value="Go"/>
      </td>
      <td align="right">
       <em>%(status)s</em>
@@ -62,7 +62,7 @@ def header(wfile, user=None):
 ''' % {"status": status, "project": config.Project.name})
 
 def hrule(wfile):
-    wfile.write("<hr>")
+    wfile.write("<hr />")
 
 def title(wfile, title, title2=None):
     if title2:
@@ -79,20 +79,21 @@ def table(wfile, titles, rows):
         wfile.write('''
   <th bgcolor="#cecece">
    <a href="%s">%s</a>
-  </th>
- </tr>''' % (url, name))
+  </th>''' % (url, name))
+    wfile.write('''
+ </tr>''')
     colours = ("#d5dfef", "#eeeeee")
     colour_index = 0
     for row in rows:
         wfile.write('''
  <tr>''')
-        for entry in rows:
+        for entry in row:
             wfile.write('''
   <td bgcolor="%s">%s</td>''' % (colours[colour_index], entry))
         wfile.write('''
  </tr>''')
         colour_index = (colour_index + 1) % 2
-        wfile.write('''
+    wfile.write('''
 </table>''')
 
 def paragraph(wfile, text):
@@ -103,7 +104,7 @@ def paragraph(wfile, text):
 def bullets(wfile, *items):
     wfile.write('<ul>')
     for text in items:
-        wfile.write('<li>%s' % text)
+        wfile.write('<li>%s</li>' % text)
     wfile.write('</ul>')
 
 def possible_actions(wfile, *possible_actions):
@@ -127,8 +128,8 @@ def footer(wfile, user=None):
      <a href="new">Add new bug</a> | 
      <a href="list">List bugs</a> | 
      <a href="search">Search bugs</a> | 
-        Find bug <input size="5" name="bug_id" type="text">
-      <input type="submit" value="Go">
+        Find bug <input size="5" name="bug_id" type="text"/>
+      <input type="submit" value="Go"/>
     </td>
     <td align="right">
      <em>%(status)s</em>
@@ -146,7 +147,7 @@ def footer(wfile, user=None):
      </td>
      <td valign="top" align="right">
       <font size="-2">
-       Copyright &copy; 2004, Timothy Corbett-Clark.<br>
+       Copyright &copy; 2004, Timothy Corbett-Clark.<br/>
       </font>   
      </td>
     </tr>
@@ -183,7 +184,7 @@ def login_form(wfile, path, usernames):
       </tr>
       <tr>
        <td colspan="3" align="right">
-        <input type="submit" value="Login">
+        <input type="submit" value="Login"/>
        </td>
       </tr>
      </table>
@@ -231,7 +232,7 @@ def add_user_form(wfile, path):
       <tr><td><table></table></td></tr>
       <tr>
        <td colspan="3" align="right">
-        <input type="submit" value="Create account">
+        <input type="submit" value="Create account"/>
        </td>
       </tr>
      </table>
@@ -282,7 +283,7 @@ def modify_user_form(wfile, path, name, email):
       <tr><td><table></table></td></tr>
       <tr>
        <td colspan="3" align="right">
-        <input type="submit" value="Change details">
+        <input type="submit" value="Change details"/>
        </td>
       </tr>
      </table>
@@ -310,7 +311,7 @@ def new_bug_form(wfile, path, versions, configurations, categories):
     for version in versions:
         if version == "":
             wfile.write('''
-         <option value="" SELECTED></option>''')
+         <option value="" selected="selected"></option>''')
         else:
             wfile.write('''
          <option value="%s">%s</option>''' % (version, version))
@@ -318,7 +319,7 @@ def new_bug_form(wfile, path, versions, configurations, categories):
         </select>
        </td>
        <td align="right"><font size="-2">(or use a new version</font>
-        <input type="text" name="new_version"></input><small>)</small>
+        <input type="text" name="new_version"/><small>)</small>
        </td>
       </tr>
      <tr bgcolor="#DDDDDD">
@@ -328,7 +329,7 @@ def new_bug_form(wfile, path, versions, configurations, categories):
     for category in categories:
         if category == "":
             wfile.write('''
-        <option value="" SELECTED></option>''')
+        <option value="" selected="selected"></option>''')
         else:
             wfile.write('''
         <option value="%s">%s</option>''' % (category, category))
@@ -336,7 +337,7 @@ def new_bug_form(wfile, path, versions, configurations, categories):
        </select>
       </td>
       <td align="right"><font size="-2">(or use a new category</font>
-       <input type="text" name="new_category"></input><small>)</small>
+       <input type="text" name="new_category"/><small>)</small>
       </td>
      </tr>
      <tr bgcolor="#DDDDDD">
@@ -346,7 +347,7 @@ def new_bug_form(wfile, path, versions, configurations, categories):
     for configuration in configurations:
         if configuration == "":
             wfile.write('''
-        <option value="" SELECTED></option>''')
+        <option value="" selected="selected"></option>''')
         else:
             wfile.write('''
         <option value="%s">%s</option>''' % (configuration, configuration))
@@ -354,10 +355,9 @@ def new_bug_form(wfile, path, versions, configurations, categories):
        </select>
       </td>
       <td align="right"><font size="-2">(or use a new configuration</font>
-       <input type="text" name="new_configuration"></input><small>)</small>
+       <input type="text" name="new_configuration"/><small>)</small>
       </td>
      </tr>
-
 
      <tr bgcolor="#DDDDDD">
       <td valign="baseline"><small><b>Description</b></small></td>
@@ -368,7 +368,7 @@ def new_bug_form(wfile, path, versions, configurations, categories):
      <tr><td><table></table></td></tr>
      <tr>
       <td colspan="3" align="right">
-       <input type="submit" name="submit" value="Submit">
+       <input type="submit" name="submit" value="Submit"/>
       </td>
      </tr>
     </table>
@@ -399,7 +399,7 @@ def edit_bug_form(wfile, path, bug, statuses, priorities,
     wfile.write('''
   <center><blockquote>
   <form action="%(path)s" method="POST">
-  <input type="hidden" name="bug_id" value="%(bug_id)s">
+  <input type="hidden" name="bug_id" value="%(bug_id)s"/>
   <font face="arial, sans-serif">
   <table cellpadding="3" cellspacing="0" border="0">
    <tr>
@@ -412,7 +412,7 @@ def edit_bug_form(wfile, path, bug, statuses, priorities,
     for status in statuses:
         if bug.status == status:
             wfile.write('''
-      <option value="%s" SELECTED>%s</option>''' % (status, status))
+      <option value="%s" selected="selected">%s</option>''' % (status, status))
         else:
             wfile.write('''
       <option value="%s">%s</option>''' % (status, status))
@@ -432,7 +432,7 @@ def edit_bug_form(wfile, path, bug, statuses, priorities,
     for priority in priorities:
         if bug.priority == priority:
             wfile.write('''
-      <option value="%s" SELECTED>%s</option>''' % (priority, priority))
+      <option value="%s" selected="selected">%s</option>''' % (priority, priority))
         else:
             wfile.write('''
       <option value="%s">%s</option>''' % (priority, priority))
@@ -459,7 +459,7 @@ def edit_bug_form(wfile, path, bug, statuses, priorities,
     for category in categories:
         if bug.category == category:
             wfile.write('''
-      <option value="%s" SELECTED>%s</option>''' % (category, category))
+      <option value="%s" selected="selected">%s</option>''' % (category, category))
         else:
             wfile.write('''
       <option value="%s">%s</option>''' % (category, category))
@@ -477,7 +477,7 @@ def edit_bug_form(wfile, path, bug, statuses, priorities,
     for configuration in configurations:
         if configuration == bug.configuration:
             wfile.write('''
-      <option value="%s" SELECTED>%s</option>''' % (
+      <option value="%s" selected="selected">%s</option>''' % (
                 configuration, configuration))
         else:
             wfile.write('''
@@ -493,7 +493,7 @@ def edit_bug_form(wfile, path, bug, statuses, priorities,
    <tr bgcolor="#DDDDDD">
     <td><small><b>&nbsp;&nbsp;<a href="/">Keywords</a></b></small></td>
     <td>
-     <input type="text" name="keywords" value="comms, replication"</input>
+     <input type="text" name="keywords" value="comms, replication"/>
     </td>
     <td> </td>
    </tr>
@@ -511,7 +511,7 @@ def edit_bug_form(wfile, path, bug, statuses, priorities,
     for version in versions:
         if version == bug.reported_in:
             wfile.write('''
-         <option value="%s" SELECTED>%s</option>''' % (version, version))
+         <option value="%s" selected="selected">%s</option>''' % (version, version))
         else:
             wfile.write('''
          <option value="%s">%s</option>''' % (version, version))
@@ -529,7 +529,7 @@ def edit_bug_form(wfile, path, bug, statuses, priorities,
     for version in versions:
         if version == bug.fixed_in:
             wfile.write('''
-         <option value="%s" SELECTED>%s</option>''' % (version, version))
+         <option value="%s" selected="selected">%s</option>''' % (version, version))
         else:
             wfile.write('''
          <option value="%s">%s</option>''' % (version, version))
@@ -548,7 +548,7 @@ def edit_bug_form(wfile, path, bug, statuses, priorities,
     for version in versions:
         if version == bug.closed_in:
             wfile.write('''
-         <option value="%s" SELECTED>%s</option>''' % (version, version))
+         <option value="%s" selected="selected">%s</option>''' % (version, version))
         else:
             wfile.write('''
          <option value="%s">%s</option>''' % (version, version))
@@ -577,7 +577,7 @@ def edit_bug_form(wfile, path, bug, statuses, priorities,
    <tr>
     <td colspan="3" align="right">
      <!--<input type="reset" value="Reset">-->
-     <input type="submit" name="submit" value="Submit">
+     <input type="submit" name="submit" value="Submit"/>
     </td>
    </tr>
   </table>
@@ -629,7 +629,7 @@ def list_form(wfile, path, status_counts):
       <tr>
        <td>Show me:</td>
        <td>
-        <input type="radio" name="status" value="new" checked>
+        <input type="radio" name="status" value="new" checked="checked"/>
         %(n_new)s
        </td>
        <td><b>new</b> bug%(new_plural)s in need of review</td>
@@ -637,7 +637,7 @@ def list_form(wfile, path, status_counts):
       <tr>
        <td></td>
        <td>
-        <input type="radio" name="status" value="reviewed">
+        <input type="radio" name="status" value="reviewed"/>
         %(n_reviewed)s
        </td>
        <td><b>reviewed</b> bug%(reviewed_plural)s ready to be scheduled</td>
@@ -645,7 +645,7 @@ def list_form(wfile, path, status_counts):
       <tr>
        <td></td>
        <td>
-        <input type="radio" name="status" value="scheduled">
+        <input type="radio" name="status" value="scheduled"/>
         %(n_scheduled)s
        </td>
        <td><b>scheduled</b> bug%(scheduled_plural)s waiting to be fixed</td>
@@ -653,7 +653,7 @@ def list_form(wfile, path, status_counts):
       <tr>
        <td></td>
        <td>
-        <input type="radio" name="status" value="fixed">
+        <input type="radio" name="status" value="fixed"/>
         %(n_fixed)s
        </td>
        <td><b>fixed</b> bug%(fixed_plural)s waiting to be tested</td>
@@ -661,7 +661,7 @@ def list_form(wfile, path, status_counts):
       <tr>
        <td></td>
        <td>
-        <input type="radio" name="status" value="closed">
+        <input type="radio" name="status" value="closed"/>
         %(n_closed)s
        </td>
        <td><b>closed</b> bug%(closed_plural)s</td>
@@ -669,40 +669,41 @@ def list_form(wfile, path, status_counts):
       <tr>
        <td></td>
        <td>
-        <input type="radio" name="status" value="cancelled">
+        <input type="radio" name="status" value="cancelled"/>
         %(n_cancelled)s
        </td>
        <td><b>cancelled</b> bug%(cancelled_plural)s</td>
       </tr>
       <tr align="right" valign="bottom" bgcolor="#FFFFFF">
        <td colspan="3" align="right">
-        <input type="submit" value="List bugs">
+        <input type="submit" value="List bugs"/>
        </td>
       </tr>
       </table>
     </font>
    </form>
-  </blockquote></center>''' % {"path": path,
-                               "n_new": status_counts.new,
-                               "n_reviewed": status_counts.reviewed,
-                               "n_scheduled": status_counts.scheduled,
-                               "n_fixed": status_counts.fixed,
-                               "n_closed": status_counts.closed,
-                               "n_cancelled": status_counts.cancelled,
-                               "new_plural": plural(status_counts.new),
-                               "reviewed_plural": plural(status_counts.reviewed),
-                               "scheduled_plural": plural(status_counts.scheduled),
-                               "fixed_plural": plural(status_counts.fixed),
-                               "closed_plural": plural(status_counts.closed),
-                               "cancelled_plural": plural(status_counts.cancelled)
-                               })
+  </blockquote></center>''' %
+                {"path": path,
+                 "n_new": status_counts.new,
+                 "n_reviewed": status_counts.reviewed,
+                 "n_scheduled": status_counts.scheduled,
+                 "n_fixed": status_counts.fixed,
+                 "n_closed": status_counts.closed,
+                 "n_cancelled": status_counts.cancelled,
+                 "new_plural": plural(status_counts.new),
+                 "reviewed_plural": plural(status_counts.reviewed),
+                 "scheduled_plural": plural(status_counts.scheduled),
+                 "fixed_plural": plural(status_counts.fixed),
+                 "closed_plural": plural(status_counts.closed),
+                 "cancelled_plural": plural(status_counts.cancelled)
+                 })
 
 
 def _table_headings(wfile, path, titles,
                     status, variables, sorted_by, ordered):
     wfile.write('''
     <tr>''')
-    for heading, variable in zip(titles,variables):
+    for heading, variable in zip(titles, variables):
         if variable == sorted_by:
             new_order = {"ascending": "descending",
                          "descending": "ascending"}[ordered]

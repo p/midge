@@ -7,6 +7,7 @@ import smtplib
 import socket
 import time
 import urllib
+import xml.sax.saxutils
 
 import midge.config as config
 import midge.logger as logger
@@ -17,12 +18,17 @@ unquote = urllib.unquote
 
 
 def make_url(path, dictionary=None):
+    return html_entity_escape(join_url(path, dictionary))
+
+
+def join_url(path, dictionary=None):
     if dictionary:
         attr = "&".join(["%s=%s" % (key, quote(value))
                          for key, value in dictionary.iteritems()])
         return "%s?%s" % (path, attr)
     else:
         return path
+
 
 def split_url(url):
     values = {}
@@ -37,11 +43,7 @@ def split_url(url):
 
 
 def html_entity_escape(text):
-    for input, output in (("&", "&amp;"),
-                          ("<", "&lt;"),
-                          (">", "&gt;")):
-        text = text.replace(input, output)
-    return text
+    return xml.sax.saxutils.escape(text)
 
 
 def format_date(date):
