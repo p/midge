@@ -338,7 +338,7 @@ def new_bug_form(wfile, path, versions, configurations, categories):
     wfile.write('''
        </select>
       </td>
-      <td align="right"><font size="-2">(or use a new version</font>
+      <td align="right"><small>(or use a new version</small>
        <input type="text" name="new_version"/><small>)</small>
       </td>
      </tr>
@@ -356,7 +356,7 @@ def new_bug_form(wfile, path, versions, configurations, categories):
     wfile.write('''
        </select>
       </td>
-      <td align="right"><font size="-2">(or use a new category</font>
+      <td align="right"><small>(or use a new category</small>
        <input type="text" name="new_category"/><small>)</small>
       </td>
      </tr>
@@ -374,7 +374,7 @@ def new_bug_form(wfile, path, versions, configurations, categories):
     wfile.write('''
        </select>
       </td>
-      <td align="right"><font size="-2">(or use a new configuration</font>
+      <td align="right"><small>(or use a new configuration</small>
        <input type="text" name="new_configuration"/><small>)</small>
       </td>
      </tr>
@@ -461,9 +461,9 @@ def edit_bug_form(wfile, path, bug, statuses, priorities,
      </select>
     </td>
     <td align="right">
-     <font size="-2">
+     <small>
        %s
-     </font>
+     </small>
     </td>
    </tr>
    <tr bgcolor="#DDDDDD">
@@ -481,9 +481,9 @@ def edit_bug_form(wfile, path, bug, statuses, priorities,
      </select>
     </td>
     <td align="right">
-     <font size="-2">
+     <small>
       (<b>1</b> is lowest, <b>5</b> is highest)
-     </font>
+     </small>
     </td>
    </tr>
   
@@ -507,7 +507,7 @@ def edit_bug_form(wfile, path, bug, statuses, priorities,
     wfile.write('''
      </select>
     </td>
-    <td align="right"><font size="-2">(or use a new category</font>
+    <td align="right"><small>(or use a new category</small>
         <input type="text" name="new_category"></input><small>)</small>
     </td>
    </tr>
@@ -527,7 +527,7 @@ def edit_bug_form(wfile, path, bug, statuses, priorities,
     wfile.write('''
      </select>
     </td>
-    <td align="right"><font size="-2">(or use a new configuration</font>
+    <td align="right"><small>(or use a new configuration</small>
         <input type="text" name="new_configuration"></input><small>)</small>
     </td>
    </tr>
@@ -547,7 +547,7 @@ def edit_bug_form(wfile, path, bug, statuses, priorities,
     wfile.write('''
      </select>
     </td>
-    <td align="right"><font size="-2">(or use a new keyword</font>
+    <td align="right"><small>(or use a new keyword</small>
         <input type="text" name="new_keyword"></input><small>)</small>
     </td>
    </tr>
@@ -572,7 +572,7 @@ def edit_bug_form(wfile, path, bug, statuses, priorities,
     wfile.write('''
      </select>
     </td>
-    <td align="right"><font size="-2">(or use a new version</font>
+    <td align="right"><small>(or use a new version</small>
         <input type="text" name="new_reported_in"></input><small>)</small>
     </td>
    </tr>
@@ -590,7 +590,7 @@ def edit_bug_form(wfile, path, bug, statuses, priorities,
     wfile.write('''
      </select>
     </td>
-    <td align="right"><font size="-2">(or use a new version</font>
+    <td align="right"><small>(or use a new version</small>
         <input type="text" name="new_fixed_in"></input><small>)</small>
     </td>
    </tr>
@@ -609,7 +609,7 @@ def edit_bug_form(wfile, path, bug, statuses, priorities,
     wfile.write('''
      </select>
     </td>
-    <td align="right"><font size="-2">(or use a new version</font>
+    <td align="right"><small>(or use a new version</small>
         <input type="text" name="new_closed_in"></input><small>)</small>
     </td>
    </tr>
@@ -661,7 +661,6 @@ def list_form(wfile, path, status_counts):
    <form action="%(path)s">
     <table bgcolor="#DDDDDD" cellpadding="8" cellspacing="0" border="0">
      <tr>
-      <td>Show me:</td>
       <td>
        <input type="radio" name="status" value="new" checked="checked"/>
        %(n_new)s
@@ -669,7 +668,6 @@ def list_form(wfile, path, status_counts):
       <td><b>new</b> bug%(new_plural)s in need of review</td>
      </tr>
      <tr>
-      <td></td>
       <td>
        <input type="radio" name="status" value="reviewed"/>
        %(n_reviewed)s
@@ -677,7 +675,6 @@ def list_form(wfile, path, status_counts):
       <td><b>reviewed</b> bug%(reviewed_plural)s ready to be scheduled</td>
      </tr>
      <tr>
-      <td></td>
       <td>
        <input type="radio" name="status" value="scheduled"/>
        %(n_scheduled)s
@@ -685,7 +682,6 @@ def list_form(wfile, path, status_counts):
       <td><b>scheduled</b> bug%(scheduled_plural)s waiting to be fixed</td>
      </tr>
      <tr>
-      <td></td>
       <td>
        <input type="radio" name="status" value="fixed"/>
        %(n_fixed)s
@@ -693,7 +689,6 @@ def list_form(wfile, path, status_counts):
       <td><b>fixed</b> bug%(fixed_plural)s waiting to be tested</td>
      </tr>
      <tr>
-      <td></td>
       <td>
        <input type="radio" name="status" value="closed"/>
        %(n_closed)s
@@ -701,7 +696,6 @@ def list_form(wfile, path, status_counts):
       <td><b>closed</b> bug%(closed_plural)s</td>
      </tr>
      <tr>
-      <td></td>
       <td>
        <input type="radio" name="status" value="cancelled"/>
        %(n_cancelled)s
@@ -709,7 +703,7 @@ def list_form(wfile, path, status_counts):
       <td><b>cancelled</b> bug%(cancelled_plural)s</td>
      </tr>
      <tr align="right" valign="bottom" bgcolor="#FFFFFF">
-      <td colspan="3" align="right">
+      <td colspan="2" align="right">
        <input type="submit" value="List bugs"/>
       </td>
      </tr>
@@ -789,20 +783,18 @@ def _table_rows(wfile, rows):
     </tr>''') 
         colour_index = (colour_index + 1) % 2
 
-def table_of_bugs(wfile, path, rows):
-    assert len(rows) > 0
-    a_row = rows[0]
-    status = a_row.status
-    titles = a_row.titles
-    variables = a_row.variables
-    sorted_by = a_row.sorted_by
-    ordered = a_row.ordered
+def table_of_bugs(wfile, path, status, search):
+    assert len(search.rows) > 0
+    titles = search.titles
+    variables = search.variables
+    sorted_by = search.sort_by
+    ordered = search.order
     wfile.write('''
   <center>
    <table cellpadding="2" cellspacing="3" border="0">''')
     _table_headings(wfile, path, titles,
                     status, variables, sorted_by, ordered)
-    _table_rows(wfile, rows)
+    _table_rows(wfile, search.rows)
     wfile.write('''
    </table>
   </center>''')
@@ -811,9 +803,28 @@ def table_of_bugs(wfile, path, rows):
 def search_form(wfile, path, statuses, priorities,
                 configurations, categories, keywords, versions):
     wfile.write('''
-  <blockquote>
-  <form action="%(path)s" method="POST">
+  <center><blockquote>
+  <form action="%(path)s">
   <table cellpadding="3" cellspacing="0" border="0">
+   <tr>
+    <td bgcolor="#EEEEEE"><small><em>Text</em></small></td>
+   </tr> 
+   <tr bgcolor="#DDDDDD">
+    <td><small><b>&nbsp;&nbsp;Title</b></small></td>
+    <td colspan="2">
+     <input name="title" type="text"/>
+    </td>
+   </tr>
+   <tr bgcolor="#DDDDDD">
+    <td><small><b>&nbsp;&nbsp;Comments</b></small></td>
+    <td colspan="2">
+     <input name="comments" type="text"/>
+    </td>
+   </tr>
+
+   <tr><td><table></table></td></tr>
+   <tr><td><table></table></td></tr>
+  
    <tr>
     <td bgcolor="#EEEEEE"><small><em>States</em></small></td>
    </tr> 
@@ -828,8 +839,14 @@ def search_form(wfile, path, statuses, priorities,
      </select>
     </td>
     <td>
+     <small><em>or</em> use a regex</small>
+     <input type="text" name="status_regex"/>
+    </td>
+    <td bgcolor="#FFFFFF">&nbsp;</td>
+    <td>
      <small><label>
       <input type="checkbox" name="status_column" value="on">Show column
+      </input>
      </label></small>
     </td>
    </tr>
@@ -844,8 +861,14 @@ def search_form(wfile, path, statuses, priorities,
      </select>
     </td>
     <td>
+     <small><em>or</em> use a regex</small>
+     <input type="text" name="priority_regex"/>
+    </td>
+    <td bgcolor="#FFFFFF">&nbsp;</td>
+    <td>
      <small><label>
       <input type="checkbox" name="priority_column" value="on">Show column
+      </input>
      </label></small>
     </td>
    </tr>
@@ -867,8 +890,14 @@ def search_form(wfile, path, statuses, priorities,
      </select>
     </td>
     <td>
+     <small><em>or</em> use a regex</small>
+     <input type="text" name="category_regex"/>
+    </td>
+    <td bgcolor="#FFFFFF">&nbsp;</td>
+    <td>
      <small><label>
       <input type="checkbox" name="category_column" value="on">Show column
+      </input>
      </label></small>
     </td>
 
@@ -885,8 +914,14 @@ def search_form(wfile, path, statuses, priorities,
      </select>
     </td>
     <td>
+     <small><em>or</em> use a regex</small>
+     <input type="text" name="configuration_regex"/>
+    </td>
+    <td bgcolor="#FFFFFF">&nbsp;</td>
+    <td>
      <small><label>
       <input type="checkbox" name="configuration_column" value="on">Show column
+      </input>
      </label></small>
     </td>
 
@@ -903,8 +938,14 @@ def search_form(wfile, path, statuses, priorities,
      </select>
     </td>
     <td>
+     <small><em>or</em> use a regex</small>
+     <input type="text" name="keyword_regex"/>
+    </td>
+    <td bgcolor="#FFFFFF">&nbsp;</td>
+    <td>
      <small><label>
       <input type="checkbox" name="keyword_column" value="on">Show column
+      </input>
      </label></small>
     </td>
 
@@ -927,8 +968,14 @@ def search_form(wfile, path, statuses, priorities,
      </select>
     </td>
     <td>
+     <small><em>or</em> use a regex</small>
+     <input type="text" name="reported_in_regex"/>
+    </td>
+    <td bgcolor="#FFFFFF">&nbsp;</td>
+    <td>
      <small><label>
       <input type="checkbox" name="reported_in_column" value="on">Show column
+      </input>
      </label></small>
     </td>
    </tr>
@@ -943,8 +990,14 @@ def search_form(wfile, path, statuses, priorities,
      </select>
     </td>
     <td>
+     <small><em>or</em> use a regex</small>
+     <input type="text" name="fixed_in_regex"/>
+    </td>
+    <td bgcolor="#FFFFFF">&nbsp;</td>
+    <td>
      <small><label>
       <input type="checkbox" name="fixed_in_column" value="on">Show column
+      </input>
      </label></small>
     </td>
    </tr>
@@ -960,45 +1013,27 @@ def search_form(wfile, path, statuses, priorities,
      </select>
     </td>
     <td>
+     <small><em>or</em> use a regex</small>
+     <input type="text" name="closed_in_regex"/>
+    </td>
+    <td bgcolor="#FFFFFF">&nbsp;</td>
+    <td>
      <small><label>
       <input type="checkbox" name="closed_in_column" value="on">Show column
+      </input>
      </label></small>
     </td>
-
-   </tr>
-  
-   <tr><td><table></table></td></tr>
-   <tr><td><table></table></td></tr>
-
-   <tr>
-    <td bgcolor="#EEEEEE"><small><em>Text</em></small></td>
-   </tr> 
-   <tr bgcolor="#DDDDDD">
-    <td><small><b>&nbsp;&nbsp;Title</b></small></td>
-    <td>
-     <input name="title" type="text"/>
-    </td>
-    <td/>
-   </tr>
-   <tr bgcolor="#DDDDDD">
-    <td><small><b>&nbsp;&nbsp;Comments</b></small></td>
-    <td>
-     <input name="comments" type="text"/>
-    </td>
-    <td>
    </tr>
 
    <tr><td><table></table></td></tr>
    <tr><td><table></table></td></tr>
   
    <tr>
-    <td colspan="3" align="right">
+    <td colspan="5" align="right">
      <input type="submit" name="submit" value="Submit"/>
     </td>
    </tr>
   </table>
   </form>
-  </blockquote>
-  
-  <hr> </hr>
+  </blockquote></center>
 ''')

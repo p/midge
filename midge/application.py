@@ -4,6 +4,7 @@
 """The main bugtracking application with concepts of users, bugs, etc."""
 
 import re
+import sets
 import textwrap
 
 import midge.connection as connection
@@ -427,6 +428,7 @@ class StateTable(object):
 
     def purge(self, names):
         """Remove all values not used by any name in a bug"""
+        # TODO
 
     def get_for_bug(self, cursor, bug_id):
         """Return one of the values for a given bug (may be "").
@@ -767,33 +769,99 @@ class Bug(object):
                 cursor.close()
 
 
+class Search:
+
+    _all = (("bug_id", "Bug"),
+            ("status", "Status"),
+            ("priority", "Priority"),
+            ("category", "Category"),
+            ("configuration", "Configuration"),
+            ("keyword", "Keyword"),
+            ("reported_in", "Reported in"),
+            ("fixed_in", "Fixed in"),
+            ("closed_in", "Closed in"),
+            ("title", "Title"))
+
+    def __init__(self, variables, sort_by, order, **criteria):
+        """Construct an object defining a search.
+
+        The order of the columns is fixed, but which columns are
+        included is provided by the variables parameter.
+
+        sort_by and order determine by which column the results are
+        sorted and in which order.
+
+        The subset of the data is provided by the **criteria
+        argument. E.g.
+           status="new"
+           keyword_regex="comms|replication"
+
+        For example, a search used to list all the new bugs could be
+        defined:
+
+           Search(("bug_id", "category", "reported_in", "title"),
+                  "category", "ascending", status="new")
+
+        """
+        self.variables, self.titles = self._make(variables)
+        self.sort_by = sort_by
+        self.order = order
+        self.criteria = criteria
+        self.rows = []
+
+        assert self.sort_by in self.variables
+        assert self.order in ("ascending", "descending")
+        assert type(self.criteria) == type({})
+
+    def _make(self, variables):
+        variables_set = sets.Set(variables)
+        variables = []
+        titles = []
+        for v, t in self._all:
+            if v in variables_set:
+                variables.append(v)
+                titles.append(t)
+                variables_set.remove(v)
+        assert len(variables_set) == 0
+        return tuple(variables), tuple(titles)
+
+    def reset(self):
+        self.rows = []    
+
+    def add(self, *args):
+        assert len(args) == len(self.variables)
+        self.rows.append(Row(self.variables, *args))
+
+   
 class Row:
 
-    """The super class off all Row objects returned from Bugs."""
+    """A Search has a list of Rows."""
 
-    # All defined by the subclass.
-    status = None
-    titles = None
-    variables = None
-    sorted_by = None
-    ordered = None
-    
-    def __init__(self, bug_id, priority,  category,
-                 reported_in, fixed_in, closed_in, title):
-        self.bug_id = bug_id
-        self.priority = priority or ""
-        self.category = category or ""
-        self.reported_in = reported_in or ""
-        self.fixed_in = fixed_in or ""
-        self.closed_in = closed_in or ""
-        self.title = lib.unquote(title)
+    def __init__(self, variable_names, *args):
+        """Initialise a row forming part of a Search.
+
+        Only to be called from within the Search class.
+
+        Once constructed, the values are accessed as attributes or
+        using the get method.
+
+        """
+        self.variable_names = variable_names
+        assert len(args) == len(self.variable_names)
+        for variable, value in zip(self.variable_names, args):
+            if variable == "title":
+                # TODO should the unquoting be done here?
+                self.title = lib.unquote(value)
+            else:
+                setattr(self, variable, value or "")
     
     def get(self):
+        """Return a list of all values in correct order."""
         return [(variable, getattr(self, variable))
-                for variable in self.variables]
+                for variable in self.variable_names]
 
     def __len__(self):
-        return len(self.titles)
+        return len(self.variable_names)
 
         
 class Bugs(object):
@@ -885,7 +953,7 @@ class Bugs(object):
             raise NoSuchBugException, bug_id
         return Bug(self, bug_id)
 
-    def _get_list(self, row_cls):
+    def search(self, search):
         sort_by_map = {
             "bug_id": "bugs.bug_id",
             "priority": "priority_values.name",
@@ -897,164 +965,94 @@ class Bugs(object):
         order_map = {
             "ascending": "ASC",
             "descending": "DESC"}
+        select_map = {   # TODO same as sort_by_map?
+            "bug_id": "bugs.bug_id",
+            "priority": "priority_values.name",
+            "category": "category_values.name",
+            "reported_in": "reported_versions.name",
+            "fixed_in": "fixed_versions.name",
+            "closed_in": "closed_versions.name",
+            "title": "title"}
 
-        assert row_cls.sorted_by in row_cls.variables
-        assert row_cls.sorted_by in sort_by_map
-        assert row_cls.ordered in order_map
+        class From:
+            bug_id = ""
+            title = ""
+            priority = """
+               ) LEFT OUTER JOIN priorities ON
+                (priorities.bug_id = bugs.bug_id)
+               ) LEFT OUTER JOIN priority_values ON
+                (priority_values.id = priorities.id)"""
+            category = """
+               ) LEFT OUTER JOIN categories ON
+                (categories.bug_id = bugs.bug_id)
+               ) LEFT OUTER JOIN category_values ON
+                (category_values.id = categories.id)"""
+            reported_in = """
+               ) LEFT OUTER JOIN reported_ins ON
+                (reported_ins.bug_id = bugs.bug_id)
+               ) LEFT OUTER JOIN versions AS reported_versions ON
+                (reported_versions.id = reported_ins.id)"""
+            fixed_in = """
+               ) LEFT OUTER JOIN fixed_ins ON
+                (fixed_ins.bug_id = bugs.bug_id)
+               ) LEFT OUTER JOIN versions AS fixed_versions ON
+                (fixed_versions.id = fixed_ins.id)"""
+            closed_in = """
+               ) LEFT OUTER JOIN closed_ins ON
+                (closed_ins.bug_id = bugs.bug_id)
+               ) LEFT OUTER JOIN versions AS closed_versions ON
+                (closed_versions.id = closed_ins.id)"""
+
+            def _get_from_clause(cls, variables):
+                return " ".join([getattr(cls, v) for v in variables])
+            get_from_clause = classmethod(_get_from_clause)
+            
+            def _get_from_brackets(variables):
+                # TODO does this -2 assume that bug_id and title are present?
+                return "((" * (len(variables) - 2)
+            get_from_brackets = staticmethod(_get_from_brackets)
+            
+        where_map = {
+            "status": "statuses.name = '%s'",
+            "status_regex": "statuses.name ~* '%s'",
+            "title": "title = '%s'",
+            "title_regex": "title ~* '%s'"
+            }
+
+        # TODO find better home for these asserts
+        assert search.sort_by in sort_by_map
+        assert search.order in order_map
     
         cursor = self.connection.cursor()
+
+        # TODO from_map needs to be used for all mentioned variables
+        # (either in criteria, or in output table).
+
         cursor.execute("""
-                SELECT bugs.bug_id,
-                       priority_values.name,
-                       category_values.name,
-                       reported_versions.name,
-                       fixed_versions.name,
-                       closed_versions.name,
-                       title
-                FROM ((((((((((
-                           statuses INNER JOIN bugs ON
-                           (bugs.status_id = statuses.status_id)
-
-                         ) LEFT OUTER JOIN priorities ON
-                           (priorities.bug_id = bugs.bug_id
-                         ) LEFT OUTER JOIN priority_values ON
-                           (priority_values.id = priorities.id)
-                           
-                         ) LEFT OUTER JOIN categories ON
-                           (categories.bug_id = bugs.bug_id)
-                         ) LEFT OUTER JOIN category_values ON
-                           (category_values.id = categories.id)
-                           
-                         ) LEFT OUTER JOIN reported_ins ON
-                           (reported_ins.bug_id = bugs.bug_id)
-                         ) LEFT OUTER JOIN versions AS reported_versions ON
-                           (reported_versions.id = reported_ins.id)
-
-                         ) LEFT OUTER JOIN fixed_ins ON
-                           (fixed_ins.bug_id = bugs.bug_id)
-                         ) LEFT OUTER JOIN versions AS fixed_versions ON
-                           (fixed_versions.id = fixed_ins.id)
-
-                         ) LEFT OUTER JOIN closed_ins ON
-                           (closed_ins.bug_id = bugs.bug_id)
-                         ) LEFT OUTER JOIN versions AS closed_versions ON
-                           (closed_versions.id = closed_ins.id))
-                WHERE statuses.name = '%(status)s'
+                SELECT %(select)s
+                FROM %(from_brackets)s
+                     statuses INNER JOIN bugs ON
+                     (bugs.status_id = statuses.status_id)
+                     %(from)s
+                WHERE %(where)s
                 ORDER BY %(sort_by)s %(order)s;
-                """ % {"status": row_cls.status,
-                       "sort_by": sort_by_map[row_cls.sorted_by],
-                       "order": order_map[row_cls.ordered]})
-        rows = []
+                """ % {"select":
+                       ",".join([select_map[v] for v in search.variables]),
+                       "from_brackets":
+                       From.get_from_brackets(search.variables),
+                       "from":
+                       From.get_from_clause(search.variables),
+                       "where": " AND ".join([where_map[c] % v for c,v in search.criteria.iteritems()]),
+                       "sort_by": sort_by_map[search.sort_by],
+                       "order": order_map[search.order]})
+        search.reset()
         result = cursor.fetchall()
         for row in result:
-            rows.append(row_cls(*row))
+            search.add(*row)
         cursor.close()
-        return rows
+        return search
 
-    def get_list(self, status, *args):
-        return getattr(self, "get_%s_list" % status)(*args)
-
-    def get_new_list(self, sort_by, order):
-        if not sort_by:
-            sort_by = "category"
-        if not order:
-            order = "ascending"
-
-        class NewRow(Row):
-
-            status = "new"
-            titles = "Bug", "Category", "Reported in", "Title"
-            variables = "bug_id", "category", "reported_in", "title"
-            sorted_by = sort_by
-            ordered = order
-        
-        return self._get_list(NewRow)
-
-    def get_reviewed_list(self, sort_by, order):
-        if not sort_by:
-            sort_by = "priority"
-        if not order:
-            order = "descending"
-
-        class ReviewedRow(Row):
-
-            status = "reviewed"
-            titles = "Bug", "Priority", "Category", "Reported in", "Title"
-            variables = ("bug_id", "priority", "category",
-                         "reported_in", "title")
-            sorted_by = sort_by
-            ordered = order
-
-        return self._get_list(ReviewedRow)
-            
-    def get_scheduled_list(self, sort_by, order):
-        if not sort_by:
-            sort_by = "priority"
-        if not order:
-            order = "descending"
-
-        class ScheduledRow(Row):
-
-            status = "scheduled"
-            titles = "Bug", "Priority", "Category", "Reported in", "Title"
-            variables = ("bug_id", "priority", "category",
-                         "reported_in", "title")
-            sorted_by = sort_by
-            ordered = order
-
-        return self._get_list(ScheduledRow)
-            
-    def get_fixed_list(self, sort_by, order):
-        if not sort_by:
-            sort_by = "fixed_in"
-        if not order:
-            order = "ascending"
-
-        class FixedRow(Row):
-
-            status = "fixed"
-            titles = "Bug", "Priority", "Category", "Fixed in", "Title"
-            variables = ("bug_id", "priority", "category",
-                         "fixed_in", "title")
-            sorted_by = sort_by
-            ordered = order
-
-        return self._get_list(FixedRow)
-            
-    def get_closed_list(self, sort_by, order):
-        if not sort_by:
-            sort_by = "closed_in"
-        if not order:
-            order = "ascending"
-
-        class ClosedRow(Row):
-
-            status = "closed"
-            titles = "Bug", "Priority", "Category", "Closed in", "Title"
-            variables = ("bug_id", "priority", "category",
-                         "closed_in", "title")
-            sorted_by = sort_by
-            ordered = order
-
-        return self._get_list(ClosedRow)
-            
-    def get_cancelled_list(self, sort_by, order):
-        if not sort_by:
-            sort_by = "bug_id"
-        if not order:
-            order = "ascending"
-
-        class CancelledRow(Row):
-
-            status = "cancelled"
-            titles = "Bug", "Title"
-            variables = "bug_id", "title"
-            sorted_by = sort_by
-            ordered = order
-
-        return self._get_list(CancelledRow)
-            
-
+           
 class Application(object):
 
     def __init__(self, connection):
@@ -1105,12 +1103,12 @@ class Application(object):
         else:
             return None
 
-    def get_bugs(self, session_id, status, sort_by, order):
+    def search(self, session_id, search):
         if self.users.get_user(session_id):
-            return self.bugs.get_list(status, sort_by, order)
+            return self.bugs.search(search)
         else:
             return None
-
+    
     def get_status_counts(self, session_id):
         if self.users.get_user(session_id):
             return self.bugs.summary.status_counts
@@ -1149,3 +1147,4 @@ class Application(object):
 
     def purge(self):
         self.bugs.purge()
+

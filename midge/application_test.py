@@ -282,16 +282,22 @@ class BugTests(BaseTest):
 
         bug = self._add_bug()
         bug.change(user, status="reviewed")
-            
-        rows = self.app.get_bugs(self.session_id, "new", None, None)
-        self.assertEqual(len(rows), 5)
+        
+        search = application.Search(
+            ("bug_id", "category", "reported_in", "title"),
+            "category", "ascending", status="new")
+        self.app.search(self.session_id, search)
+        self.assertEqual(search.variables,
+                         ("bug_id", "category", "reported_in", "title"))
+        self.assertEqual(search.titles,
+                         ("Bug", "Category", "Reported in", "Title"))
+        self.assertEqual(len(search.rows), 5)
 
         index = 0
         for p in (1,2,3,4,5):
-            row = rows[index]
+            row = search.rows[index]
             assert len(row) == 4
             assert len(row.get()) == 4
-            assert len(row.titles) == 4
             self.assertEqual(row.bug_id, ids[p])
             self.assertEqual(row.category, str(p))
             self.assertEqual(row.reported_in, self.VERSION)
@@ -311,14 +317,22 @@ class BugTests(BaseTest):
         bug = self._add_bug()
         bug.change(user, status="fixed")
             
-        rows = self.app.get_bugs(self.session_id, "reviewed", None, None)
-        self.assertEqual(len(rows), 5)
+        search = application.Search(
+            ("bug_id", "priority", "category", "reported_in", "title"),
+            "priority", "descending", status="reviewed")
+        self.app.search(self.session_id, search)
+        self.assertEqual(search.variables,
+                         ("bug_id", "priority", "category",
+                          "reported_in", "title"))
+        self.assertEqual(search.titles,
+                         ("Bug", "Priority", "Category",
+                          "Reported in", "Title"))
+        self.assertEqual(len(search.rows), 5)
 
         index = 0
         for p in (5,4,3,2,1):
-            row = rows[index]
+            row = search.rows[index]
             assert len(row) == 5
-            assert len(row.titles) == 5
             assert len(row.get()) == 5
             self.assertEqual(row.bug_id, ids[p])
             self.assertEqual(row.priority, str(p))
@@ -339,15 +353,23 @@ class BugTests(BaseTest):
 
         bug = self._add_bug()
         bug.change(user, status="fixed")
-            
-        rows = self.app.get_bugs(self.session_id, "scheduled", None, None)
-        self.assertEqual(len(rows), 5)
+
+        search = application.Search(
+            ("bug_id", "priority", "category", "reported_in", "title"),
+            "priority", "descending", status="scheduled")
+        self.app.search(self.session_id, search)
+        self.assertEqual(search.variables,
+                         ("bug_id", "priority", "category",
+                          "reported_in", "title"))
+        self.assertEqual(search.titles,
+                         ("Bug", "Priority", "Category",
+                          "Reported in", "Title"))
+        self.assertEqual(len(search.rows), 5)
 
         index = 0
         for p in (5,4,3,2,1):
-            row = rows[index]
+            row = search.rows[index]
             assert len(row) == 5
-            assert len(row.titles) == 5
             assert len(row.get()) == 5
             self.assertEqual(row.bug_id, ids[p])
             self.assertEqual(row.priority, str(p))
@@ -367,15 +389,23 @@ class BugTests(BaseTest):
             ids[p] = bug.bug_id
 
         bug = self._add_bug()
-            
-        rows = self.app.get_bugs(self.session_id, "fixed", None, None)
-        self.assertEqual(len(rows), 5)
+
+        search = application.Search(
+            ("bug_id", "priority", "category", "fixed_in", "title"),
+            "fixed_in", "ascending", status="fixed")
+        self.app.search(self.session_id, search)
+        self.assertEqual(search.variables,
+                         ("bug_id", "priority", "category",
+                          "fixed_in", "title"))
+        self.assertEqual(search.titles,
+                         ("Bug", "Priority", "Category",
+                          "Fixed in", "Title"))
+        self.assertEqual(len(search.rows), 5)
 
         index = 0
         for p in (1,2,3,4,5):
-            row = rows[index]
+            row = search.rows[index]
             assert len(row) == 5
-            assert len(row.titles) == 5
             assert len(row.get()) == 5
             self.assertEqual(row.bug_id, ids[p])
             self.assertEqual(row.priority, "")
@@ -395,15 +425,22 @@ class BugTests(BaseTest):
             ids[p] = bug.bug_id
 
         bug = self._add_bug()
-            
-        rows = self.app.get_bugs(self.session_id, "closed", None, None)
-        self.assertEqual(len(rows), 5)
+        search = application.Search(
+            ("bug_id", "priority", "category", "closed_in", "title"),
+            "closed_in", "ascending", status="closed")
+        self.app.search(self.session_id, search)
+        self.assertEqual(search.variables,
+                         ("bug_id", "priority", "category",
+                          "closed_in", "title"))
+        self.assertEqual(search.titles,
+                         ("Bug", "Priority", "Category",
+                          "Closed in", "Title"))
+        self.assertEqual(len(search.rows), 5)
 
         index = 0
         for p in (1,2,3,4,5):
-            row = rows[index]
+            row = search.rows[index]
             assert len(row) == 5
-            assert len(row.titles) == 5
             assert len(row.get()) == 5
             self.assertEqual(row.bug_id, ids[p])
             self.assertEqual(row.priority, "")
@@ -421,15 +458,17 @@ class BugTests(BaseTest):
             bug.change(user, status="cancelled")
 
         bug = self._add_bug()
-            
-        rows = self.app.get_bugs(self.session_id, "cancelled", None, None)
-        self.assertEqual(len(rows), 5)
+        search = application.Search(("bug_id", "title"),
+                        "bug_id", "ascending", status="cancelled")
+        search = self.app.search(self.session_id, search)
+        self.assertEqual(search.variables, ("bug_id", "title"))
+        self.assertEqual(search.titles, ("Bug", "Title"))
+        self.assertEqual(len(search.rows), 5)
 
         index = 0
         for p in (1,2,3,4,5):
-            row = rows[index]
+            row = search.rows[index]
             assert len(row) == 2
-            assert len(row.titles) == 2
             assert len(row.get()) == 2
             self.assertEqual(row.bug_id, p)
             self.assertEqual(row.title, self.TITLE)
@@ -459,3 +498,59 @@ class BugTests(BaseTest):
         for status, count in n_bugs_in_status.iteritems():
             self.assertEqual(getattr(counts, status), count)
         
+    def test_search(self):
+        """Check search for bugs by title"""
+        user = self._login()
+
+        bugs = []
+        bug_id = self.app.add_bug(
+            self.session_id,
+            title="first title",
+            version="a version",
+            configuration="a configuration",
+            category="a category",
+            description="a description")
+        bugs.append(self.app.get_bug(self.session_id, bug_id))
+        bug_id = self.app.add_bug(
+            self.session_id,
+            title="foobar",
+            version="a version",
+            configuration="a configuration",
+            category="a category",
+            description="a description")
+        bugs.append(self.app.get_bug(self.session_id, bug_id))
+        bug_id = self.app.add_bug(
+            self.session_id,
+            title="second title",
+            version="another version",
+            configuration="a configuration",
+            category="a category",
+            description="a description")
+        bugs.append(self.app.get_bug(self.session_id, bug_id))
+        
+        bugs[1].change(user, status="reviewed")
+
+        self.assertEqual(
+            len(self.app.search(self.session_id, status="new").rows),
+            2)
+        self.assertEqual(
+            len(self.app.search(self.session_id, status="reviewed").rows),
+            1)
+        self.assertEqual(
+            len(self.app.search(self.session_id,
+                                status_regex="new|reviewed").rows),
+            3)
+
+        self.assertEqual(
+            len(self.app.search(self.session_id, title="foobar").rows),
+            1)
+        self.assertEqual(
+            len(self.app.search(self.session_id, title_regex=".*title").rows),
+            2)
+
+        self.assertEqual(
+            len(self.app.search(self.session_id, title="foobar").rows),
+            1)
+        self.assertEqual(
+            len(self.app.search(self.session_id, title_regex=".*title").rows),
+                         2)

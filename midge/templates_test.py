@@ -248,3 +248,15 @@ class TemplatesTest(unittest.TestCase):
         templates.table_of_bugs(wfile, "a path", [MockRow()])
         self.assert_(self.is_well_formed(wfile))
         
+    def test_table_of_bugs(self):
+        """Check search for bugs"""
+        wfile = self.get_wfile()
+        templates.search_form(wfile, "a path",
+                              ["a status"],
+                              ["a priority"],
+                              ["a configuration"],
+                              ["a category"],
+                              ["a keyword"],
+                              ["a version"])
+        self.assert_(self.is_well_formed(wfile))
+        

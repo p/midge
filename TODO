@@ -4,7 +4,8 @@ User visible TODOs:
 - spawn bug (split a bug into two identical bugs, for separate tracking)
 - add hyperlinks to other bugs listed in posted text
    - map bug #123 etc all to standard format (bug:123)
-- fix alignment of "order triangle" under IE5
+- fix alignment of "order triangle"
+   - use a table within a table
 - fix email password
 - description alignment is wrong in add new bug form
 - make it possible to change the title of a bug (?)
@@ -17,7 +18,7 @@ User visible TODOs:
    - #bugs moved into certain states as histogram or by date
 - inform the user when their session has timed-out
 - fix: timed out session, then post. The post is not passed on after relogin
-- in add bug, font in fields is different from font in description
+- slight alignment problem in numbers and text of list bugs location
 
 Underlying changes:
 
@@ -35,6 +36,7 @@ Underlying changes:
 - log source address etc in server
 - logs should more clearly contain who is viewing what pages etc.
 - locations.py should probably contain no html (all in templates.py)
+- raise exceptions rather than return None in Application is not logged in
 
 If inside HEAD:
 <style type="text/css">
@@ -52,18 +54,15 @@ href="mystyle.css" />
 In which case the external .css file should contain no tags
 
 
+Search:
 
-search input:
-
-by status, by priority
-by text in comment or title OR regex
-by category, configuration, or keyword
-by reported_in or REGEX
-by fixed_in or REGEX
-by closed_in or REGEX
-
-Sentence summarising the search.
-
-Always show the bug id first and the title last.
-
-...table...
+   - provide instructions to search page
+   - unquote "+"/spaces in GET parameters
+   - unittests for each search type
+   - produce table
+      - always show the bug id first and the title last
+      - add sentence summarising the search.
+      - selectable columns
+      - make columns orderable (default order by increasing bug id)      
+   - refactor into list functionality (?)
+      - don't make "status" a special case in Row class

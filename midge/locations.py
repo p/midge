@@ -435,79 +435,117 @@ class List(Location):
             self.redirect(path)
 
     def _show_new(self, session_id, wfile, sort_by, order):
-        rows = self.application.get_bugs(session_id, "new", sort_by, order)
+        if not sort_by:
+            sort_by = "category"
+        if not order:
+            order = "ascending"
+        search = application.Search(
+            ("bug_id", "category", "reported_in", "title"),
+            sort_by, order, status="new")
+        self.application.search(session_id, search)
         templates.title(wfile, "All new bugs")
-        if rows:
+        if search.rows:
             templates.paragraph(
                 wfile,
                 "These bugs are all new and need to be reviewed.")
-            templates.table_of_bugs(wfile, self.path, rows)
+            templates.table_of_bugs(wfile, self.path, "new", search)
         else:
             templates.paragraph(wfile, "There are no new bugs.")
 
     def _show_reviewed(self, session_id, wfile, sort_by, order):
-        rows = self.application.get_bugs(
-            session_id, "reviewed", sort_by, order)
+        if not sort_by:
+            sort_by = "priority"
+        if not order:
+            order = "descending"
+        search = application.Search(
+            ("bug_id", "priority", "category", "reported_in", "title"),
+            sort_by, order, status="reviewed")
+        self.application.search(session_id, search)
         templates.title(wfile, "All reviewed bugs")
-        if rows:
+        if search.rows:
             templates.paragraph(
                 wfile,
                 "These bugs are ready to be scheduled "
                 "(priority 5 is most important).")
-            templates.table_of_bugs(wfile, self.path, rows)
+            templates.table_of_bugs(wfile, self.path, "reviewed", search)
         else:
             templates.paragraph(wfile,
                                 "There are no bugs in the reviewed state.")
 
     def _show_scheduled(self, session_id, wfile, sort_by, order):
-        rows = self.application.get_bugs(
-            session_id, "scheduled", sort_by, order)
+        if not sort_by:
+            sort_by = "priority"
+        if not order:
+            order = "descending"
+        search = application.Search(
+            ("bug_id", "priority", "category", "reported_in", "title"),
+            sort_by, order, status="scheduled")
+        self.application.search(session_id, search)
         templates.title(wfile, "All scheduled bugs")
-        if rows:
+        if search.rows:
             templates.paragraph(
                 wfile,
                 "These bugs are ready to be fixed "
                 "(starting with priority 5).")
-            templates.table_of_bugs(wfile, self.path, rows)
+            templates.table_of_bugs(wfile, self.path, "scheduled", search)
         else:
             templates.paragraph(
                 wfile,
                 "There are no bugs scheduled to be fixed.")
 
     def _show_fixed(self, session_id, wfile, sort_by, order):
-        rows = self.application.get_bugs(session_id, "fixed", sort_by, order)
+        if not sort_by:
+            sort_by = "fixed_in"
+        if not order:
+            order = "ascending"
+        search = application.Search(
+            ("bug_id", "priority", "category", "fixed_in", "title"),
+            sort_by, order, status="fixed")
+        self.application.search(session_id, search)
         templates.title(wfile, "All fixed bugs")
-        if rows:
+        if search.rows:
             templates.paragraph(
                 wfile,
                 "These bugs are ready to be tested.")
-            templates.table_of_bugs(wfile, self.path, rows)
+            templates.table_of_bugs(wfile, self.path, "fixed", search)
         else:
             templates.paragraph(
                 wfile,
                 "There are no bugs waiting to be tested.")
 
     def _show_closed(self, session_id, wfile, sort_by, order):
-        rows = self.application.get_bugs(session_id, "closed", sort_by, order)
+        if not sort_by:
+            sort_by = "closed_in"
+        if not order:
+            order = "ascending"
+        search = application.Search(
+            ("bug_id", "priority", "category", "closed_in", "title"),
+            sort_by, order, status="closed")
+        self.application.search(session_id, search)
         templates.title(wfile, "All closed bugs")
-        if rows:
+        if search.rows:
             templates.paragraph(
                 wfile,
                 "These bugs have all been closed (e.g. confirmed fixed).")
-            templates.table_of_bugs(wfile, self.path, rows)
+            templates.table_of_bugs(wfile, self.path, "closed", search)
         else:
             templates.paragraph(wfile,
                                 "There are no closed bugs.")
 
     def _show_cancelled(self, session_id, wfile, sort_by, order):
-        rows = self.application.get_bugs(
-            session_id, "cancelled", sort_by, order)
+        if not sort_by:
+            sort_by = "bug_id"
+        if not order:
+            order = "ascending"
+        search = application.Search(
+            ("bug_id", "title"), sort_by, order, status="cancelled")
+        self.application.search(session_id, search)
         templates.title(wfile, "All cancelled bugs")
-        if rows:
+        if search.rows:
             templates.paragraph(
                 wfile,
                 "These bugs have been cancelled (e.g. mistakenly filed).")
-            templates.table_of_bugs(wfile, self.path, rows)
+            templates.table_of_bugs(wfile, self.path, "cancelled", search)
         else:
             templates.paragraph(wfile,
                                 "There are no cancelled bugs.")
@@ -760,29 +798,29 @@ class Search(Location):
         user = self.application.get_user(session_id)
         if user:
             templates.header(wfile, user)
-            templates.title(wfile, "Search for bugs")
-            templates.search_form(wfile, self.path,
-                        [""] + list(self.application.statuses),
-                        self.application.priorities,
-                        self.application.configurations,
-                        self.application.categories,
-                        self.application.keywords,
-                        self.application.versions)
+            if values:
+                self._search(session_id, wfile, values)
+            else:
+                templates.title(wfile, "Search for bugs")
+                templates.search_form(wfile, self.path,
+                            [""] + list(self.application.statuses),
+                            self.application.priorities,
+                            self.application.configurations,
+                            self.application.categories,
+                            self.application.keywords,
+                            self.application.versions)
             templates.footer(wfile, user)
         else:
             self.redirect(Login.path, self.path)
             
-    def handle_post(self, session_id, values, post_data, wfile):
-        user = self.application.get_user(session_id)
-        if user:
-            templates.header(wfile, user)
-            self._search(session_id, wfile, post_data)
-            templates.footer(wfile, user)
-        else:
-            self.redirect(Login.path, self.path)
-
-    def _search(self, session_id, wfile, post_data):
-        wfile.write(str(post_data))
+    def _search(self, session_id, wfile, values):
+        del values["submit"]
+        for key, value in values.items():
+            if not value:
+                del values[key]
+            else:
+                values[key] = lib.unquote(value)
+        wfile.write(str(values))
 
 class Images(Location):
 
