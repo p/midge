@@ -247,6 +247,18 @@ class Users(object):
             raise NoSuchUsernameException, username
         return lib.sendmail(
             user.email, 'Your Midge password is "%s".' % user.password)
+
+    def export_users(self):
+        cursor = self.connection.cursor()
+        try:
+            cursor.execute("""
+                SELECT username, name, email, password FROM users;
+                """)
+            rows = cursor.fetchall()
+            rows.insert(0, ("Username", "Name", "Email", "Password"))
+            return rows
+        finally:
+            cursor.close()
     
 
 class Comment:
@@ -642,7 +654,7 @@ class Bug(object):
                        keyword_values.name,
                        reported_versions.name,
                        fixed_versions.name,
-                       closed_versions.name                       
+                       tested_ok_versions.name                       
                 FROM (((((((((((((((
                            statuses INNER JOIN bugs ON
                            (bugs.status_id = statuses.status_id)
@@ -679,8 +691,8 @@ class Bug(object):
 
                          ) LEFT OUTER JOIN tested_ok_ins ON
                            (tested_ok_ins.bug_id = %(bug_id)s)
-                         ) LEFT OUTER JOIN versions AS closed_versions ON
-                           (closed_versions.id = tested_ok_ins.id))
+                         ) LEFT OUTER JOIN versions AS tested_ok_versions ON
+                           (tested_ok_versions.id = tested_ok_ins.id))
                 WHERE bugs.bug_id = %(bug_id)s;
                 """ % {"bug_id": self.bug_id})
         result = cursor.fetchone()
@@ -802,7 +814,7 @@ class Search:
         keyword = "keyword_values.name",
         reported_in = "reported_versions.name",
         fixed_in = "fixed_versions.name",
-        tested_ok_in = "closed_versions.name",
+        tested_ok_in = "tested_ok_versions.name",
         title = "title")
 
     _from_map = dict(
@@ -839,8 +851,8 @@ class Search:
         tested_ok_in = """
                ) LEFT OUTER JOIN tested_ok_ins ON
                 (tested_ok_ins.bug_id = bugs.bug_id)
-               ) LEFT OUTER JOIN versions AS closed_versions ON
-                (closed_versions.id = tested_ok_ins.id)""",
+               ) LEFT OUTER JOIN versions AS tested_ok_versions ON
+                (tested_ok_versions.id = tested_ok_ins.id)""",
         comments = """
                ) LEFT OUTER JOIN comments ON
                 (comments.bug_id = bugs.bug_id)
@@ -861,8 +873,8 @@ class Search:
         "reported_in_regex": "reported_versions.name ~* '%s'",
         "fixed_in": "fixed_versions.name = '%s'",
         "fixed_in_regex": "fixed_versions.name ~* '%s'",
-        "tested_ok_in": "closed_versions.name = '%s'",
-        "tested_ok_in_regex": "closed_versions.name ~* '%s'",
+        "tested_ok_in": "tested_ok_versions.name = '%s'",
+        "tested_ok_in_regex": "tested_ok_versions.name ~* '%s'",
         "title": "title ~* '%s'",
         "comments": "comments.comment ~* '%s'"
         }
@@ -979,9 +991,13 @@ class Row:
             setattr(self, variable, value or "")
     
     def get(self):
-        """Return a list of all values in correct order."""
+        """Return a list of all (variable, value) in correct order."""
         return [(variable, getattr(self, variable))
                 for variable in self.variable_names]
+
+    def get_values(self):
+        """Return a list of all values in correct order."""
+        return [getattr(self, variable) for variable in self.variable_names]
 
     def __len__(self):
         return len(self.variable_names)
@@ -1068,6 +1084,78 @@ class Bugs(object):
         bug.change(user, cursor, **changes)
         self.connection.commit()
         cursor.close()
+
+    def export_bugs(self):
+        cursor = self.connection.cursor()
+        try:
+            cursor.execute("""
+        SELECT DISTINCT bugs.bug_id,
+                        users.username,
+                        date,
+                        title,
+                        statuses.name,
+                        priority_values.name,
+                        category_values.name,
+                        configuration_values.name,
+                        keyword_values.name,
+                        reported_versions.name,
+                        fixed_versions.name,
+                        tested_ok_versions.name
+        FROM (((((((((((((((
+               statuses INNER JOIN bugs ON
+                (bugs.status_id = statuses.status_id)
+               ) LEFT OUTER JOIN users ON
+                (users.user_id = bugs.user_id)
+               ) LEFT OUTER JOIN categories ON
+                (categories.bug_id = bugs.bug_id)
+               ) LEFT OUTER JOIN category_values ON
+                (category_values.id = categories.id) 
+               ) LEFT OUTER JOIN keywords ON
+                (keywords.bug_id = bugs.bug_id)
+               ) LEFT OUTER JOIN keyword_values ON
+                (keyword_values.id = keywords.id) 
+               ) LEFT OUTER JOIN fixed_ins ON
+                (fixed_ins.bug_id = bugs.bug_id)
+               ) LEFT OUTER JOIN versions AS fixed_versions ON
+                (fixed_versions.id = fixed_ins.id) 
+               ) LEFT OUTER JOIN tested_ok_ins ON
+                (tested_ok_ins.bug_id = bugs.bug_id)
+               ) LEFT OUTER JOIN versions AS tested_ok_versions ON
+                (tested_ok_versions.id = tested_ok_ins.id) 
+               ) LEFT OUTER JOIN reported_ins ON
+                (reported_ins.bug_id = bugs.bug_id)
+               ) LEFT OUTER JOIN versions AS reported_versions ON
+                (reported_versions.id = reported_ins.id) 
+               ) LEFT OUTER JOIN configurations ON
+                (configurations.bug_id = bugs.bug_id)
+               ) LEFT OUTER JOIN configuration_values ON
+                (configuration_values.id = configurations.id) 
+               ) LEFT OUTER JOIN priorities ON
+                (priorities.bug_id = bugs.bug_id)
+               ) LEFT OUTER JOIN priority_values ON
+                (priority_values.id = priorities.id)
+        ORDER BY bugs.bug_id ASC;
+                """)
+            rows = cursor.fetchall()
+            rows.insert(0, ("Bug", "Username", "Date", "Title", "Status", "Priority",
+                            "Category", "Configuration", "Keyword",
+                            "Reported in", "Fixed in", "Tested ok in"))
+            return rows
+        finally:
+            cursor.close()
+
+    def export_comments(self):
+        cursor = self.connection.cursor()
+        try:
+            cursor.execute("""
+                SELECT bug_id, username, date, comment FROM comments, users
+                WHERE comments.user_id = users.user_id;
+                """)
+            rows = cursor.fetchall()
+            rows.insert(0, ("Bug", "Username", "Date", "Comment") )
+            return rows
+        finally:
+            cursor.close()
     
     def get(self, bug_id):
         try:

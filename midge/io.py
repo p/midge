@@ -3,6 +3,8 @@
 
 """Functionality to import and export bugs from Midge."""
 
+import csv
+
 import midge.application as application
 
 
@@ -14,46 +16,90 @@ class Importer:
         self.bugs = application.Bugs(connection)
         self.passwords = {}
         
-    def get_user(self, username):
+    def _get_user(self, username):
         user = application.User(self.connection)
         user.login(username, self.passwords[username])
         return user
 
-    def import_user(self, username, name, email, password):
+    def _import_user(self, username, name, email, password):
         self.users.create_new_user(username, name, email, password)
         self.passwords[username] = password
 
-    def import_bug(self, bug_id, username, timestamp, title, status, priority,
+    def _import_bug(self, bug_id, username, timestamp, title, status, priority,
                    category, configuration, keyword,
                    reported_in, fixed_in, tested_ok_in):
-        user = self.get_user(username)
+        user = self._get_user(username)
         self.bugs.import_bug(bug_id, user, timestamp, title, status, priority,
                              category, configuration, keyword,
                              reported_in, fixed_in, tested_ok_in)
 
-    def import_comment(self, bug_id, username, timestamp, text):
+    def _import_comment(self, bug_id, username, timestamp, text):
         bug = self.bugs.get(bug_id)
-        user = self.get_user(username)
+        user = self._get_user(username)
         bug.change(user, comment=text, timestamp=timestamp)
 
-    def import_all(self, users, bugs, comments):
-        """Import a set of data into the database.
+    def _import_users_from_file(self, filename):
+        f = file(filename)
+        reader = csv.reader(f)
+        iterator = iter(reader)
+        titles = iterator.next()
+        assert titles == ["Username", "Name", "Email", "Password"]
+        for row in iterator:
+            self._import_user(*row)
 
-        The users, bugs, comments arguments are all lists of values
-        which must correspond to the arguments of the import_user,
-        import_bug, import_comment methods respectively.
+    def _import_bugs_from_file(self, filename):
+        f = file(filename)
+        reader = csv.reader(f)
+        iterator = iter(reader)
+        titles = iterator.next()
+        assert titles == ["Bug", "Username", "Date", "Title", "Status", "Priority",
+                          "Category", "Configuration", "Keyword",
+                          "Reported in", "Fixed in", "Tested ok in"]
+        for row in iterator:
+            self._import_bug(*row)
 
-        """
-        for user in users:
-            self.import_user(*user)
-            
-        for bug in bugs:
-            self.import_bug(*bug)
+    def _import_comments_from_file(self, filename):
+        f = file(filename)
+        reader = csv.reader(f)
+        iterator = iter(reader)
+        titles = iterator.next()
+        assert titles == ["Bug", "Username", "Date", "Comment"]
+        for row in iterator:
+            self._import_comment(*row)
 
-        for comment in comments:
-            self.import_comment(*comment)
+    def import_all(self, users_filename, bugs_filename, comments_filename):
+        """Import a set of data into the database."""
+        self._import_users_from_file(users_filename)
+        self._import_bugs_from_file(bugs_filename)
+        self._import_comments_from_file(comments_filename)
 
 
 class Exporter:
 
-    pass
+    def __init__(self, connection):
+        self.users = application.Users(connection)
+        self.bugs = application.Bugs(connection)
+
+    def _write_users_to_file(self, filename):
+        f = file(filename, "w")
+        writer = csv.writer(f)
+        writer.writerows(self.users.export_users())
+        f.close()
+
+    def _write_bugs_to_file(self, filename):
+        f = file(filename, "w")
+        writer = csv.writer(f)
+        writer.writerows(self.bugs.export_bugs())
+        f.close()
+     
+    def _write_comments_to_file(self, filename):
+        f = file(filename, "w")
+        writer = csv.writer(f)
+        writer.writerows(self.bugs.export_comments())
+        f.close()
+
+    def export_all(self, users_filename, bugs_filename, comments_filename):
+        """Export all bugs to three files (users, bugs, comments)."""
+        self._write_users_to_file(users_filename)
+        self._write_bugs_to_file(bugs_filename)
+        self._write_comments_to_file(comments_filename)           

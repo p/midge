@@ -16,7 +16,9 @@ distutils.core.setup(
     data_files=[("/etc", ["etc/midge.conf"]),
                 ("/usr/local/bin", ["bin/midged",
                                     "bin/midge-test",
-                                    "bin/midge-config"]),
+                                    "bin/midge-config",
+                                    "bin/midge-export",
+                                    "bin/midge-import"]),
                 ("/usr/local/sbin", ["bin/midge-admin"]),
                 ("/usr/local/share/midge",
                  ["images/up.gif", "images/down.gif"])])

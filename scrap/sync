@@ -9,8 +9,10 @@ sudo bash <<EOF
   midge-admin setup
 EOF
 
-scp phpbt_extract.py trevor.devel.cmedltd.com:
-ssh trevor.devel.cmedltd.com python phpbt_extract.py
-scp trevor.devel.cmedltd.com:{users.txt,bugs.txt,comments.txt} .
+# scp phpbt_extract.py trevor.devel.cmedltd.com:
+# ssh trevor.devel.cmedltd.com python phpbt_extract.py
+# scp trevor.devel.cmedltd.com:{users.txt,bugs.txt,comments.txt} .
 
-python importer.py
+python converter.py
+
+midge-import users.csv bugs.csv comments.csv

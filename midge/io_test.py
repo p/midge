@@ -28,10 +28,10 @@ class ImporterTests(BaseTest):
         users = [("username%d" %i, "Full name %d" %i,
                   "Email %d" %i, "Password %d" %i) for i in (1,2,3)]
         for username, name, email, password in users:
-            self.importer.import_user(username, name, email, password)
+            self.importer._import_user(username, name, email, password)
 
         for username, name, email, password in users:
-            user = self.importer.get_user(username)
+            user = self.importer._get_user(username)
             self.assertEqual(user.username, username)
             self.assertEqual(user.name, name)
             self.assertEqual(user.email, email)
@@ -50,7 +50,7 @@ class ImporterTests(BaseTest):
         
     def test_import_comments(self):
         """Check import comment"""
-        self.importer.import_user("username", "name", "email", "password")
+        self.importer._import_user("username", "name", "email", "password")
         user = application.User(self.connection)
         user.login("username", "password")
         bug = self._add_bug(user)
@@ -62,7 +62,7 @@ class ImporterTests(BaseTest):
                      "username", "Mon Apr 13 12:23:00 GMT 2000",
                      "a second comment")]
         for bug_id, username, timestamp, text in comments:
-            self.importer.import_comment(bug_id, username, timestamp, text)
+            self.importer._import_comment(bug_id, username, timestamp, text)
         self.assertEqual(len(bug.comments), 3)
 
         comment1 = bug.comments[1]
@@ -75,8 +75,8 @@ class ImporterTests(BaseTest):
 
     def test_import_bugs(self):
         """Check import bugs"""
-        self.importer.import_user("username", "name", "email", "password")
-        self.importer.import_bug("23",
+        self.importer._import_user("username", "name", "email", "password")
+        self.importer._import_bug("23",
                                  "username",
                                  "Mon Apr 13 12:23:00 GMT 2000",
                                  "a title",

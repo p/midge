@@ -1,7 +1,5 @@
 User visible TODOs:
 
-- fix email password
-
 - detect and prevent simultaneous attempts to change same data
 - check everywhere redirecting when not logged in
 - fix alignment of "order triangle"
@@ -17,34 +15,28 @@ User visible TODOs:
 
 Underlying changes:
 
-- add some explicit means of migrating (import/export)
-   - use csv rather than python eval format
 - automatically clear unused user-set categories
 
 - add more unittests, particularly the server
 - declare DTD
 - automatically validate the pages with http://validator.w3.org/
 - use style sheets (remove all <font> tags), in a separate file
+   If inside HEAD:
+   <style type="text/css">
+   table {
+     font-family: verdana, arial, "sans serif";
+     font-size: 175%;
+   }
+   </style>
+   
+   <head>
+   <link rel="stylesheet" type="text/css"
+   href="mystyle.css" />
+   </head>
 - group template.py functions into classes
 - consolidate status strings into Statuses object in application.py
 - grep *.py TODO
-- use docutils to format comments (including hyperlinks elsewhere)
 - log source address etc in server
 - logs should more clearly contain who is viewing what pages etc.
 - locations.py should probably contain no html (all in templates.py)
 - raise exceptions rather than return None in Application if not logged in
-
-If inside HEAD:
-<style type="text/css">
-table {
-  font-family: verdana, arial, "sans serif";
-  font-size: 175%;
-}
-</style>
-
-<head>
-<link rel="stylesheet" type="text/css"
-href="mystyle.css" />
-</head>
-
-In which case the external .css file should contain no tags
