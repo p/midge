@@ -449,16 +449,18 @@ def bug_status_summary(wfile, bug):
     if bug.priority:
         wfile.write('''
   <p>
-   &nbsp;&nbsp;<strong>%(status)s</strong>,
-   priority %(priority)s (<a href="#editbugform">more</a>)
-  </p>''' % {"status": bug.status.capitalize(),
-              "priority": bug.priority})
+   <strong>Bug %(bug_id)s, %(status)s,
+   priority %(priority)s</strong> (<a href="#editbugform">more</a>)
+  </p>''' % {"bug_id": bug.bug_id,
+             "status": bug.status,
+             "priority": bug.priority})
     else:
         wfile.write('''
   <p>
-   &nbsp;&nbsp;<strong>%(status)s</strong>
+   <strong>Bug %(bug_id)s, %(status)s</strong>
    (<a href="#editbugform">more</a>)
-  </p>''' % {"status": bug.status.capitalize()})
+  </p>''' % {"bug_id": bug.bug_id,
+             "status": bug.status.capitalize()})
   
     
 def edit_bug_form(wfile, path, bug, statuses, priorities,

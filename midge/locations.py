@@ -553,7 +553,7 @@ class View(Location):
                 templates.header(wfile, "Bug %s" % bug_id)
                 try:
                     bug = self.application.get_bug(session_id, bug_id)
-                    templates.title(wfile, "Bug %s" % bug_id, bug.title)
+                    templates.title(wfile, bug.title)
                     self._show_status_and_comments_and_form(wfile, bug)
                 except application.NoSuchBugException:
                     templates.title(wfile, "No such Bug!")
@@ -679,7 +679,7 @@ class View(Location):
         else:
             templates.title(wfile, "No update needed")
         templates.hrule(wfile)
-        templates.title(wfile, "Bug %s" % new_bug.bug_id, new_bug.title)
+        templates.title(wfile, new_bug.title)
         self._show_status_and_comments_and_form(wfile, new_bug)
 
     def handle_post(self, session_id, values, post_data, wfile):
