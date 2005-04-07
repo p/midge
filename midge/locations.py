@@ -843,13 +843,38 @@ class Changes(Location):
             templates.title(wfile, "Recent changes to bugs")
             sort_by = values.get("sort_by", "date")
             order = values.get("order", "descending")
-            changes = self.application.bugs.changes.get_recent_changes(sort_by, order)
+            changes = self.application.bugs.changes.get_recent_changes(
+                sort_by, order)
             if len(changes.rows) > 0:
                 templates.table_of_changes(wfile, self.path, changes)
             else:
-                templates.paragraph(wfile,
-                                    "There have been no changes made in the last"
-                                    " %d days." % config.History.changes_max_age)
+                templates.paragraph(
+                    wfile,
+                    "There have been no changes made in the last"
+                    " %d days." % config.History.changes_max_age)
+            templates.footer(wfile)
+        else:
+            values["next"] = self.path
+            path = lib.join_url(Login.path, values)
+            self.redirect(path)
+
+
+class Progress(Location):
+
+    path = "/progress"
+
+    def handle_get(self, session_id, values, wfile):
+        user = self.application.get_user(session_id)
+        if user:
+            templates.header(wfile)
+            templates.title(wfile, "History of number of bugs in each status")
+            progress = self.application.bugs.summary.get_progress()
+            if len(progress.rows) > 0:
+                templates.table_of_progress(wfile, progress)
+            else:
+                templates.paragraph(
+                    wfile,
+                    "No history available (yet).")
             templates.footer(wfile)
         else:
             values["next"] = self.path

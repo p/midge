@@ -46,6 +46,7 @@ def run_sql(database, sql_commands):
 
 
 def drop_tables(database):
+    drop_progress(database)
     drop_changes(database)
     drop_state(database, "tested_ok_ins")
     drop_state(database, "fixed_ins")
@@ -83,6 +84,7 @@ def create_tables(database):
     create_state(database, "fixed_ins", "versions")
     create_state(database, "tested_ok_ins", "versions")
     create_changes(database)
+    create_progress(database)
 
 
 def have_tables(database):
@@ -210,6 +212,20 @@ def drop_changes(database):
         DROP TABLE changes;
         """)
 
+def create_progress(database):
+    return run_sql(database, """
+        CREATE TABLE progress (date      TIMESTAMP,
+                               news      INTEGER,
+                               reviewed  INTEGER,
+                               scheduled INTEGER,
+                               fixed     INTEGER,
+                               closed    INTEGER);
+                               """)
+
+def drop_progress(database):
+    return run_sql(database, """
+        DROP TABLE progress;
+        """)
 
 def create_state_value(database, value_table):
     return run_sql(database, """

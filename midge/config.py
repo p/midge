@@ -56,6 +56,7 @@ class Presentation:
 class History:
 
     changes_max_age = None
+    progress_max_age = None
 
 
 class CommentMappings:
@@ -117,6 +118,7 @@ def read():
     Logging.facility = get("Logging", "facility")
     Logging.debugging = get_boolean("Logging", "debugging")
     History.changes_max_age = get_int("History", "changes_max_age")
+    History.progress_max_age = get_int("History", "progress_max_age")
     Presentation.directory = get("Presentation", "directory")
 
     def read_comment_mappings():
@@ -136,7 +138,8 @@ def read():
 
 def print_env_variables():
     """Print the variables to standard out in bash format."""
-    for cls in (Postgres, Database, Project, Server, Email, Logging, History):
+    for cls in (Postgres, Database, Project,
+                Server, Email, Logging, History):
         for name in dir(cls):
             if not name.startswith("__"):
                 print "%s_%s=%s" % (cls.__name__.upper(),

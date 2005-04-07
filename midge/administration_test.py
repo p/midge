@@ -66,4 +66,7 @@ class AdministrationTests(unittest.TestCase):
         cursor.execute("SELECT * FROM changes;")
         self.assertEqual(len(cursor.fetchall()), 0)
        
+        cursor.execute("SELECT * FROM progress;")
+        self.assertEqual(len(cursor.fetchall()), 0)
+       
         cursor.close()

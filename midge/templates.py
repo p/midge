@@ -727,6 +727,24 @@ def _table_rows(wfile, rows):
         wfile.write('''
     </tr>''') 
 
+
+def table_of_progress(wfile, progress):
+    assert len(progress.rows) > 0
+    wfile.write('''
+   <table class="list-of-bugs">
+    <thead>''')
+    _table_headings(wfile,
+                    progress.titles,
+                    progress.variables)
+    wfile.write('''
+    </thead>
+    <tbody>''')
+    _table_rows(wfile, progress.rows)
+    wfile.write('''
+    </tbody>
+   </table>''')
+
+
 def table_of_changes(wfile, path, recent_changes):
     assert len(recent_changes.rows) > 0
     wfile.write('''
@@ -744,6 +762,7 @@ def table_of_changes(wfile, path, recent_changes):
     wfile.write('''
     </tbody>
    </table>''')
+
 
 def table_of_bugs(wfile, path, search):
     assert len(search.rows) > 0

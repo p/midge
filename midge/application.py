@@ -624,6 +624,74 @@ class Summary(object):
 
     status_counts = property(_get_status_counts)
 
+    def do_maintenance(self):
+        self._take_snapshot()
+        self._keep_short()
+
+    def _take_snapshot(self):
+        cursor = self.connection.cursor()
+        try:
+            counts = self.status_counts
+            cursor.execute("""
+              INSERT INTO progress VALUES
+              ('%s', %d, %d, %d, %d, %d)
+              """ % (time.ctime(),
+                     counts.new, counts.reviewed,
+                     counts.scheduled, counts.fixed, counts.closed))
+        finally:
+            cursor.close()
+
+    def get_progress(self):
+        cursor = self.connection.cursor()
+        try:
+            class Progress:
+
+                variables = ("date", "new", "reviewed", "scheduled",
+                             "fixed", "closed", "comment")
+                titles = ("Date",
+                          "New",
+                          "Reviewed",
+                          "Scheduled",
+                          "Fixed",
+                          "Closed",
+                          "Comment")
+
+                def __init__(self, rows):
+                    self.rows = rows
+
+            cursor.execute("""
+            SELECT * FROM progress ORDER BY date ASC;
+            """)
+
+            rows = []
+            old_count = (None, 0, 0, 0, 0, 0)
+            for count in cursor.fetchall():
+                comments = []
+                for i in (1,2,3,4,5):
+                    delta = count[i] - old_count[i]
+                    if delta > 0:
+                        comments.append("+%d %s" %
+                                       (delta, Progress.variables[i]))
+                comment = ", ".join(comments)
+                rows.append(Row(Progress.variables, *count + (comment,)))
+                old_count = count
+            rows.reverse()
+            return Progress(rows)
+        
+        finally:
+            cursor.close()
+
+    def _keep_short(self):
+        cursor = self.connection.cursor()
+        try:
+            now = time.ctime(time.time() -
+                             config.History.progress_max_age * 60*60*24)
+            cursor.execute("""
+              DELETE FROM progress WHERE date<'%s'""" % now)
+            self.connection.commit()
+        finally:
+            cursor.close()
+
 
 class Bug(object):
 
@@ -1051,9 +1119,6 @@ class Changes(object):
         finally:
             cursor.close()
 
-    def _make_sort_clause(self, sort_by, order):
-        return 
-
     def get_recent_changes(self, sort_by, order):
         
         class RecentChanges:
@@ -1101,6 +1166,7 @@ class Bugs(object):
     def do_maintenance(self):
         """Remove unused keywords, versions, etc"""
         self.changes.do_maintenance()
+        self.summary.do_maintenance()
         # TODO implement purge
         
     def _add_to_bugs_table(self, cursor, user, title):
