@@ -258,12 +258,11 @@ class Server(object):
 
     def start(self):
         logger.info("Starting server")
-        next_maintenance = time.time()
+        next_hour = lib.get_utc_time_of_next_hour()
         while True:
             rs, ws, es = select.select([self.httpd], [self.httpd], [], 1)
             if rs or ws:
                 self.httpd.handle_request()
-            if time.time() > next_maintenance:
+            if lib.get_utc_time() > next_hour:
                 self.sessions.do_maintenance()
-                next_maintenance = time.time() + 60 * config.Server.maintenance_period
-               
+                next_hour = lib.get_utc_time_of_next_hour()

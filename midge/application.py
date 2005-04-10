@@ -636,8 +636,12 @@ class Summary(object):
               INSERT INTO progress VALUES
               ('%s', %d, %d, %d, %d, %d)
               """ % (time.ctime(),
-                     counts.new, counts.reviewed,
-                     counts.scheduled, counts.fixed, counts.closed))
+                     counts.new,
+                     counts.reviewed,
+                     counts.scheduled,
+                     counts.fixed,
+                     counts.closed))
+            self.connection.commit()
         finally:
             cursor.close()
 
@@ -647,33 +651,35 @@ class Summary(object):
             class Progress:
 
                 variables = ("date", "new", "reviewed", "scheduled",
-                             "fixed", "closed", "comment")
+                             "fixed", "closed")
                 titles = ("Date",
                           "New",
                           "Reviewed",
                           "Scheduled",
                           "Fixed",
-                          "Closed",
-                          "Comment")
+                          "Closed")
 
                 def __init__(self, rows):
                     self.rows = rows
 
             cursor.execute("""
-            SELECT * FROM progress ORDER BY date ASC;
+            SELECT * FROM 
+              (SELECT
+               DISTINCT ON (news, reviewed, scheduled, fixed, closed)
+               *
+               FROM progress
+               ORDER BY news, reviewed, scheduled, fixed, closed, date DESC)
+               AS temp_progress
+              ORDER BY temp_progress.date ASC;
             """)
 
             rows = []
             old_count = (None, 0, 0, 0, 0, 0)
             for count in cursor.fetchall():
-                comments = []
+                delta = [count[0], 0, 0, 0, 0, 0]
                 for i in (1,2,3,4,5):
-                    delta = count[i] - old_count[i]
-                    if delta > 0:
-                        comments.append("+%d %s" %
-                                       (delta, Progress.variables[i]))
-                comment = ", ".join(comments)
-                rows.append(Row(Progress.variables, *count + (comment,)))
+                    delta[i] = count[i] - old_count[i]
+                rows.append(Row(Progress.variables, *delta))
                 old_count = count
             rows.reverse()
             return Progress(rows)
@@ -804,14 +810,14 @@ class Bug(object):
 
     status_hint = property(_get_status_hint)
 
-    def change(self, user, **args):
+    def change(self, user, log_changes=True, **args):
         cursor = self.bugs.connection.cursor()
         try:
-            self._change(user, cursor, log_changes=True, **args)
+            self._change(user, cursor, log_changes, **args)
         finally:
             cursor.close()
 
-    def _change(self, user, cursor, log_changes=False, **args):
+    def _change(self, user, cursor, log_changes, **args):
         try:
             if "status" in args:
                 status = args["status"]
@@ -861,8 +867,8 @@ class Bug(object):
                     else:
                         pretty_variable = variable.replace("_", " ").capitalize()
                         self.bugs.changes.add_change(
-                            self.bug_id, user, "Set %s to %s" % (pretty_variable,
-                                                                 value))
+                            self.bug_id, user, "%s -> %s" % (pretty_variable,
+                                                             value))
         except:
             self.bugs.connection.rollback()
             raise
@@ -1123,8 +1129,8 @@ class Changes(object):
         
         class RecentChanges:
 
-            variables = "bug_id", "username", "date", "description"
-            titles = "Bug", "User", "Date", "Description"
+            variables = "bug_id", "username", "date", "description", "title"
+            titles = "Bug", "User", "Date", "Description", "Title"
 
             def __init__(self, sort_by, order, rows):
                 self.sort_by = sort_by
@@ -1137,9 +1143,14 @@ class Changes(object):
         cursor = self.connection.cursor()
         try:
             cursor.execute("""
-            SELECT bug_id, username, date, description
-            FROM changes, users
+            SELECT changes.bug_id,
+                   users.username,
+                   changes.date,
+                   changes.description,
+                   bugs.title
+            FROM changes, users, bugs
             WHERE changes.user_id=users.user_id
+              AND changes.bug_id=bugs.bug_id
             ORDER BY %s %s;""" % (sort_by, self._order_map[order]))
             return RecentChanges(sort_by, order,
                                  [Row(RecentChanges.variables, *change)
@@ -1205,8 +1216,8 @@ class Bugs(object):
             changes["comment"] = description
         if changes:
             bug = self.get(bug_id)
-            self.changes.add_change(bug_id, user, "New bug: %s" % title)
-            bug._change(user, cursor, **changes)
+            self.changes.add_change(bug_id, user, "New bug")
+            bug._change(user, cursor, False, **changes)
         self.connection.commit()
         cursor.close()
         return bug_id
@@ -1226,7 +1237,7 @@ class Bugs(object):
                    "reported_in": reported_in,
                    "fixed_in": fixed_in,
                    "tested_ok_in": tested_ok_in}
-        bug._change(user, cursor, **changes)
+        bug._change(user, cursor, False, **changes)
         self.connection.commit()
         cursor.close()
 

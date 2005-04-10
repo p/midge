@@ -3,6 +3,7 @@
 
 """Common library routines."""
 
+import mx.DateTime
 import smtplib
 import socket
 import time
@@ -41,14 +42,6 @@ def html_entity_escape(text):
     return xml.sax.saxutils.escape(text)
 
 
-def format_date(date):
-    return date.strftime("%a %d of %B, %Y")
-
-
-def format_time(date):
-    return date.strftime("%H:%M:%S")
-
-
 def sendmail(to, message):
     """Attempt to send email, and return boolean success."""
     try:
@@ -64,3 +57,23 @@ def sendmail(to, message):
         logger.error("Unable to send email")
         logger.exception()
     return False
+
+
+def format_date(date):
+    return date.strftime("%a %d of %B, %Y")
+
+
+def format_time(date):
+    return date.strftime("%H:%M:%S")
+
+
+def get_utc_time_of_next_hour():
+    next = mx.DateTime.utc() + mx.DateTime.TimeDelta(1)
+    minutes_etc = mx.DateTime.TimeDelta(hours=0,
+                                        minutes=next.minute,
+                                        seconds=next.second)
+    return next - minutes_etc
+
+
+def get_utc_time():
+    return mx.DateTime.utc()

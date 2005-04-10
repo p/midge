@@ -1,7 +1,11 @@
 release_0-5 (???)
 
-  * History of changes to recent bugs.
+  * Added history of changes to recent bugs.
 
+  * Added history of number of bugs in each status.
+
+  * Underlying "do_maintenance" now occurs every hour on the hour, and
+    is no longer configurable.
 
 release_0-4 (20 Oct 2004)
 

@@ -824,7 +824,7 @@ class History(Location):
                 wfile,
                 'List of recent <a href="/changes">changes made to bugs</a>,'
                 ' including addition of new bugs.',
-                'Graph of recent changes in <a href="/progress">'
+                'List of recent changes in <a href="/progress">'
                 ' number of bugs in each status</a>.')
             templates.footer(wfile)
         else:
@@ -867,7 +867,9 @@ class Progress(Location):
         user = self.application.get_user(session_id)
         if user:
             templates.header(wfile)
-            templates.title(wfile, "History of number of bugs in each status")
+            templates.title(
+                wfile,
+                "Recent changes to number of bugs in each status")
             progress = self.application.bugs.summary.get_progress()
             if len(progress.rows) > 0:
                 templates.table_of_progress(wfile, progress)

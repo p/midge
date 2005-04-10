@@ -690,14 +690,9 @@ def _table_headings(wfile, titles, variables):
     wfile.write('''
     <tr>''')
     for heading, variable in zip(titles, variables):
-        if variable == variables[-1]:
-            css_class = "last-column-heading"
-        else:
-            css_class = "column-heading"
         wfile.write('''
-     <th class="%(css_class)s">
-       %(heading)s''' % {"heading": heading,
-                         "css_class": css_class})
+     <th class="column-heading">
+       %s''' % heading)
         wfile.write('''
      </th>''')
     wfile.write('''                

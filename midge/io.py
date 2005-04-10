@@ -38,7 +38,7 @@ class Importer:
     def _import_comment(self, bug_id, username, timestamp, text):
         bug = self.bugs.get(bug_id)
         user = self._get_user(username)
-        bug.change(user, comment=text, timestamp=timestamp)
+        bug.change(user, log_changes=False, comment=text, timestamp=timestamp)
 
     def _import_users_from_file(self, filename):
         f = file(filename)
