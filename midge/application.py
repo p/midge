@@ -1030,6 +1030,11 @@ class Search:
         # TODO fix this hack to detect malformed regex expressions
         for c,v in criteria.iteritems():
             if "~" in self._where_map[c]:
+                if "{" in v or "}" in v:
+                    # Unfortunately "asdf{1,2,3}" does not raise
+                    # despite being invalid. Be overly strict but safe
+                    # by dissallowing any use of {} syntax.
+                    raise InvalidSearchException
                 try:
                     re.compile(v)
                 except re.error, e:

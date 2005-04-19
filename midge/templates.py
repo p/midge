@@ -321,11 +321,10 @@ def new_bug_form(wfile, path, versions, categories):
        <input type="text" name="new_category"/><small>)</small>
       </td>
      </tr>
-
      <tr class="form">
       <td class="form-row-heading" valign="baseline">Description</td>
       <td colspan="3">
-       <textarea class="expand" name="description" rows="8"></textarea>
+       <textarea class="expand" name="description" cols="80" rows="20"></textarea>
       </td>
      </tr>
      <tr><td><table></table></td></tr>

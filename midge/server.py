@@ -227,6 +227,16 @@ class RequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         pass
 
 
+class MyHTTPServer(BaseHTTPServer.HTTPServer):
+
+    def handle_error(self, request, client_address):
+        logger.error("Request = %s" % str(request))
+        logger.error("Client address = %s" % str(client_address))
+        lines = logger.get_exception_as_lines()
+        for line in lines:
+            logger.error(line)
+
+
 class Server(object):
 
     def __init__(self, application, locations):
@@ -240,8 +250,7 @@ class Server(object):
             logger.info("Creating server on %s:%s" % (interface, port))
         else:
             logger.info("Creating server on all interfaces:%s" % port)
-        self.httpd = BaseHTTPServer.HTTPServer( (interface, port),
-                                                RequestHandler)
+        self.httpd = MyHTTPServer( (interface, port), RequestHandler)
 
     def _get_locations(self, locations, application):
         """Build a dictionary of Location's from the locations module."""
@@ -266,3 +275,6 @@ class Server(object):
             if lib.get_utc_time() > next_hour:
                 self.sessions.do_maintenance()
                 next_hour = lib.get_utc_time_of_next_hour()
+
+    def stop(self):
+        self.httpd.server_close()

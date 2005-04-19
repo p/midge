@@ -608,3 +608,15 @@ class BugTests(BaseTest):
             application.InvalidSearchException,
             self.app.search,
             self.session_id, search)
+
+        search.criteria = {"comments": "{}"}
+        self.failUnlessRaises(
+            application.InvalidSearchException,
+            self.app.search,
+            self.session_id, search)
+
+        search.criteria = {"comments": "{2,3,4}"}
+        self.failUnlessRaises(
+            application.InvalidSearchException,
+            self.app.search,
+            self.session_id, search)

@@ -3,9 +3,12 @@
 # (C) Timothy Corbett-Clark, 2004
 
 
+import sys
+
 import midge.application as application
 import midge.config as config
 import midge.connection as connection
+import midge.lib as lib
 import midge.locations as locations
 import midge.logger as logger
 import midge.server as server
@@ -15,11 +18,20 @@ if __name__ == "__main__":
     config.read()
     logger.start(config.Logging.debugging)
     app = application.Application(connection.Connection())
-    try:
-        server.Server(app, locations).start()
-    except Exception:
-        logger.error("Fatal error - exiting with traceback...")
-        lines = logger.get_exception_as_lines()
-        for line in lines:
-            logger.error(line)
+    while True:
+        time_of_last_exception = lib.get_utc_time()
+        try:
+            s = server.Server(app, locations)
+            s.start()
+        except Exception:
+            s.stop()
+            lines = logger.get_exception_as_lines()
+            for line in lines:
+                logger.error(line)
+            if lib.get_utc_time() - time_of_last_exception < 1:
+                logger.error("Exiting due to rapid exceptions...")
+                exit_now = True
+                sys.exit()
+            else:
+                time_of_last_exception = lib.get_utc_time()
 

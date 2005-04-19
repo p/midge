@@ -7,6 +7,18 @@ release_0-5 (???)
   * Underlying "do_maintenance" now occurs every hour on the hour, and
     is no longer configurable.
 
+  * Enlarged the Description field for "add new bug"
+
+  * Hacky fix for search bug when using malformed regex
+    such as dallas_bld{1,2,3}. (Achieved by dissallowing any use of
+    {} as it is not often needed.)
+
+  * Fixed bug whereby a "Broken Pipe" socket error caused system to
+    crash.
+
+  * Try to keep going after any exception unless two exceptions occur
+    within 1 second of each other.
+
 release_0-4 (20 Oct 2004)
 
   * No longer use any absolute positioning in the style sheet (since
