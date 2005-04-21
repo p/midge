@@ -67,6 +67,10 @@ def format_time(date):
     return date.strftime("%H:%M:%S")
 
 
+def format_date_time(date):
+    return date.strftime("%Y-%m-%d %H:%M")
+
+    
 def get_utc_time_of_next_hour():
     next = mx.DateTime.utc() + mx.DateTime.TimeDelta(1)
     minutes_etc = mx.DateTime.TimeDelta(hours=0,

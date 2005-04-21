@@ -676,7 +676,7 @@ class Summary(object):
             rows = []
             old_count = (None, 0, 0, 0, 0, 0)
             for count in cursor.fetchall():
-                delta = [count[0], 0, 0, 0, 0, 0]
+                delta = [lib.format_date_time(count[0]), 0, 0, 0, 0, 0]
                 for i in (1,2,3,4,5):
                     delta[i] = count[i] - old_count[i]
                 rows.append(Row(Progress.variables, *delta))
