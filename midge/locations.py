@@ -658,7 +658,8 @@ class New(Location):
                 'the available ones are unsuitable.')
             templates.new_bug_form(wfile, self.path,
                                    self.application.versions,
-                                   self.application.categories)
+                                   self.application.categories,
+                                   self.application.keywords)
             templates.footer(wfile)
         else:
             self.redirect(Login.path, self.path)
@@ -686,7 +687,9 @@ class New(Location):
         new_category = post_data.pop("new_category", None)
         if new_category:
             post_data["category"] = new_category
-
+        new_keyword = post_data.pop("new_keyword", None)
+        if new_keyword:
+            post_data["keyword"] = new_keyword
         try:
             bug_id = self.application.add_bug(session_id, **post_data)
             templates.title(wfile, "Successfuly added new bug")
@@ -822,10 +825,10 @@ class History(Location):
             templates.title(wfile, "History")
             templates.bullets(
                 wfile,
-                'List of recent <a href="/changes">changes made to bugs</a>,'
+                '<a href="/changes">Recent changes</a> made to bugs</a>,'
                 ' including addition of new bugs.',
-                'List of recent changes in <a href="/progress">'
-                ' number of bugs in each status</a>.')
+                '<a href="/progress">Daily  progress</a>, as indicated'
+                ' by changes in the number of bugs in each status</a>.')
             templates.footer(wfile)
         else:
             values["next"] = self.path
@@ -840,12 +843,18 @@ class Changes(Location):
         user = self.application.get_user(session_id)
         if user:
             templates.header(wfile)
-            templates.title(wfile, "Recent changes to bugs")
+            templates.title(wfile, "Recent changes")
             sort_by = values.get("sort_by", "date")
             order = values.get("order", "descending")
             changes = self.application.bugs.changes.get_recent_changes(
                 sort_by, order)
             if len(changes.rows) > 0:
+                templates.bullets(
+                    wfile,
+                    "The following table displays the last"
+                    " %d days of changes made to bugs." % config.History.changes_max_age,
+                    "This includes the addition of new bugs.",
+                    "The table is updated every hour on the hour.")
                 templates.table_of_changes(wfile, self.path, changes)
             else:
                 templates.paragraph(
@@ -869,9 +878,17 @@ class Progress(Location):
             templates.header(wfile)
             templates.title(
                 wfile,
-                "Recent changes to number of bugs in each status")
+                "Daily progress")
             progress = self.application.bugs.summary.get_progress()
             if len(progress.rows) > 0:
+                templates.bullets(
+                    wfile,
+                    "The following table summarises activity"
+                    " over the last %d days" % config.History.progress_max_age,
+                    "Each row displays the net change in the number of"
+                    " bugs in each status over each day.",
+                    "The table is updated every hour on the hour, so todays row"
+                    " potentially changes throughout the day.")
                 templates.table_of_progress(wfile, progress)
             else:
                 templates.paragraph(

@@ -275,7 +275,7 @@ def modify_user_form(wfile, path, name, email):
    </form>''' % {"path": path, "name": name, "email": email})
 
 
-def new_bug_form(wfile, path, versions, categories):
+def new_bug_form(wfile, path, versions, categories, keywords):
     wfile.write('''
    <form name="mainform" action="%(path)s" method="POST">
     <table class="centered" cellpadding="5" cellspacing="0" border="0">
@@ -321,6 +321,26 @@ def new_bug_form(wfile, path, versions, categories):
        <input type="text" name="new_category"/><small>)</small>
       </td>
      </tr>
+
+     <tr class="form">
+      <td class="form-row-heading" valign="baseline">Keyword</td>
+      <td>
+       <select name="keyword" size="1">''')
+    for keyword in keywords:
+        if keyword == "":
+            wfile.write('''
+        <option value="" selected="selected"></option>''')
+        else:
+            wfile.write('''
+        <option value="%s">%s</option>''' % (keyword, keyword))
+    wfile.write('''
+       </select>
+      </td>
+      <td align="right"><small>(or use a new keyword</small>
+       <input type="text" name="new_keyword"/><small>)</small>
+      </td>
+     </tr>
+
      <tr class="form">
       <td class="form-row-heading" valign="baseline">Description</td>
       <td colspan="3">
@@ -368,7 +388,7 @@ def show_comments(wfile, bug):
   <br/><br/>
   ''' % {"name": comment.users_name,
          "username": comment.username,
-         "date":lib.format_date(comment.date),
+         "date":lib.pretty_format_date(comment.date),
          "time":lib.format_time(comment.date),
          "text":format_comment(comment.text)})
 
@@ -578,7 +598,7 @@ def edit_bug_form(wfile, path, bug,
    </tr> 
    <tr class="form">
     <td colspan="3">
-     <textarea class="expand" name="comment" rows="8"></textarea>
+     <textarea class="expand" name="comment" cols="80" rows="12"></textarea>
     </td>
    </tr>
   

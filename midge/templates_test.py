@@ -140,7 +140,8 @@ class TemplatesTests(unittest.TestCase):
         templates.new_bug_form(wfile,
                                "a path",
                                ["version1", "version2"],
-                               ["category1", "category2"])
+                               ["category1", "category2"],
+                               ["keyword1", "keyword2"])
         self.assert_(self.is_well_formed(wfile))
 
     def test_edit_bug_form(self):

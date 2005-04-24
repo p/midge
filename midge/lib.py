@@ -6,7 +6,6 @@
 import mx.DateTime
 import smtplib
 import socket
-import time
 import urllib
 import xml.sax.saxutils
 
@@ -59,8 +58,12 @@ def sendmail(to, message):
     return False
 
 
-def format_date(date):
+def pretty_format_date(date):
     return date.strftime("%a %d of %B, %Y")
+
+
+def format_date(date):
+    return date.strftime("%Y-%m-%d (%a)")
 
 
 def format_time(date):
@@ -69,6 +72,9 @@ def format_time(date):
 
 def format_date_time(date):
     return date.strftime("%Y-%m-%d %H:%M")
+
+def get_day(date):
+    return date.day
 
     
 def get_utc_time_of_next_hour():

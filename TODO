@@ -1,9 +1,9 @@
 USER VISIBLE
 
 - add ability to edit title
-- update the web site to use e.g. perhaps like www.openzaurus.org
 - add ability for the user to change their username
 - add ability to search by users
+- update the web site to use e.g. perhaps like www.openzaurus.org
 - add ability to add attachments
 - detect and prevent simultaneous attempts to change same data
 - check everywhere redirecting when not logged in

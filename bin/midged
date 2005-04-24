@@ -20,11 +20,13 @@ if __name__ == "__main__":
     app = application.Application(connection.Connection())
     while True:
         time_of_last_exception = lib.get_utc_time()
+        s = None
         try:
             s = server.Server(app, locations)
             s.start()
         except Exception:
-            s.stop()
+            if s is not None:
+                s.stop()
             lines = logger.get_exception_as_lines()
             for line in lines:
                 logger.error(line)

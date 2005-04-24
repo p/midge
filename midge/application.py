@@ -663,24 +663,32 @@ class Summary(object):
                     self.rows = rows
 
             cursor.execute("""
-            SELECT * FROM 
-              (SELECT
-               DISTINCT ON (news, reviewed, scheduled, fixed, closed)
-               *
-               FROM progress
-               ORDER BY news, reviewed, scheduled, fixed, closed, date DESC)
-               AS temp_progress
-              ORDER BY temp_progress.date ASC;
+              SELECT * FROM progress
+              ORDER BY date ASC
             """)
+#             cursor.execute("""
+#             SELECT * FROM 
+#               (SELECT
+#                DISTINCT ON (news, reviewed, scheduled, fixed, closed)
+#                *
+#                FROM progress
+#                ORDER BY news, reviewed, scheduled, fixed, closed, date DESC)
+#                AS temp_progress
+#               ORDER BY temp_progress.date ASC;
+#             """)
 
             rows = []
-            old_count = (None, 0, 0, 0, 0, 0)
-            for count in cursor.fetchall():
-                delta = [lib.format_date_time(count[0]), 0, 0, 0, 0, 0]
-                for i in (1,2,3,4,5):
-                    delta[i] = count[i] - old_count[i]
-                rows.append(Row(Progress.variables, *delta))
-                old_count = count
+            counts = cursor.fetchall()
+            old_count = counts[0]
+            old_day = lib.get_day(old_count[0])
+            for count in counts:
+                if lib.get_day(count[0]) != old_day or count == counts[-1]:
+                    delta = [lib.format_date(old_count[0]), 0, 0, 0, 0, 0]
+                    for i in (1,2,3,4,5):
+                        delta[i] = count[i] - old_count[i]
+                    rows.append(Row(Progress.variables, *delta))
+                    old_count = count
+                    old_day = lib.get_day(count[0])
             rows.reverse()
             return Progress(rows)
         
