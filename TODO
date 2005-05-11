@@ -1,7 +1,7 @@
 USER VISIBLE
 
 
-- "daily progress" does not work when no bugs have been submitted:
+- "daily progress" does not work until first hourly update has occured:
 
 Traceback (most recent call last):
   File "/usr/lib/python2.4/site-packages/midge/server.py", line 181, in do_GET
