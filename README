@@ -43,7 +43,7 @@ Install
 
  3) Install:
 
-      sudo python set.py install
+      sudo python setup.py install
 
  4) Edit configuration file:
 
@@ -53,17 +53,30 @@ Install
 
      sudo midge-admin setup
 
- 6) Test:
+ 6) Adjust configuration of postgres.
+
+    The simplest (but not safest) approach is to edit (as root)
+
+       /var/lib/postgres/data/pg_hba.conf
+
+    changing the line for "All other connections by UNIX sockets" from
+    method "ident sameuser" to "trust".
+
+    Don't forget to restart postgres, e.g.
+
+      sudo /etc/init.d/postgresql restart
+
+ 7) Run tests:
 
      midge-test
 
- 7) Start:
+ 8) Start:
 
      midged &
 
     (as an ordinary user)
 
- 8) Point your browser to http://localhost:8000
+ 9) Point your browser to http://localhost:8000
     (or as per the config file).
 
 
