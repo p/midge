@@ -1,5 +1,18 @@
 USER VISIBLE
 
+
+- "daily progress" does not work when no bugs have been submitted:
+
+Traceback (most recent call last):
+  File "/usr/lib/python2.4/site-packages/midge/server.py", line 181, in do_GET
+    location.handle_get(session_id, values, wfile)
+  File "/usr/lib/python2.4/site-packages/midge/locations.py", line 882, in handle_get
+    progress = self.application.bugs.summary.get_progress()
+  File "/usr/lib/python2.4/site-packages/midge/application.py", line 682, in get_progress
+    old_count = counts[0]
+IndexError: list index out of range
+
+
 - add ability to edit title
 - add ability for the user to change their username
 - add ability to search by users
