@@ -121,7 +121,7 @@ preventing accidents (e.g. selecting the wrong username on login).
 
 So don't use a secure password.
 
-For the same reasons, passwords are not hashed in the underling
+For the same reasons, passwords are not hashed in the underlying
 database.
 
 States
@@ -136,7 +136,7 @@ Approach:
     again, rather than "reopened")
 
   - Keep states as orthogonal as possible. So for example, don't have
-    a resolved category which is only relevent when the status is
+    a resolved category which is only relevant when the status is
     closed or fixed. Also don't allow multiple "fixed in versions" as
     this clashes with the status (use separate bugs linked through
     keywords).
