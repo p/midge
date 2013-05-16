@@ -679,17 +679,18 @@ class Summary(object):
 
             rows = []
             counts = cursor.fetchall()
-            old_count = counts[0]
-            old_day = lib.get_day(old_count[0])
-            for count in counts:
-                if lib.get_day(count[0]) != old_day or count == counts[-1]:
-                    delta = [lib.format_date(old_count[0]), 0, 0, 0, 0, 0]
-                    for i in (1,2,3,4,5):
-                        delta[i] = count[i] - old_count[i]
-                    rows.append(Row(Progress.variables, *delta))
-                    old_count = count
-                    old_day = lib.get_day(count[0])
-            rows.reverse()
+            if len(counts) > 0:
+                old_count = counts[0]
+                old_day = lib.get_day(old_count[0])
+                for count in counts:
+                    if lib.get_day(count[0]) != old_day or count == counts[-1]:
+                        delta = [lib.format_date(old_count[0]), 0, 0, 0, 0, 0]
+                        for i in (1,2,3,4,5):
+                            delta[i] = count[i] - old_count[i]
+                        rows.append(Row(Progress.variables, *delta))
+                        old_count = count
+                        old_day = lib.get_day(count[0])
+                rows.reverse()
             return Progress(rows)
         
         finally:
