@@ -3,7 +3,7 @@
 
 """Provide abstract connections and test connections to the database."""
 
-import psycopg
+import psycopg2
 
 import midge.administration as administration
 import midge.config as config
@@ -19,7 +19,7 @@ class Connection(object):
     
     """
     def __init__(self):
-        self._connection = psycopg.connect(
+        self._connection = psycopg2.connect(
             "dbname=%s user=%s password=%s" % (config.Database.name,
                                                config.Database.user,
                                                config.Database.password))
@@ -55,7 +55,7 @@ class TestConnection(object):
         self._drop_tables()
         self._create_tables()
         self._create_test_user()
-        self._connection = psycopg.connect(
+        self._connection = psycopg2.connect(
             "dbname=%s user=%s password=%s" % (config.Database.test_name,
                                                config.Database.user,
                                                config.Database.password))
@@ -90,9 +90,9 @@ class TestConnection(object):
 
 
 # Expose those exceptions which users of this module may wish to catch.
-#Error = psycopg.Error
-#DataError = psycopg.DataError
-#DatabaseError = psycopg.DatabaseError
-ProgrammingError = psycopg.ProgrammingError
-IntegrityError = psycopg.IntegrityError
+#Error = psycopg2.Error
+#DataError = psycopg2.DataError
+#DatabaseError = psycopg2.DatabaseError
+ProgrammingError = psycopg2.ProgrammingError
+IntegrityError = psycopg2.IntegrityError
 

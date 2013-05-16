@@ -3,7 +3,7 @@
 
 """Unittests for the administration module."""
 
-import psycopg
+import psycopg2
 import unittest
 
 import midge.administration as administration
@@ -16,7 +16,7 @@ class AdministrationTests(unittest.TestCase):
     def setUp(self):
         config.read()
         administration.create_tables(config.Database.test_name)
-        self.connection = psycopg.connect(
+        self.connection = psycopg2.connect(
             "dbname=%s user=%s password=%s" % (config.Database.test_name,
                                                config.Database.user,
                                                config.Database.password))

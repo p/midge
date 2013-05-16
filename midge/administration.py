@@ -18,7 +18,7 @@ Note that the value_table may be shared amongst different states.
 
 """
 
-import psycopg
+import psycopg2
 
 import midge.lib as lib
 import midge.logger as logger
@@ -27,7 +27,7 @@ import midge.config as config
 
 def run_sql(database, sql_commands):
     assert database in (config.Database.name, config.Database.test_name)
-    connection = psycopg.connect(
+    connection = psycopg2.connect(
         "dbname=%s user=%s password=%s" % (database,
                                            config.Database.user,
                                            config.Database.password))
@@ -37,7 +37,7 @@ def run_sql(database, sql_commands):
         cursor.execute(sql_commands)
         connection.commit()
         success = True
-    except psycopg.Error:
+    except psycopg2.Error:
         logger.exception()
         connection.rollback()
         success = False
@@ -92,7 +92,7 @@ def have_tables(database):
 
 
 def have_table(database, table):
-    connection = psycopg.connect(
+    connection = psycopg2.connect(
         "dbname=%s user=%s password=%s" % (database,
                                            config.Database.user,
                                            config.Database.password))
@@ -103,7 +103,7 @@ def have_table(database, table):
                 SELECT * FROM %s;
         """ % table)
         success = True
-    except psycopg.Error:
+    except psycopg2.Error:
         success = False
     cursor.close()
     return success
